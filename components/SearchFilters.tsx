@@ -74,20 +74,7 @@ export default function SearchFilters({ order, type, status, genre, title }: Sea
   return (
     <div className="mb-8 p-4 bg-card border border-border rounded-lg">
       <h3 className="font-semibold mb-4 text-white">Filters</h3>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
-        {/* Search Title */}
-        <div>
-          <label className="text-sm font-medium block mb-2 text-white">Search Title</label>
-          <input 
-            type="text"
-            value={titleInput}
-            placeholder="e.g. solo leveling"
-            onKeyDown={handleTitleChange}
-            onChange={(e) => setTitleInput(e.target.value)}
-            className="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded text-sm text-white placeholder-slate-400 hover:border-slate-600 transition-colors focus:outline-none focus:border-primary"
-          />
-        </div>
-
+      <div className="grid grid-cols-1 gap-4">
         {/* Order Filter */}
         <div>
           <label className="text-sm font-medium block mb-2 text-white">Order By</label>
@@ -143,6 +130,19 @@ export default function SearchFilters({ order, type, status, genre, title }: Sea
             placeholder="e.g. action, romance"
             onKeyDown={handleGenreChange}
             onChange={(e) => setGenreInput(e.target.value)}
+            className="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded text-sm text-white placeholder-slate-400 hover:border-slate-600 transition-colors focus:outline-none focus:border-primary"
+          />
+        </div>
+
+        {/* Search Title */}
+        <div>
+          <label className="text-sm font-medium block mb-2 text-white">Search Title</label>
+          <input 
+            type="text"
+            value={titleInput}
+            placeholder="e.g. solo leveling"
+            onKeyDown={handleTitleChange}
+            onChange={(e) => setTitleInput(e.target.value)}
             className="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded text-sm text-white placeholder-slate-400 hover:border-slate-600 transition-colors focus:outline-none focus:border-primary"
           />
         </div>

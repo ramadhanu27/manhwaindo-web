@@ -1,37 +1,64 @@
+'use client';
+
+import { useState, useEffect, use } from 'react';
 import { searchSeries, getSeriesList } from '@/lib/api';
 import SeriesCard from '@/components/SeriesCard';
 import SearchFilters from '@/components/SearchFilters';
+import SearchListItem from '@/components/SearchListItem';
+import ViewToggle from '@/components/ViewToggle';
 import Link from 'next/link';
 
-export default async function SearchPage({
+export default function SearchPage({
   searchParams,
 }: {
   searchParams: Promise<{ q?: string; page?: string; order?: string; type?: string; status?: string; genre?: string; title?: string }>;
 }) {
-  const { q, page: pageParam, order, type, status, genre, title } = await searchParams;
+  const resolvedSearchParams = use(searchParams);
+  const { q, page: pageParam, order, type, status, genre, title } = resolvedSearchParams;
   const query = q || '';
-  const page = parseInt(pageParam || '1');
-  
-  // If query is provided, use search API; otherwise use series-list API with filters
-  let data;
-  if (query) {
-    console.log('Searching with query:', query);
-    data = await searchSeries(query);
-    console.log('Search results:', data);
-  } else {
-    // Use series-list API with filters
-    const filters: any = {};
-    if (title) filters.title = title;
-    if (order) filters.order = order;
-    if (type) filters.type = type;
-    if (status) filters.status = status;
-    if (genre) filters.genre = genre;
+  const [page, setPage] = useState(parseInt(pageParam || '1'));
+  const [view, setView] = useState<'grid' | 'list'>('grid');
+  const [data, setData] = useState<any>({ success: false, data: [] });
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      setLoading(true);
+      let result;
+      
+      if (query) {
+        console.log('Searching with query:', query);
+        result = await searchSeries(query);
+        console.log('Search results:', result);
+      } else {
+        // Use series-list API with filters
+        const filters: any = {};
+        if (title) filters.title = title;
+        if (order) filters.order = order;
+        if (type) filters.type = type;
+        if (status) filters.status = status;
+        if (genre) filters.genre = genre;
+        
+        console.log('Using series-list with filters:', filters);
+        result = await getSeriesList(page, filters);
+        console.log('Series-list results:', result);
+      }
+      
+      setData(result);
+      setLoading(false);
+    };
     
-    console.log('Using series-list with filters:', filters);
-    data = await getSeriesList(page, filters);
-    console.log('Series-list results:', data);
-  }
-  
+    fetchData();
+  }, [query, page, title, order, type, status, genre]);
+
+  // Update page state when searchParams changes
+  useEffect(() => {
+    const newPage = parseInt(pageParam || '1');
+    if (newPage !== page) {
+      setPage(newPage);
+    }
+  }, [pageParam]);
+
   const results = data.success ? data.data : [];
   console.log('Final results:', results);
 
@@ -47,8 +74,22 @@ export default async function SearchPage({
     return `?${params.toString()}`;
   };
 
+  if (loading) {
+    return (
+      <div className="container mx-auto px-4 py-8">
+        <div className="flex justify-center items-center min-h-[400px]">
+          <div className="text-center">
+            <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+            <p className="text-muted-foreground">Loading series...</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="container mx-auto px-4 py-8">
+      {/* Header */}
       <div className="mb-8">
         <h1 className="text-3xl font-bold mb-2">
           {query ? `Search Results for "${query}"` : 'Browse Manhwa'}
@@ -62,64 +103,173 @@ export default async function SearchPage({
         </p>
       </div>
 
-      {/* Filter Section */}
-      {!query && (
-        <SearchFilters title={title} order={order} type={type} status={status} genre={genre} />
-      )}
+      {/* Main Layout with Sidebar */}
+      <div className="flex flex-col lg:flex-row gap-6 lg:gap-8">
+        {/* Sidebar - Filters */}
+        {!query && (
+          <div className="w-full lg:w-80 flex-shrink-0">
+            <div className="lg:sticky lg:top-8">
+              <SearchFilters title={title} order={order} type={type} status={status} genre={genre} />
+            </div>
+          </div>
+        )}
 
-      {results.length > 0 ? (
-        <>
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4 mb-8">
-            {results.map((series: any) => (
-              <SeriesCard
-                key={series.slug}
-                title={series.title}
-                slug={series.slug}
-                image={series.image}
-                type={series.type}
-                rating={series.rating}
-              />
-            ))}
+        {/* Main Content */}
+        <div className="flex-1 w-full">
+          {/* View Toggle */}
+          <div className="flex justify-end mb-4 lg:mb-6">
+            <ViewToggle onViewChange={setView} />
           </div>
 
-          {/* Pagination - Only show for filtered view, not search */}
-          {!query && (
-            <div className="flex justify-center gap-2">
-              {page > 1 && (
-                <Link
-                  href={`/search${buildQueryString({ page: page - 1 })}`}
-                  className="px-4 py-2 bg-secondary hover:bg-secondary/80 rounded-lg transition-colors"
-                >
-                  Previous
-                </Link>
+          {/* Results */}
+          {results.length > 0 ? (
+            <>
+              {/* Grid View */}
+              {view === 'grid' && (
+                <div className="grid grid-cols-2 gap-3 md:gap-4 mb-8">
+                  {results.map((series: any) => (
+                    <SeriesCard
+                      key={series.slug}
+                      title={series.title}
+                      slug={series.slug}
+                      image={series.image}
+                      type={series.type}
+                      rating={series.rating}
+                      latestChapter={series.chapters?.[0]?.title}
+                      chapters={series.chapters}
+                    />
+                  ))}
+                </div>
               )}
-              <span className="px-4 py-2 bg-primary text-primary-foreground rounded-lg">
-                Page {page}
-              </span>
-              {results.length > 0 && (
-                <Link
-                  href={`/search${buildQueryString({ page: page + 1 })}`}
-                  className="px-4 py-2 bg-secondary hover:bg-secondary/80 rounded-lg transition-colors"
-                >
-                  Next
-                </Link>
+
+              {/* List View */}
+              {view === 'list' && (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4 mb-8">
+                  {results.map((item: any) => (
+                    <SearchListItem key={item.slug} item={item} />
+                  ))}
+                </div>
               )}
+
+              {/* Pagination - Only show for filtered view, not search */}
+              {!query && (
+                <div className="flex justify-center gap-2 flex-wrap">
+                  {page > 1 && (
+                    <Link
+                      href={`/search${buildQueryString({ page: page - 1 })}`}
+                      className="px-4 py-2 bg-secondary hover:bg-secondary/80 rounded-lg transition-colors"
+                    >
+                      Previous
+                    </Link>
+                  )}
+                  
+                  {/* Page Numbers */}
+                  <div className="flex gap-1">
+                    {/* Always show page 1 */}
+                    {page !== 1 && (
+                      <Link
+                        href={`/search${buildQueryString({ page: 1 })}`}
+                        className="px-3 py-2 bg-background border border-border hover:bg-primary hover:text-primary-foreground hover:border-primary rounded-lg transition-colors text-sm"
+                      >
+                        1
+                      </Link>
+                    )}
+                    
+                    {/* Show current page */}
+                    <span className="px-3 py-2 bg-primary border border-primary text-primary-foreground rounded-lg text-sm">
+                      {page}
+                    </span>
+                    
+                    {/* Show next few pages */}
+                    {page < 5 && [page + 1, page + 2, page + 3, page + 4].slice(0, 4 - (page - 1)).map((pageNum) => (
+                      <Link
+                        key={pageNum}
+                        href={`/search${buildQueryString({ page: pageNum })}`}
+                        className="px-3 py-2 bg-background border border-border hover:bg-primary hover:text-primary-foreground hover:border-primary rounded-lg transition-colors text-sm"
+                      >
+                        {pageNum}
+                      </Link>
+                    ))}
+                    
+                    {/* Show ellipsis and last page */}
+                    {page < 50 && (
+                      <>
+                        <span className="px-2 py-2 text-muted-foreground">...</span>
+                        <Link
+                          href={`/search${buildQueryString({ page: 200 })}`}
+                          className="px-3 py-2 bg-background border border-border hover:bg-primary hover:text-primary-foreground hover:border-primary rounded-lg transition-colors text-sm"
+                        >
+                          200
+                        </Link>
+                      </>
+                    )}
+                    
+                    {/* If we're near the end, show last few pages */}
+                    {page >= 50 && page < 195 && (
+                      <>
+                        <span className="px-2 py-2 text-muted-foreground">...</span>
+                        {[page - 1, page + 1, page + 2].map((pageNum) => (
+                          <Link
+                            key={pageNum}
+                            href={`/search${buildQueryString({ page: pageNum })}`}
+                            className="px-3 py-2 bg-background border border-border hover:bg-primary hover:text-primary-foreground hover:border-primary rounded-lg transition-colors text-sm"
+                          >
+                            {pageNum}
+                          </Link>
+                        ))}
+                        <span className="px-2 py-2 text-muted-foreground">...</span>
+                        <Link
+                          href={`/search${buildQueryString({ page: 200 })}`}
+                          className="px-3 py-2 bg-background border border-border hover:bg-primary hover:text-primary-foreground hover:border-primary rounded-lg transition-colors text-sm"
+                        >
+                          200
+                        </Link>
+                      </>
+                    )}
+                    
+                    {/* If we're at the very end */}
+                    {page >= 195 && page < 200 && (
+                      <>
+                        <span className="px-2 py-2 text-muted-foreground">...</span>
+                        {[196, 197, 198, 199].map((pageNum) => (
+                          <Link
+                            key={pageNum}
+                            href={`/search${buildQueryString({ page: pageNum })}`}
+                            className="px-3 py-2 bg-background border border-border hover:bg-primary hover:text-primary-foreground hover:border-primary rounded-lg transition-colors text-sm"
+                          >
+                            {pageNum}
+                          </Link>
+                        ))}
+                      </>
+                    )}
+                  </div>
+                  
+                  {results.length > 0 && (
+                    <Link
+                      href={`/search${buildQueryString({ page: page + 1 })}`}
+                      className="px-4 py-2 bg-secondary hover:bg-secondary/80 rounded-lg transition-colors"
+                    >
+                      Next
+                    </Link>
+                  )}
+                </div>
+              )}
+            </>
+          ) : query ? (
+            <div className="text-center py-16">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-16 h-16 mx-auto text-muted-foreground mb-4">
+                <path strokeLinecap="round" strokeLinejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
+              </svg>
+              <p className="text-xl text-muted-foreground mb-2">No manhwa found matching "{query}"</p>
+              <p className="text-sm text-muted-foreground">Try searching with different keywords or use the filters below</p>
+            </div>
+          ) : (
+            <div className="text-center py-16">
+              <p className="text-lg text-muted-foreground">Use the filters above to browse manhwa series</p>
             </div>
           )}
-        </>
-      ) : query ? (
-        <div className="text-center py-16">
-          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-16 h-16 mx-auto text-muted-foreground mb-4">
-            <path strokeLinecap="round" strokeLinejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
-          </svg>
-          <p className="text-xl text-muted-foreground mb-2">No manhwa found matching "{query}"</p>
-          <p className="text-sm text-muted-foreground">Try searching with different keywords or use the filters below</p>
         </div>
-      ) : (
-        <div className="text-center py-16">
-          <p className="text-lg text-muted-foreground">Use the filters above to browse manhwa series</p>
-        </div>
-      )}
+      </div>
     </div>
   );
 }

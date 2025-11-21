@@ -10,7 +10,7 @@ export default function Footer() {
             {Array.from('ABCDEFGHIJKLMNOPQRSTUVWXYZ').map((letter) => (
               <Link
                 key={letter}
-                href={`/search?q=${letter}`}
+                href={`/search?title=${letter}`}
                 className="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-background border border-border text-sm font-semibold text-foreground hover:bg-primary hover:text-primary-foreground hover:border-primary transition-all duration-200 hover:scale-110"
               >
                 {letter}

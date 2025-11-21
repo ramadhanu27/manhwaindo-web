@@ -7,6 +7,12 @@ interface SeriesCardProps {
   type?: string;
   rating?: string;
   latestChapter?: string;
+  chapters?: Array<{
+    title: string;
+    url: string;
+    slug: string;
+    time: string;
+  }>;
   isHot?: boolean;
   isNew?: boolean;
 }
@@ -31,14 +37,15 @@ export default function SeriesCard({
   type = 'Manhwa',
   rating,
   latestChapter,
+  chapters,
   isHot = false,
   isNew = false,
 }: SeriesCardProps) {
   return (
     <Link href={`/series/${encodeURIComponent(cleanSlug(slug))}`} className="group block">
-      <div className="relative overflow-hidden rounded-lg bg-card border border-border hover:border-primary/50 transition-all duration-300">
+      <div className="relative overflow-hidden rounded-lg bg-card border border-border hover:border-primary/50 transition-all duration-300 max-w-xs">
         {/* Image */}
-        <div className="relative aspect-[2/3] overflow-hidden bg-muted">
+        <div className="relative aspect-[2/3] overflow-hidden bg-muted h-32 sm:h-40">
           <img
             src={image || '/placeholder.jpg'}
             alt={title}
@@ -81,11 +88,34 @@ export default function SeriesCard({
         </div>
 
         {/* Info */}
-        <div className="p-3">
-          <h3 className="font-semibold text-sm line-clamp-2 mb-1 group-hover:text-primary transition-colors">
+        <div className="p-2">
+          <h3 className="font-semibold text-xs line-clamp-2 mb-1 group-hover:text-primary transition-colors">
             {title}
           </h3>
-          {latestChapter && (
+          
+          {/* Chapters List */}
+          {chapters && chapters.length > 0 && (
+            <div className="space-y-1">
+              {chapters.slice(0, 2).map((chapter, index) => (
+                <div key={index} className="flex items-center justify-between text-xs">
+                  <span className="text-muted-foreground truncate flex-1">
+                    {chapter.title}
+                  </span>
+                  <span className="text-muted-foreground ml-2 flex-shrink-0">
+                    {chapter.time}
+                  </span>
+                </div>
+              ))}
+              {chapters.length > 2 && (
+                <div className="text-xs text-muted-foreground">
+                  +{chapters.length - 2} more
+                </div>
+              )}
+            </div>
+          )}
+          
+          {/* Fallback to latestChapter if no chapters array */}
+          {!chapters && latestChapter && (
             <p className="text-xs text-muted-foreground line-clamp-1">
               {latestChapter}
             </p>
