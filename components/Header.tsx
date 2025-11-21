@@ -28,7 +28,7 @@ export default function Header() {
 
           {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center space-x-6">
-            <Link href="/series" className="text-sm font-medium transition-colors hover:text-primary">
+            <Link href="/search" className="text-sm font-medium transition-colors hover:text-primary">
               Explore
             </Link>
             <Link href="/bookmark" className="text-sm font-medium transition-colors hover:text-primary">

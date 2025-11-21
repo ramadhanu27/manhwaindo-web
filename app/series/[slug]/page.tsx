@@ -71,13 +71,6 @@ export default async function SeriesDetailPage({
                 </div>
               )}
 
-              {/* Synopsis Preview */}
-              {series.synopsis && (
-                <p className="text-sm text-muted-foreground mb-4">
-                  {series.synopsis}
-                </p>
-              )}
-
               {/* Social Share Buttons */}
               <div className="flex flex-wrap gap-2 mb-6">
                 <a href={`https://www.facebook.com/sharer/sharer.php?u=${typeof window !== 'undefined' ? window.location.href : ''}`} target="_blank" rel="noopener noreferrer" className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded text-sm font-semibold transition-colors flex items-center gap-2">

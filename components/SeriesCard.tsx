@@ -14,6 +14,16 @@ interface SeriesCardProps {
 // Helper function to clean slugs
 const cleanSlug = (slug: string) => slug.replace(/\/+$/, '').trim();
 
+// Helper function to get badge color based on type
+const getTypeBadgeColor = (type?: string) => {
+  if (!type) return 'bg-primary';
+  const typeUpper = type.toUpperCase();
+  if (typeUpper.includes('MANHWA')) return 'bg-purple-600 hover:bg-purple-700';
+  if (typeUpper.includes('MANGA')) return 'bg-blue-600 hover:bg-blue-700';
+  if (typeUpper.includes('MANHUA')) return 'bg-orange-600 hover:bg-orange-700';
+  return 'bg-primary';
+};
+
 export default function SeriesCard({
   title,
   slug,
@@ -39,7 +49,7 @@ export default function SeriesCard({
           <div className="absolute top-2 left-2 right-2 flex items-center justify-between gap-2">
             {/* Type Badge - Left */}
             {type && (
-              <div className="bg-primary text-primary-foreground px-2 py-0.5 rounded text-xs font-semibold">
+              <div className={`${getTypeBadgeColor(type)} text-white px-2 py-0.5 rounded text-xs font-semibold transition-colors`}>
                 {type}
               </div>
             )}

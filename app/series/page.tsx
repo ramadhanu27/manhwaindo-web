@@ -10,7 +10,17 @@ export default async function SeriesPage({
   const { page: pageParam } = await searchParams;
   const page = parseInt(pageParam || '1');
   const data = await getLatest(page);
-  const series = data.success ? data.data : [];
+  
+  // Deduplicate series by slug
+  const seriesMap = new Map();
+  if (data.success && data.data) {
+    data.data.forEach((item: any) => {
+      if (!seriesMap.has(item.slug)) {
+        seriesMap.set(item.slug, item);
+      }
+    });
+  }
+  const series = Array.from(seriesMap.values());
 
   return (
     <div className="container mx-auto px-4 py-8">
