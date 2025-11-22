@@ -14,8 +14,10 @@ export default function SearchGridView({ results }: SearchGridViewProps) {
   useEffect(() => {
     const fetchDetails = async () => {
       const details: Record<string, any> = {};
-      // Fetch details for all results, not just first 20
-      for (const series of results) {
+      // Only fetch details for visible items (first 15) to avoid rate limiting
+      const visibleResults = results.slice(0, 15);
+      
+      for (const series of visibleResults) {
         if (!seriesDetails[series.slug]) {
           try {
             const result = await getSeriesDetail(series.slug);
@@ -23,8 +25,11 @@ export default function SearchGridView({ results }: SearchGridViewProps) {
               details[series.slug] = result.data;
             }
           } catch (error) {
-            console.error(`Failed to fetch details for ${series.slug}:`, error);
+            // Silently fail - use fallback data
+            console.debug(`Could not fetch details for ${series.slug}`);
           }
+          // Add small delay between requests to avoid rate limiting
+          await new Promise(resolve => setTimeout(resolve, 100));
         }
       }
       setSeriesDetails((prev) => ({ ...prev, ...details }));
