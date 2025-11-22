@@ -34,18 +34,20 @@ export default function SeriesCard({
   title,
   slug,
   image,
-  type = 'Manhwa',
+  type,
   rating,
   latestChapter,
   chapters,
   isHot = false,
   isNew = false,
 }: SeriesCardProps) {
+  const displayType = type || 'Manhwa';
+  
   return (
     <Link href={`/series/${encodeURIComponent(cleanSlug(slug))}`} className="group block">
-      <div className="relative overflow-hidden rounded-lg bg-card border border-border hover:border-primary/50 transition-all duration-300 max-w-xs">
+      <div className="relative overflow-hidden rounded-lg bg-card border border-border hover:border-primary/50 transition-all duration-300 w-full">
         {/* Image */}
-        <div className="relative aspect-[2/3] overflow-hidden bg-muted h-32 sm:h-40">
+        <div className="relative aspect-[2/3] overflow-hidden bg-muted">
           <img
             src={image || '/placeholder.jpg'}
             alt={title}
@@ -54,10 +56,10 @@ export default function SeriesCard({
           
           {/* Badges Container - Top */}
           <div className="absolute top-2 left-2 right-2 flex items-center justify-between gap-2">
-            {/* Type Badge - Left */}
-            {type && (
-              <div className={`${getTypeBadgeColor(type)} text-white px-2 py-0.5 rounded text-xs font-semibold transition-colors`}>
-                {type}
+            {/* Type Badge Letter - Left */}
+            {displayType && (
+              <div className={`${getTypeBadgeColor(displayType)} text-white px-1.5 py-0.5 rounded text-[10px] font-bold transition-colors`}>
+                {displayType.substring(0, 1).toUpperCase()}
               </div>
             )}
             

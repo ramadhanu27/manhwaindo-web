@@ -3,6 +3,8 @@
 import { useState, useEffect, use } from 'react';
 import { searchSeries, getSeriesList } from '@/lib/api';
 import SeriesCard from '@/components/SeriesCard';
+import SearchGridView from '@/components/SearchGridView';
+import SearchListView from '@/components/SearchListView';
 import SearchFilters from '@/components/SearchFilters';
 import SearchListItem from '@/components/SearchListItem';
 import ViewToggle from '@/components/ViewToggle';
@@ -125,31 +127,10 @@ export default function SearchPage({
           {results.length > 0 ? (
             <>
               {/* Grid View */}
-              {view === 'grid' && (
-                <div className="grid grid-cols-2 gap-3 md:gap-4 mb-8">
-                  {results.map((series: any) => (
-                    <SeriesCard
-                      key={series.slug}
-                      title={series.title}
-                      slug={series.slug}
-                      image={series.image}
-                      type={series.type}
-                      rating={series.rating}
-                      latestChapter={series.chapters?.[0]?.title}
-                      chapters={series.chapters}
-                    />
-                  ))}
-                </div>
-              )}
+              {view === 'grid' && <SearchGridView results={results} />}
 
               {/* List View */}
-              {view === 'list' && (
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4 mb-8">
-                  {results.map((item: any) => (
-                    <SearchListItem key={item.slug} item={item} />
-                  ))}
-                </div>
-              )}
+              {view === 'list' && <SearchListView results={results} />}
 
               {/* Pagination - Only show for filtered view, not search */}
               {!query && (

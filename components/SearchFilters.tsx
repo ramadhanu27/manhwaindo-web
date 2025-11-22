@@ -94,16 +94,55 @@ export default function SearchFilters({ order, type, status, genre, title }: Sea
         {/* Type Filter */}
         <div>
           <label className="text-sm font-medium block mb-2 text-white">Type</label>
-          <select 
-            value={type || ''}
-            onChange={(e) => handleFilterChange('type', e.target.value)}
-            className="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded text-sm cursor-pointer text-white hover:border-slate-600 transition-colors"
-          >
-            <option value="" className="bg-slate-900 text-white">All</option>
-            <option value="manhwa" className="bg-slate-900 text-white">Manhwa</option>
-            <option value="manhua" className="bg-slate-900 text-white">Manhua</option>
-            <option value="manga" className="bg-slate-900 text-white">Manga</option>
-          </select>
+          <div className="space-y-2">
+            <label className="flex items-center gap-2 cursor-pointer">
+              <input
+                type="radio"
+                name="type"
+                value=""
+                checked={!type}
+                onChange={(e) => handleFilterChange('type', e.target.value)}
+                className="cursor-pointer"
+              />
+              <span className="text-sm text-white">All</span>
+            </label>
+            <label className="flex items-center gap-2 cursor-pointer">
+              <input
+                type="radio"
+                name="type"
+                value="manhwa"
+                checked={type === 'manhwa'}
+                onChange={(e) => handleFilterChange('type', e.target.value)}
+                className="cursor-pointer"
+              />
+              <span className="px-2 py-0.5 rounded text-xs font-medium text-white bg-purple-600">Manhwa</span>
+              <span className="text-xs text-slate-400">(Korean)</span>
+            </label>
+            <label className="flex items-center gap-2 cursor-pointer">
+              <input
+                type="radio"
+                name="type"
+                value="manga"
+                checked={type === 'manga'}
+                onChange={(e) => handleFilterChange('type', e.target.value)}
+                className="cursor-pointer"
+              />
+              <span className="px-2 py-0.5 rounded text-xs font-medium text-white bg-blue-600">Manga</span>
+              <span className="text-xs text-slate-400">(Japanese)</span>
+            </label>
+            <label className="flex items-center gap-2 cursor-pointer">
+              <input
+                type="radio"
+                name="type"
+                value="manhua"
+                checked={type === 'manhua'}
+                onChange={(e) => handleFilterChange('type', e.target.value)}
+                className="cursor-pointer"
+              />
+              <span className="px-2 py-0.5 rounded text-xs font-medium text-white bg-orange-600">Manhua</span>
+              <span className="text-xs text-slate-400">(Chinese)</span>
+            </label>
+          </div>
         </div>
 
         {/* Status Filter */}
