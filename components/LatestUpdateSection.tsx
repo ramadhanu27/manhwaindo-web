@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import ViewToggle from './ViewToggle';
 
@@ -12,6 +12,27 @@ const cleanSlug = (slug: string) => slug.replace(/\/+$/, '').trim();
 
 export default function LatestUpdateSection({ series }: LatestUpdateSectionProps) {
   const [view, setView] = useState<'grid' | 'list' | 'compact'>('grid');
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  // Prevent hydration mismatch
+  if (!mounted) {
+    return (
+      <section className="mb-12">
+        <div className="flex items-center justify-between mb-6">
+          <h2 className="text-2xl font-bold">Latest Update</h2>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {series.slice(0, 12).map((item: any) => (
+            <div key={item.slug} className="bg-card border border-border rounded-lg h-48 animate-pulse" />
+          ))}
+        </div>
+      </section>
+    );
+  }
 
   return (
     <section className="mb-12">

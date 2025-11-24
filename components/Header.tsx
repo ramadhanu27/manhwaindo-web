@@ -23,7 +23,7 @@ export default function Header() {
         <div className="flex h-16 items-center justify-between">
           {/* Logo */}
           <Link href="/" className="text-2xl font-bold bg-gradient-to-r from-primary to-pink-500 bg-clip-text text-transparent">
-            ManhwaIndo
+            Manhwaid
           </Link>
 
           {/* Desktop Navigation */}

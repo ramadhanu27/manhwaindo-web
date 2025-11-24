@@ -40,6 +40,15 @@ export default function HeroCarousel({ series }: HeroCarouselProps) {
     return null;
   }
 
+  // Prevent hydration mismatch - don't render until mounted on client
+  if (!mounted) {
+    return (
+      <div className="relative w-full h-[400px] md:h-[500px] rounded-xl overflow-hidden bg-card border border-border">
+        <div className="absolute inset-0 bg-gradient-to-r from-card via-card/95 to-card/50" />
+      </div>
+    );
+  }
+
   const currentSeries = series[currentIndex];
 
   return (
