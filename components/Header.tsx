@@ -31,6 +31,9 @@ export default function Header() {
             <Link href="/search" className="text-sm font-medium transition-colors hover:text-primary">
               Explore
             </Link>
+            <Link href="/download" className="text-sm font-medium transition-colors hover:text-primary">
+              Download
+            </Link>
             <Link href="/bookmark" className="text-sm font-medium transition-colors hover:text-primary">
               Bookmark
             </Link>
@@ -83,8 +86,11 @@ export default function Header() {
                 className="w-full px-4 py-2 bg-secondary text-sm rounded-lg border border-border focus:outline-none focus:ring-2 focus:ring-primary"
               />
             </form>
-            <Link href="/series" className="block py-2 text-sm font-medium hover:text-primary">
+            <Link href="/search" className="block py-2 text-sm font-medium hover:text-primary">
               Explore
+            </Link>
+            <Link href="/download" className="block py-2 text-sm font-medium hover:text-primary">
+              Download
             </Link>
             <Link href="/bookmark" className="block py-2 text-sm font-medium hover:text-primary">
               Bookmark

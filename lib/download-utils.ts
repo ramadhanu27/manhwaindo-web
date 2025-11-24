@@ -1,0 +1,541 @@
+/**
+ * Frontend-based file generation utilities
+ * Generates PDF, CBZ, and ZIP files in the browser
+ */
+
+import JSZip from 'jszip';
+
+interface ChapterData {
+  slug: string;
+  title: string;
+  images: string[];
+}
+
+interface DownloadProgress {
+  current: number;
+  total: number;
+  status: string;
+}
+
+type ProgressCallback = (progress: DownloadProgress) => void;
+
+/**
+ * Create a placeholder image blob
+ */
+function createPlaceholderBlob(): Blob {
+  // Create a simple gray placeholder image (1x1 pixel PNG)
+  const canvas = typeof document !== 'undefined' ? document.createElement('canvas') : null;
+  
+  if (canvas) {
+    canvas.width = 100;
+    canvas.height = 150;
+    const ctx = canvas.getContext('2d');
+    if (ctx) {
+      ctx.fillStyle = '#e5e7eb';
+      ctx.fillRect(0, 0, 100, 150);
+      ctx.fillStyle = '#9ca3af';
+      ctx.font = '12px Arial';
+      ctx.textAlign = 'center';
+      ctx.fillText('Image', 50, 70);
+      ctx.fillText('Unavailable', 50, 85);
+    }
+    return new Promise(resolve => {
+      canvas.toBlob(blob => resolve(blob || new Blob()), 'image/png');
+    }) as any;
+  }
+  
+  // Fallback: return empty blob
+  return new Blob();
+}
+
+/**
+ * Fetch image as blob using backend proxy
+ */
+async function fetchImageBlob(url: string): Promise<Blob> {
+  try {
+    console.log(`Fetching image: ${url}`);
+    
+    // Try backend proxy first (recommended)
+    try {
+      const proxyUrl = `/api/proxy-image?url=${encodeURIComponent(url)}`;
+      console.log(`  Trying proxy: ${proxyUrl}`);
+      
+      const response = await fetch(proxyUrl, {
+        method: 'GET',
+        signal: AbortSignal.timeout(15000),
+      });
+
+      if (response.ok) {
+        const blob = await response.blob();
+        if (blob.size > 0) {
+          console.log(`✓ Image fetched (proxy): ${blob.size} bytes`);
+          return blob;
+        }
+      }
+    } catch (proxyError) {
+      console.log(`Proxy fetch failed, trying direct fetch...`);
+    }
+
+    // Fallback: Try direct fetch with CORS
+    try {
+      const response = await fetch(url, {
+        method: 'GET',
+        mode: 'cors',
+        credentials: 'omit',
+        headers: {
+          'Accept': 'image/*',
+        },
+        signal: AbortSignal.timeout(10000),
+      });
+
+      if (response.ok) {
+        const blob = await response.blob();
+        console.log(`✓ Image fetched (direct): ${blob.size} bytes`);
+        return blob;
+      }
+    } catch (directError) {
+      console.log(`Direct fetch failed, trying no-cors mode...`);
+    }
+
+    // Fallback: Try with no-cors mode
+    try {
+      const noCorsResponse = await fetch(url, {
+        method: 'GET',
+        mode: 'no-cors',
+        credentials: 'omit',
+        signal: AbortSignal.timeout(10000),
+      });
+
+      if (noCorsResponse.status === 0 || noCorsResponse.ok) {
+        const blob = await noCorsResponse.blob();
+        if (blob.size > 0) {
+          console.log(`✓ Image fetched (no-cors): ${blob.size} bytes`);
+          return blob;
+        }
+      }
+    } catch (noCorsError) {
+      console.log(`No-cors fetch also failed, using placeholder...`);
+    }
+
+    // Last resort: Use placeholder image
+    console.warn(`⚠ Using placeholder for: ${url}`);
+    return createPlaceholderBlob();
+  } catch (error) {
+    console.error(`Error fetching image from ${url}:`, error);
+    // Return placeholder instead of throwing
+    return createPlaceholderBlob();
+  }
+}
+
+/**
+ * Download all images in parallel with progress tracking
+ */
+async function downloadAllImages(
+  chapters: ChapterData[],
+  onProgress?: ProgressCallback
+): Promise<Map<string, Blob[]>> {
+  const imageMap = new Map<string, Blob[]>();
+  let completed = 0;
+  const total = chapters.reduce((sum, ch) => sum + ch.images.length, 0) || 1;
+
+  if (total === 0) {
+    onProgress?.({
+      current: 100,
+      total: 100,
+      status: 'No images to download',
+    });
+    return imageMap;
+  }
+
+  for (const chapter of chapters) {
+    const blobs: Blob[] = [];
+
+    if (chapter.images.length === 0) {
+      console.warn(`Chapter ${chapter.title} has no images`);
+      imageMap.set(chapter.slug, []);
+      continue;
+    }
+
+    // Download images in parallel
+    const imagePromises = chapter.images.map(async (imageUrl, index) => {
+      try {
+        const blob = await fetchImageBlob(imageUrl);
+        blobs.push(blob);
+        completed++;
+        onProgress?.({
+          current: completed,
+          total,
+          status: `Downloading images... ${completed}/${total}`,
+        });
+        return blob;
+      } catch (error) {
+        console.error(`Error downloading image ${index + 1}:`, error);
+        completed++;
+        onProgress?.({
+          current: completed,
+          total,
+          status: `Downloading images... ${completed}/${total}`,
+        });
+        return null;
+      }
+    });
+
+    await Promise.all(imagePromises);
+    const successfulBlobs = blobs.filter(Boolean);
+    
+    console.log(`Chapter ${chapter.title}: Downloaded ${successfulBlobs.length}/${chapter.images.length} images`);
+    imageMap.set(chapter.slug, successfulBlobs);
+  }
+
+  return imageMap;
+}
+
+/**
+ * Generate PDF file with all images merged into 1 page
+ */
+export async function generatePDF(
+  series: string,
+  chapters: ChapterData[],
+  onProgress?: ProgressCallback
+): Promise<Blob> {
+  onProgress?.({
+    current: 0,
+    total: 100,
+    status: 'Downloading images...',
+  });
+
+  // Download all images
+  const imageMap = await downloadAllImages(chapters, onProgress);
+
+  onProgress?.({
+    current: 50,
+    total: 100,
+    status: 'Generating PDF...',
+  });
+
+  // Dynamic import for jsPDF
+  const { jsPDF } = await import('jspdf');
+
+  // Calculate total height needed for all images
+  let totalHeight = 100; // Start with space for title
+  const imageHeights: number[] = [];
+  const imageUrls: string[] = [];
+  const imageBlobs: Blob[] = [];
+
+  // First pass: Calculate dimensions and collect images
+  let processedImages = 0;
+  const totalImages = Array.from(imageMap.values()).reduce((sum, blobs) => sum + blobs.length, 0);
+
+  for (const chapter of chapters) {
+    const blobs = imageMap.get(chapter.slug) || [];
+    if (blobs.length === 0) continue;
+
+    totalHeight += 15; // Space for chapter title
+
+    for (const blob of blobs) {
+      const url = URL.createObjectURL(blob);
+      const img = new Image();
+
+      await new Promise((resolve) => {
+        img.onload = () => {
+          try {
+            // Calculate height based on standard width (210mm - 10mm margins = 200mm)
+            const standardWidth = 200;
+            const height = (img.height / img.width) * standardWidth;
+            imageHeights.push(height);
+            imageUrls.push(url);
+            imageBlobs.push(blob);
+
+            totalHeight += height + 2; // Add image height + gap
+
+            processedImages++;
+            onProgress?.({
+              current: 50 + (processedImages / totalImages) * 30,
+              total: 100,
+              status: `Calculating layout... ${processedImages}/${totalImages}`,
+            });
+
+            resolve(null);
+          } catch (error) {
+            console.error('Error calculating image size:', error);
+            resolve(null);
+          }
+        };
+        img.onerror = () => {
+          console.error('Error loading image');
+          resolve(null);
+        };
+        img.src = url;
+      });
+    }
+  }
+
+  // Create PDF with calculated height
+  const pdf = new jsPDF({
+    orientation: 'portrait',
+    unit: 'mm',
+    format: [210, totalHeight + 20], // Width: A4, Height: calculated
+  });
+
+  const pageWidth = pdf.internal.pageSize.getWidth();
+  const margin = 5;
+  const contentWidth = pageWidth - margin * 2;
+
+  let yPosition = margin;
+
+  // Add title
+  pdf.setFontSize(20);
+  pdf.text(series, pageWidth / 2, yPosition + 10, { align: 'center' });
+  yPosition += 20;
+
+  pdf.setFontSize(10);
+  pdf.text(`Total Chapters: ${chapters.length}`, pageWidth / 2, yPosition, { align: 'center' });
+  yPosition += 15;
+
+  // Second pass: Add all images to single page
+  let imageIndex = 0;
+  for (const chapter of chapters) {
+    const blobs = imageMap.get(chapter.slug) || [];
+    if (blobs.length === 0) continue;
+
+    // Add chapter title
+    pdf.setFontSize(14);
+    pdf.text(chapter.title, margin, yPosition);
+    yPosition += 15;
+
+    // Add images
+    for (const blob of blobs) {
+      if (imageIndex < imageUrls.length && imageIndex < imageHeights.length) {
+        try {
+          const url = imageUrls[imageIndex];
+          const imgHeight = imageHeights[imageIndex];
+          const imgWidth = contentWidth;
+
+          // Add image to PDF
+          pdf.addImage(url, 'JPEG', margin, yPosition, imgWidth, imgHeight);
+          yPosition += imgHeight + 2;
+
+          URL.revokeObjectURL(url);
+        } catch (error) {
+          console.error('Error adding image to PDF:', error);
+        }
+      }
+      imageIndex++;
+
+      processedImages++;
+      onProgress?.({
+        current: 80 + (processedImages / totalImages) * 20,
+        total: 100,
+        status: `Adding images... ${processedImages}/${totalImages}`,
+      });
+    }
+
+    yPosition += 5; // Gap between chapters
+  }
+
+  onProgress?.({
+    current: 100,
+    total: 100,
+    status: 'PDF ready! (1 page)',
+  });
+
+  return pdf.output('blob');
+}
+
+/**
+ * Generate CBZ (Comic Book ZIP) file
+ */
+export async function generateCBZ(
+  series: string,
+  chapters: ChapterData[],
+  onProgress?: ProgressCallback
+): Promise<Blob> {
+  onProgress?.({
+    current: 0,
+    total: 100,
+    status: 'Downloading images...',
+  });
+
+  // Download all images
+  const imageMap = await downloadAllImages(chapters, onProgress);
+
+  onProgress?.({
+    current: 50,
+    total: 100,
+    status: 'Creating CBZ file...',
+  });
+
+  const zip = new JSZip();
+  let imageIndex = 1;
+  let processedImages = 0;
+  const totalImages = Array.from(imageMap.values()).reduce((sum, blobs) => sum + blobs.length, 0);
+
+  for (const chapter of chapters) {
+    const chapterFolder = zip.folder(chapter.title);
+    if (!chapterFolder) continue;
+
+    const blobs = imageMap.get(chapter.slug) || [];
+
+    for (const blob of blobs) {
+      const filename = `${String(imageIndex).padStart(4, '0')}.jpg`;
+      chapterFolder.file(filename, blob);
+      imageIndex++;
+
+      processedImages++;
+      onProgress?.({
+        current: 50 + (processedImages / totalImages) * 50,
+        total: 100,
+        status: `Creating CBZ... ${processedImages}/${totalImages}`,
+      });
+    }
+  }
+
+  // Add ComicInfo.xml metadata
+  const comicInfo = generateComicInfoXML(series, chapters);
+  zip.file('ComicInfo.xml', comicInfo);
+
+  onProgress?.({
+    current: 95,
+    total: 100,
+    status: 'Finalizing CBZ...',
+  });
+
+  const blob = await zip.generateAsync({ type: 'blob' });
+
+  onProgress?.({
+    current: 100,
+    total: 100,
+    status: 'CBZ ready!',
+  });
+
+  return blob;
+}
+
+/**
+ * Generate ZIP file with organized folder structure
+ */
+export async function generateZIP(
+  series: string,
+  chapters: ChapterData[],
+  onProgress?: ProgressCallback
+): Promise<Blob> {
+  onProgress?.({
+    current: 0,
+    total: 100,
+    status: 'Downloading images...',
+  });
+
+  // Download all images
+  const imageMap = await downloadAllImages(chapters, onProgress);
+
+  onProgress?.({
+    current: 50,
+    total: 100,
+    status: 'Creating ZIP file...',
+  });
+
+  const zip = new JSZip();
+  let processedImages = 0;
+  const totalImages = Array.from(imageMap.values()).reduce((sum, blobs) => sum + blobs.length, 0);
+
+  for (const chapter of chapters) {
+    const chapterFolder = zip.folder(chapter.title);
+    if (!chapterFolder) continue;
+
+    const blobs = imageMap.get(chapter.slug) || [];
+
+    for (let i = 0; i < blobs.length; i++) {
+      const filename = `${String(i + 1).padStart(3, '0')}.jpg`;
+      chapterFolder.file(filename, blobs[i]);
+
+      processedImages++;
+      onProgress?.({
+        current: 50 + (processedImages / totalImages) * 50,
+        total: 100,
+        status: `Creating ZIP... ${processedImages}/${totalImages}`,
+      });
+    }
+  }
+
+  // Add metadata file
+  const metadata = {
+    series,
+    chapters: chapters.map((ch) => ({
+      title: ch.title,
+      images: (imageMap.get(ch.slug) || []).length,
+    })),
+    downloadedAt: new Date().toISOString(),
+  };
+  zip.file('metadata.json', JSON.stringify(metadata, null, 2));
+
+  onProgress?.({
+    current: 95,
+    total: 100,
+    status: 'Finalizing ZIP...',
+  });
+
+  const blob = await zip.generateAsync({ type: 'blob' });
+
+  onProgress?.({
+    current: 100,
+    total: 100,
+    status: 'ZIP ready!',
+  });
+
+  return blob;
+}
+
+/**
+ * Trigger file download
+ */
+export function downloadBlob(blob: Blob, filename: string): void {
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = filename;
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  URL.revokeObjectURL(url);
+}
+
+/**
+ * Generate ComicInfo.xml for CBZ format
+ */
+function generateComicInfoXML(series: string, chapters: ChapterData[]): string {
+  const totalImages = chapters.reduce((sum, ch) => sum + ch.images.length, 0);
+
+  return `<?xml version="1.0" encoding="utf-8"?>
+<ComicInfo xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <Title>${escapeXML(series)}</Title>
+  <Series>${escapeXML(series)}</Series>
+  <Number>${chapters.length}</Number>
+  <Count>${totalImages}</Count>
+  <Summary>Downloaded from ManhwaIndo</Summary>
+  <Year>${new Date().getFullYear()}</Year>
+  <Month>${new Date().getMonth() + 1}</Month>
+  <Day>${new Date().getDate()}</Day>
+  <Publisher>ManhwaIndo</Publisher>
+  <Genre>Manga</Genre>
+  <Web>https://manhwaindo.com</Web>
+  <PageCount>${totalImages}</PageCount>
+  <LanguageISO>id</LanguageISO>
+  <Format>Webtoon</Format>
+  <BlackAndWhite>No</BlackAndWhite>
+  <Manga>YesAndRightToLeft</Manga>
+  <ScanInformation>Downloaded from ManhwaIndo</ScanInformation>
+  <AgeRating>Unknown</AgeRating>
+</ComicInfo>`;
+}
+
+/**
+ * Escape XML special characters
+ */
+function escapeXML(str: string): string {
+  return str
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&apos;');
+}

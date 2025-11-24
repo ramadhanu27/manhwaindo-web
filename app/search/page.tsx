@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, use } from 'react';
-import { searchSeries, getSeriesList } from '@/lib/api';
+import { getSeriesList } from '@/lib/api';
 import SeriesCard from '@/components/SeriesCard';
 import SearchGridView from '@/components/SearchGridView';
 import SearchListView from '@/components/SearchListView';
@@ -16,8 +16,7 @@ export default function SearchPage({
   searchParams: Promise<{ q?: string; page?: string; order?: string; type?: string; status?: string; genre?: string; title?: string }>;
 }) {
   const resolvedSearchParams = use(searchParams);
-  const { q, page: pageParam, order, type, status, genre, title } = resolvedSearchParams;
-  const query = q || '';
+  const { page: pageParam, order, type, status, genre, title } = resolvedSearchParams;
   const [page, setPage] = useState(parseInt(pageParam || '1'));
   const [view, setView] = useState<'grid' | 'list'>('grid');
   const [data, setData] = useState<any>({ success: false, data: [] });
@@ -26,32 +25,24 @@ export default function SearchPage({
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
-      let result;
+
+      // Always use series-list API
+      const filters: any = {};
+      if (order) filters.order = order;
+      if (type) filters.type = type;
+      if (status) filters.status = status;
+      if (genre) filters.genre = genre;
       
-      if (query) {
-        console.log('Searching with query:', query);
-        result = await searchSeries(query);
-        console.log('Search results:', result);
-      } else {
-        // Use series-list API with filters
-        const filters: any = {};
-        if (title) filters.title = title;
-        if (order) filters.order = order;
-        if (type) filters.type = type;
-        if (status) filters.status = status;
-        if (genre) filters.genre = genre;
-        
-        console.log('Using series-list with filters:', filters);
-        result = await getSeriesList(page, filters);
-        console.log('Series-list results:', result);
-      }
+      console.log(`Using series-list API: /api/series-list?page=${page}`, filters);
+      const result = await getSeriesList(page, filters);
+      console.log('Series-list results:', result);
       
       setData(result);
       setLoading(false);
     };
     
     fetchData();
-  }, [query, page, title, order, type, status, genre]);
+  }, [page, order, type, status, genre]);
 
   // Update page state when searchParams changes
   useEffect(() => {
@@ -67,7 +58,6 @@ export default function SearchPage({
   // Build query string for filters
   const buildQueryString = (newParams: any) => {
     const params = new URLSearchParams();
-    if (query) params.append('q', query);
     if (newParams.page) params.append('page', newParams.page);
     if (newParams.order || order) params.append('order', newParams.order || order);
     if (newParams.type || type) params.append('type', newParams.type || type);
@@ -93,14 +83,10 @@ export default function SearchPage({
     <div className="container mx-auto px-4 py-8">
       {/* Header */}
       <div className="mb-8">
-        <h1 className="text-3xl font-bold mb-2">
-          {query ? `Search Results for "${query}"` : 'Browse Manhwa'}
-        </h1>
+        <h1 className="text-3xl font-bold mb-2">Browse Manhwa</h1>
         <p className="text-muted-foreground">
           {results.length > 0
-            ? `Found ${results.length} results`
-            : query
-            ? 'No results found'
+            ? `Found ${results.length} series`
             : 'Browse and filter manhwa series'}
         </p>
       </div>
@@ -108,13 +94,11 @@ export default function SearchPage({
       {/* Main Layout with Sidebar */}
       <div className="flex flex-col lg:flex-row gap-6 lg:gap-8">
         {/* Sidebar - Filters */}
-        {!query && (
-          <div className="w-full lg:w-80 flex-shrink-0">
-            <div className="lg:sticky lg:top-8">
-              <SearchFilters title={title} order={order} type={type} status={status} genre={genre} />
-            </div>
+        <div className="w-full lg:w-80 flex-shrink-0">
+          <div className="lg:sticky lg:top-8">
+            <SearchFilters title={title} order={order} type={type} status={status} genre={genre} />
           </div>
-        )}
+        </div>
 
         {/* Main Content */}
         <div className="flex-1 w-full">
@@ -132,9 +116,8 @@ export default function SearchPage({
               {/* List View */}
               {view === 'list' && <SearchListView results={results} />}
 
-              {/* Pagination - Only show for filtered view, not search */}
-              {!query && (
-                <div className="flex justify-center gap-2 flex-wrap">
+              {/* Pagination */}
+              <div className="flex justify-center gap-2 flex-wrap">
                   {page > 1 && (
                     <Link
                       href={`/search${buildQueryString({ page: page - 1 })}`}
@@ -233,17 +216,8 @@ export default function SearchPage({
                       Next
                     </Link>
                   )}
-                </div>
-              )}
+              </div>
             </>
-          ) : query ? (
-            <div className="text-center py-16">
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-16 h-16 mx-auto text-muted-foreground mb-4">
-                <path strokeLinecap="round" strokeLinejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
-              </svg>
-              <p className="text-xl text-muted-foreground mb-2">No manhwa found matching "{query}"</p>
-              <p className="text-sm text-muted-foreground">Try searching with different keywords or use the filters below</p>
-            </div>
           ) : (
             <div className="text-center py-16">
               <p className="text-lg text-muted-foreground">Use the filters above to browse manhwa series</p>
