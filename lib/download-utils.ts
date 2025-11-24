@@ -148,7 +148,7 @@ async function downloadAllImages(
   }
 
   for (const chapter of chapters) {
-    const blobs: Blob[] = [];
+    const blobs: (Blob | null)[] = new Array(chapter.images.length).fill(null);
 
     if (chapter.images.length === 0) {
       console.warn(`Chapter ${chapter.title} has no images`);
@@ -156,11 +156,11 @@ async function downloadAllImages(
       continue;
     }
 
-    // Download images in parallel
+    // Download images in parallel but maintain order
     const imagePromises = chapter.images.map(async (imageUrl, index) => {
       try {
         const blob = await fetchImageBlob(imageUrl);
-        blobs.push(blob);
+        blobs[index] = blob; // Maintain order by index
         completed++;
         onProgress?.({
           current: completed,
@@ -170,6 +170,7 @@ async function downloadAllImages(
         return blob;
       } catch (error) {
         console.error(`Error downloading image ${index + 1}:`, error);
+        blobs[index] = null; // Keep null at correct index
         completed++;
         onProgress?.({
           current: completed,
@@ -181,9 +182,9 @@ async function downloadAllImages(
     });
 
     await Promise.all(imagePromises);
-    const successfulBlobs = blobs.filter(Boolean);
+    const successfulBlobs = blobs.filter((blob): blob is Blob => blob !== null);
     
-    console.log(`Chapter ${chapter.title}: Downloaded ${successfulBlobs.length}/${chapter.images.length} images`);
+    console.log(`Chapter ${chapter.title}: Downloaded ${successfulBlobs.length}/${chapter.images.length} images (order maintained)`);
     imageMap.set(chapter.slug, successfulBlobs);
   }
 
@@ -233,33 +234,12 @@ export async function generatePDF(
   const contentWidth = pageWidth - margin * 2;
   const minBottomMargin = 15; // Minimum space at bottom before page break
   
-  let yPosition = pageHeight - margin - 20;
-  let isFirstPage = true;
+  let yPosition = pageHeight - margin;
 
-  // Add title on first page
-  pdf.setFontSize(20);
-  pdf.text(series, pageWidth / 2, yPosition, { align: 'center' });
-  yPosition -= 15;
-
-  pdf.setFontSize(10);
-  pdf.text(`Total Chapters: ${chapters.length}`, pageWidth / 2, yPosition, { align: 'center' });
-  yPosition -= 20;
-
-  // Add all images with automatic page breaks
+  // Add all images with automatic page breaks (no titles)
   for (const chapter of chapters) {
     const blobs = imageMap.get(chapter.slug) || [];
     if (blobs.length === 0) continue;
-
-    // Check if chapter title fits on current page
-    if (yPosition < margin + minBottomMargin + 15) {
-      pdf.addPage();
-      yPosition = pageHeight - margin;
-    }
-
-    // Add chapter title
-    pdf.setFontSize(14);
-    pdf.text(chapter.title, margin, yPosition);
-    yPosition -= 15;
 
     // Add images
     for (const blob of blobs) {
