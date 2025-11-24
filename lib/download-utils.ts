@@ -216,128 +216,112 @@ export async function generatePDF(
   // Dynamic import for jsPDF
   const { jsPDF } = await import('jspdf');
 
-  // Calculate total height needed for all images
-  let totalHeight = 100; // Start with space for title
-  const imageHeights: number[] = [];
-  const imageUrls: string[] = [];
-  const imageBlobs: Blob[] = [];
-
-  // First pass: Calculate dimensions and collect images
-  let processedImages = 0;
+  // Get total images count
   const totalImages = Array.from(imageMap.values()).reduce((sum, blobs) => sum + blobs.length, 0);
+  let processedImages = 0;
 
-  for (const chapter of chapters) {
-    const blobs = imageMap.get(chapter.slug) || [];
-    if (blobs.length === 0) continue;
-
-    totalHeight += 15; // Space for chapter title
-
-    for (const blob of blobs) {
-      const url = URL.createObjectURL(blob);
-      const img = new Image();
-
-      await new Promise((resolve) => {
-        img.onload = () => {
-          try {
-            // Calculate height based on standard width (210mm - 10mm margins = 200mm)
-            const standardWidth = 200;
-            const height = (img.height / img.width) * standardWidth;
-            imageHeights.push(height);
-            imageUrls.push(url);
-            imageBlobs.push(blob);
-
-            totalHeight += height + 2; // Add image height + gap
-
-            processedImages++;
-            onProgress?.({
-              current: 50 + (processedImages / totalImages) * 30,
-              total: 100,
-              status: `Calculating layout... ${processedImages}/${totalImages}`,
-            });
-
-            resolve(null);
-          } catch (error) {
-            console.error('Error calculating image size:', error);
-            resolve(null);
-          }
-        };
-        img.onerror = () => {
-          console.error('Error loading image');
-          resolve(null);
-        };
-        img.src = url;
-      });
-    }
-  }
-
-  // Create PDF with calculated height
+  // Create PDF with A4 size and automatic page breaks
   const pdf = new jsPDF({
     orientation: 'portrait',
     unit: 'mm',
-    format: [210, totalHeight + 20], // Width: A4, Height: calculated
+    format: 'a4',
   });
 
-  const pageWidth = pdf.internal.pageSize.getWidth();
-  const margin = 5;
+  const pageWidth = 210;
+  const pageHeight = 297;
+  const margin = 10;
   const contentWidth = pageWidth - margin * 2;
+  const minBottomMargin = 15; // Minimum space at bottom before page break
+  
+  let yPosition = pageHeight - margin - 20;
+  let isFirstPage = true;
 
-  let yPosition = margin;
-
-  // Add title
+  // Add title on first page
   pdf.setFontSize(20);
-  pdf.text(series, pageWidth / 2, yPosition + 10, { align: 'center' });
-  yPosition += 20;
+  pdf.text(series, pageWidth / 2, yPosition, { align: 'center' });
+  yPosition -= 15;
 
   pdf.setFontSize(10);
   pdf.text(`Total Chapters: ${chapters.length}`, pageWidth / 2, yPosition, { align: 'center' });
-  yPosition += 15;
+  yPosition -= 20;
 
-  // Second pass: Add all images to single page
-  let imageIndex = 0;
+  // Add all images with automatic page breaks
   for (const chapter of chapters) {
     const blobs = imageMap.get(chapter.slug) || [];
     if (blobs.length === 0) continue;
+
+    // Check if chapter title fits on current page
+    if (yPosition < margin + minBottomMargin + 15) {
+      pdf.addPage();
+      yPosition = pageHeight - margin;
+    }
 
     // Add chapter title
     pdf.setFontSize(14);
     pdf.text(chapter.title, margin, yPosition);
-    yPosition += 15;
+    yPosition -= 15;
 
     // Add images
     for (const blob of blobs) {
-      if (imageIndex < imageUrls.length && imageIndex < imageHeights.length) {
-        try {
-          const url = imageUrls[imageIndex];
-          const imgHeight = imageHeights[imageIndex];
-          const imgWidth = contentWidth;
+      try {
+        // Get image dimensions
+        const img = new Image();
+        const url = URL.createObjectURL(blob);
 
-          // Add image to PDF
-          pdf.addImage(url, 'JPEG', margin, yPosition, imgWidth, imgHeight);
-          yPosition += imgHeight + 2;
+        await new Promise<void>((resolve) => {
+          img.onload = () => {
+            try {
+              // Calculate image height based on content width
+              const imgHeight = (img.height / img.width) * contentWidth;
 
-          URL.revokeObjectURL(url);
-        } catch (error) {
-          console.error('Error adding image to PDF:', error);
-        }
+              // Check if image fits on current page (with buffer)
+              if (yPosition - imgHeight < margin + minBottomMargin) {
+                pdf.addPage();
+                yPosition = pageHeight - margin;
+              }
+
+              // Add image to PDF
+              pdf.addImage(url, 'JPEG', margin, yPosition - imgHeight, contentWidth, imgHeight);
+              yPosition -= imgHeight + 2;
+
+              URL.revokeObjectURL(url);
+              console.log(`✓ Added image ${processedImages + 1}/${totalImages} at y=${yPosition}`);
+              resolve();
+            } catch (error) {
+              console.error('Error adding image:', error);
+              resolve();
+            }
+          };
+          img.onerror = () => {
+            URL.revokeObjectURL(url);
+            console.error('Error loading image');
+            resolve();
+          };
+          img.src = url;
+        });
+
+        processedImages++;
+        onProgress?.({
+          current: 50 + (processedImages / totalImages) * 50,
+          total: 100,
+          status: `Adding images... ${processedImages}/${totalImages}`,
+        });
+      } catch (error) {
+        console.error('Error processing image:', error);
       }
-      imageIndex++;
-
-      processedImages++;
-      onProgress?.({
-        current: 80 + (processedImages / totalImages) * 20,
-        total: 100,
-        status: `Adding images... ${processedImages}/${totalImages}`,
-      });
     }
 
-    yPosition += 5; // Gap between chapters
+    yPosition -= 8; // Gap between chapters
   }
 
+  const pageCount = pdf.internal.pages.length - 1;
   onProgress?.({
     current: 100,
     total: 100,
-    status: 'PDF ready! (1 page)',
+    status: `PDF ready! (${pageCount} pages, ${processedImages} images)`,
   });
+
+  console.log(`PDF generated: ${pageCount} pages, Total images: ${processedImages}/${totalImages}`);
 
   return pdf.output('blob');
 }

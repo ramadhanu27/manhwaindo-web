@@ -26,35 +26,58 @@ export async function GET(request: NextRequest) {
 
     console.log(`Proxying image: ${imageUrl}`);
 
-    // Fetch image from external server
-    const response = await fetch(imageUrl, {
-      headers: {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
-        'Referer': 'https://apimanhwa.netlify.app/',
-      },
-      signal: AbortSignal.timeout(15000),
-    });
+    // Fetch image from external server with longer timeout
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 30000); // 30 second timeout
+    
+    try {
+      const response = await fetch(imageUrl, {
+        headers: {
+          'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
+          'Referer': 'https://apimanhwa.netlify.app/',
+        },
+        signal: controller.signal,
+      });
 
-    if (!response.ok) {
-      console.error(`Image fetch failed: ${response.status}`);
+      if (!response.ok) {
+        console.error(`Image fetch failed: ${response.status}`);
+        clearTimeout(timeoutId);
+        return NextResponse.json(
+          { error: `Failed to fetch image: ${response.status}` },
+          { status: response.status }
+        );
+      }
+
+      const blob = await response.blob();
+      clearTimeout(timeoutId);
+      console.log(`✓ Image proxied: ${blob.size} bytes`);
+
+      // Return image with proper headers
+      return new NextResponse(blob, {
+        status: 200,
+        headers: {
+          'Content-Type': blob.type || 'image/jpeg',
+          'Cache-Control': 'public, max-age=86400', // Cache for 24 hours
+          'Access-Control-Allow-Origin': '*',
+        },
+      });
+    } catch (fetchError) {
+      clearTimeout(timeoutId);
+      console.error('Image fetch error:', fetchError);
+      
+      // Handle timeout specifically
+      if (fetchError instanceof Error && fetchError.name === 'AbortError') {
+        return NextResponse.json(
+          { error: 'Image fetch timeout' },
+          { status: 504 }
+        );
+      }
+      
       return NextResponse.json(
-        { error: `Failed to fetch image: ${response.status}` },
-        { status: response.status }
+        { error: 'Failed to fetch image' },
+        { status: 500 }
       );
     }
-
-    const blob = await response.blob();
-    console.log(`✓ Image proxied: ${blob.size} bytes`);
-
-    // Return image with proper headers
-    return new NextResponse(blob, {
-      status: 200,
-      headers: {
-        'Content-Type': blob.type || 'image/jpeg',
-        'Cache-Control': 'public, max-age=86400', // Cache for 24 hours
-        'Access-Control-Allow-Origin': '*',
-      },
-    });
   } catch (error) {
     console.error('Image proxy error:', error);
     return NextResponse.json(
