@@ -55,7 +55,7 @@ export default function DownloadFlow() {
         if (submittedSearchQuery.trim()) {
           filters.title = submittedSearchQuery;
         }
-        
+
         const data = await getSeriesList(currentPage, filters);
         if (data.success) {
           setSearchResults(data.data || []);
@@ -124,16 +124,17 @@ export default function DownloadFlow() {
     }
   };
 
-  // Download single chapter as PDF
+  // Download single chapter as PDF (direct download via API)
   const handleDownloadChapter = async (chapterSlug: string) => {
     if (!seriesDetail) return;
 
-    setLoading(true);
-    setError("");
-    setDownloadProgress({ current: 0, total: 100, status: "Starting..." });
-
     try {
-      setDownloadProgress({ current: 5, total: 100, status: "Fetching chapter images..." });
+      setError("");
+      setDownloadProgress({
+        current: 0,
+        total: 100,
+        status: "Memuat chapter...",
+      });
 
       const data = await getChapterImages(chapterSlug);
 
@@ -148,56 +149,94 @@ export default function DownloadFlow() {
           },
         ];
 
-        setDownloadProgress({ current: 50, total: 100, status: "Generating PDF..." });
+        setDownloadProgress({
+          current: 20,
+          total: 100,
+          status: `Merging ${data.data.images.length} images...`,
+        });
 
-        const progressCallback = (progress: any) => {
-          setDownloadProgress(progress);
-        };
+        // Trigger server-side PDF generation and direct download
+        const response = await fetch("/api/generate-pdf", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            series: seriesDetail.title,
+            chapters: chapterData,
+          }),
+        });
 
-        const blob = await generatePDF(seriesDetail.title, chapterData, progressCallback);
+        if (!response.ok) {
+          throw new Error("Failed to generate PDF");
+        }
+
+        setDownloadProgress({
+          current: 60,
+          total: 100,
+          status: "Membuat PDF...",
+        });
+
+        // Get PDF blob and trigger download
+        const blob = await response.blob();
+
+        setDownloadProgress({
+          current: 90,
+          total: 100,
+          status: "Menyimpan file...",
+        });
+
         downloadBlob(blob, `${seriesDetail.title} - ${foundChapter?.title || "Chapter"}.pdf`);
-        setDownloadProgress(null);
-        alert("Download completed!");
+
+        setDownloadProgress({
+          current: 100,
+          total: 100,
+          status: "✓ Download selesai!",
+        });
+
+        // Hide progress after 2 seconds
+        setTimeout(() => {
+          setDownloadProgress(null);
+        }, 2000);
       } else {
         throw new Error("No images found for this chapter");
       }
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Download failed");
       setDownloadProgress(null);
-    } finally {
-      setLoading(false);
+      setError(err instanceof Error ? err.message : "Download failed");
     }
   };
 
-  // Download multiple chapters as ZIP with PDFs
+  // Download multiple chapters as ZIP with PDFs (direct download)
   const handleDownloadMultiple = async () => {
     if (!seriesDetail || selectedChapters.size === 0) {
       setError("Please select at least one chapter");
       return;
     }
 
-    setLoading(true);
-    setError("");
-    setDownloadProgress({ current: 0, total: 100, status: "Starting..." });
-
     try {
-      setDownloadProgress({ current: 5, total: 100, status: "Fetching chapter images..." });
+      setError("");
+      setDownloadProgress({
+        current: 0,
+        total: 100,
+        status: "Memulai download...",
+      });
 
-      // Fetch chapter images directly from external API
+      // Fetch chapter images
       const chapterData: ChapterImages[] = [];
       const selectedChapterArray = Array.from(selectedChapters);
+      const totalChapters = selectedChapterArray.length;
 
       for (let i = 0; i < selectedChapterArray.length; i++) {
         const chapterSlug = selectedChapterArray[i];
+        setDownloadProgress({
+          current: (i / totalChapters) * 20,
+          total: 100,
+          status: `Memuat chapter ${i + 1}/${totalChapters}...`,
+        });
 
         try {
-          console.log(`\n[${i + 1}/${selectedChapterArray.length}] Fetching chapter: ${chapterSlug}`);
-
           const data = await getChapterImages(chapterSlug);
-          console.log(`  Response success: ${data.success}`);
 
           if (data.success && data.data?.images && data.data.images.length > 0) {
-            // Find chapter title from series detail
             const foundChapter = seriesDetail.chapters.find((ch) => ch.slug.replace(/\/+$/, "").trim() === chapterSlug);
 
             chapterData.push({
@@ -205,68 +244,106 @@ export default function DownloadFlow() {
               title: foundChapter?.title || data.data.title || "Chapter",
               images: data.data.images,
             });
-
-            console.log(`✓ Fetched ${chapterSlug}: ${data.data.images.length} images`);
-          } else {
-            console.warn(`✗ No images in response for ${chapterSlug}`);
           }
         } catch (err) {
-          console.error(`✗ Error fetching chapter ${chapterSlug}:`, err);
+          console.error(`Error fetching chapter ${chapterSlug}:`, err);
         }
-
-        // Update progress
-        const progress = 5 + ((i + 1) / selectedChapterArray.length) * 40;
-        setDownloadProgress({
-          current: progress,
-          total: 100,
-          status: `Fetching chapters... ${i + 1}/${selectedChapterArray.length}`,
-        });
       }
 
       if (chapterData.length === 0) {
         throw new Error("No chapter images found. Please try again.");
       }
 
-      setDownloadProgress({ current: 50, total: 100, status: "Processing..." });
+      setDownloadProgress({
+        current: 25,
+        total: 100,
+        status: `Membuat PDF untuk ${chapterData.length} chapter...`,
+      });
 
-      // Generate files
-      const progressCallback = (progress: any) => {
-        setDownloadProgress(progress);
-      };
-
-      // If only 1 chapter, download as PDF
+      // If only 1 chapter, download as PDF via API
       if (chapterData.length === 1) {
-        const blob = await generatePDF(seriesDetail.title, chapterData, progressCallback);
+        const response = await fetch("/api/generate-pdf", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            series: seriesDetail.title,
+            chapters: chapterData,
+          }),
+        });
+
+        if (!response.ok) {
+          throw new Error("Failed to generate PDF");
+        }
+
+        setDownloadProgress({
+          current: 80,
+          total: 100,
+          status: "Menyimpan PDF...",
+        });
+
+        const blob = await response.blob();
         downloadBlob(blob, `${seriesDetail.title} - ${chapterData[0].title}.pdf`);
+
+        setDownloadProgress({
+          current: 100,
+          total: 100,
+          status: "✓ Download selesai!",
+        });
+
+        setTimeout(() => {
+          setDownloadProgress(null);
+        }, 2000);
       } else {
-        // If 2+ chapters, create ZIP with individual PDFs
-        const { jsPDF } = await import("jspdf");
+        // If 2+ chapters, create ZIP with individual PDFs via API
         const JSZip = (await import("jszip")).default;
         const zip = new JSZip();
 
         for (let i = 0; i < chapterData.length; i++) {
           const chapter = chapterData[i];
-          const blob = await generatePDF(seriesDetail.title, [chapter], progressCallback);
-          zip.file(`${i + 1}. ${chapter.title}.pdf`, blob);
 
           setDownloadProgress({
-            current: 50 + ((i + 1) / chapterData.length) * 50,
+            current: 25 + (i / chapterData.length) * 60,
             total: 100,
-            status: `Creating ZIP... ${i + 1}/${chapterData.length}`,
+            status: `Membuat PDF ${i + 1}/${chapterData.length}...`,
           });
+
+          const response = await fetch("/api/generate-pdf", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              series: seriesDetail.title,
+              chapters: [chapter],
+            }),
+          });
+
+          if (response.ok) {
+            const blob = await response.blob();
+            zip.file(`${i + 1}. ${chapter.title}.pdf`, blob);
+          }
         }
+
+        setDownloadProgress({
+          current: 90,
+          total: 100,
+          status: "Membuat file ZIP...",
+        });
 
         const zipBlob = await zip.generateAsync({ type: "blob" });
         downloadBlob(zipBlob, `${seriesDetail.title}.zip`);
-      }
 
-      setDownloadProgress(null);
-      alert("Download completed!");
+        setDownloadProgress({
+          current: 100,
+          total: 100,
+          status: "✓ Download selesai!",
+        });
+
+        setTimeout(() => {
+          setDownloadProgress(null);
+        }, 2000);
+      }
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Download failed");
       setDownloadProgress(null);
-    } finally {
-      setLoading(false);
+      setError(err instanceof Error ? err.message : "Download failed");
     }
   };
 
@@ -355,8 +432,7 @@ export default function DownloadFlow() {
                 />
                 <button
                   type="submit"
-                  className="px-6 py-3 bg-gradient-to-r from-primary to-purple-500 hover:from-primary/90 hover:to-purple-500/90 text-white font-semibold rounded-lg transition-all duration-300 hover:shadow-lg hover:shadow-primary/50 flex items-center gap-2"
-                >
+                  className="px-6 py-3 bg-gradient-to-r from-primary to-purple-500 hover:from-primary/90 hover:to-purple-500/90 text-white font-semibold rounded-lg transition-all duration-300 hover:shadow-lg hover:shadow-primary/50 flex items-center gap-2">
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                   </svg>
@@ -427,15 +503,11 @@ export default function DownloadFlow() {
               <div className="mt-12 flex justify-center gap-2 flex-wrap">
                 {/* Previous Button */}
                 {currentPage > 1 && (
-                  <button
-                    onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
-                    disabled={loading}
-                    className="px-4 py-2 bg-secondary hover:bg-secondary/80 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                  >
+                  <button onClick={() => setCurrentPage(Math.max(1, currentPage - 1))} disabled={loading} className="px-4 py-2 bg-secondary hover:bg-secondary/80 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
                     Previous
                   </button>
                 )}
-                
+
                 {/* Page Numbers */}
                 <div className="flex gap-1">
                   {/* Always show page 1 */}
@@ -443,29 +515,26 @@ export default function DownloadFlow() {
                     <button
                       onClick={() => setCurrentPage(1)}
                       disabled={loading}
-                      className="px-3 py-2 bg-background border border-border hover:bg-primary hover:text-primary-foreground hover:border-primary rounded-lg transition-colors text-sm disabled:opacity-50 disabled:cursor-not-allowed"
-                    >
+                      className="px-3 py-2 bg-background border border-border hover:bg-primary hover:text-primary-foreground hover:border-primary rounded-lg transition-colors text-sm disabled:opacity-50 disabled:cursor-not-allowed">
                       1
                     </button>
                   )}
-                  
+
                   {/* Show current page */}
-                  <span className="px-3 py-2 bg-primary border border-primary text-primary-foreground rounded-lg text-sm">
-                    {currentPage}
-                  </span>
-                  
+                  <span className="px-3 py-2 bg-primary border border-primary text-primary-foreground rounded-lg text-sm">{currentPage}</span>
+
                   {/* Show next few pages */}
-                  {currentPage < 5 && [currentPage + 1, currentPage + 2, currentPage + 3, currentPage + 4].slice(0, 4 - (currentPage - 1)).map((pageNum) => (
-                    <button
-                      key={pageNum}
-                      onClick={() => setCurrentPage(pageNum)}
-                      disabled={loading}
-                      className="px-3 py-2 bg-background border border-border hover:bg-primary hover:text-primary-foreground hover:border-primary rounded-lg transition-colors text-sm disabled:opacity-50 disabled:cursor-not-allowed"
-                    >
-                      {pageNum}
-                    </button>
-                  ))}
-                  
+                  {currentPage < 5 &&
+                    [currentPage + 1, currentPage + 2, currentPage + 3, currentPage + 4].slice(0, 4 - (currentPage - 1)).map((pageNum) => (
+                      <button
+                        key={pageNum}
+                        onClick={() => setCurrentPage(pageNum)}
+                        disabled={loading}
+                        className="px-3 py-2 bg-background border border-border hover:bg-primary hover:text-primary-foreground hover:border-primary rounded-lg transition-colors text-sm disabled:opacity-50 disabled:cursor-not-allowed">
+                        {pageNum}
+                      </button>
+                    ))}
+
                   {/* Show ellipsis and last page */}
                   {currentPage < 50 && (
                     <>
@@ -473,13 +542,12 @@ export default function DownloadFlow() {
                       <button
                         onClick={() => setCurrentPage(200)}
                         disabled={loading}
-                        className="px-3 py-2 bg-background border border-border hover:bg-primary hover:text-primary-foreground hover:border-primary rounded-lg transition-colors text-sm disabled:opacity-50 disabled:cursor-not-allowed"
-                      >
+                        className="px-3 py-2 bg-background border border-border hover:bg-primary hover:text-primary-foreground hover:border-primary rounded-lg transition-colors text-sm disabled:opacity-50 disabled:cursor-not-allowed">
                         200
                       </button>
                     </>
                   )}
-                  
+
                   {/* If we're near the end, show last few pages */}
                   {currentPage >= 50 && currentPage < 195 && (
                     <>
@@ -489,8 +557,7 @@ export default function DownloadFlow() {
                           key={pageNum}
                           onClick={() => setCurrentPage(pageNum)}
                           disabled={loading}
-                          className="px-3 py-2 bg-background border border-border hover:bg-primary hover:text-primary-foreground hover:border-primary rounded-lg transition-colors text-sm disabled:opacity-50 disabled:cursor-not-allowed"
-                        >
+                          className="px-3 py-2 bg-background border border-border hover:bg-primary hover:text-primary-foreground hover:border-primary rounded-lg transition-colors text-sm disabled:opacity-50 disabled:cursor-not-allowed">
                           {pageNum}
                         </button>
                       ))}
@@ -498,13 +565,12 @@ export default function DownloadFlow() {
                       <button
                         onClick={() => setCurrentPage(200)}
                         disabled={loading}
-                        className="px-3 py-2 bg-background border border-border hover:bg-primary hover:text-primary-foreground hover:border-primary rounded-lg transition-colors text-sm disabled:opacity-50 disabled:cursor-not-allowed"
-                      >
+                        className="px-3 py-2 bg-background border border-border hover:bg-primary hover:text-primary-foreground hover:border-primary rounded-lg transition-colors text-sm disabled:opacity-50 disabled:cursor-not-allowed">
                         200
                       </button>
                     </>
                   )}
-                  
+
                   {/* If we're at the very end */}
                   {currentPage >= 195 && currentPage < 200 && (
                     <>
@@ -514,22 +580,20 @@ export default function DownloadFlow() {
                           key={pageNum}
                           onClick={() => setCurrentPage(pageNum)}
                           disabled={loading}
-                          className="px-3 py-2 bg-background border border-border hover:bg-primary hover:text-primary-foreground hover:border-primary rounded-lg transition-colors text-sm disabled:opacity-50 disabled:cursor-not-allowed"
-                        >
+                          className="px-3 py-2 bg-background border border-border hover:bg-primary hover:text-primary-foreground hover:border-primary rounded-lg transition-colors text-sm disabled:opacity-50 disabled:cursor-not-allowed">
                           {pageNum}
                         </button>
                       ))}
                     </>
                   )}
                 </div>
-                
+
                 {/* Next Button */}
                 {searchResults.length > 0 && (
                   <button
                     onClick={() => setCurrentPage(Math.min(200, currentPage + 1))}
                     disabled={loading}
-                    className="px-4 py-2 bg-secondary hover:bg-secondary/80 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                  >
+                    className="px-4 py-2 bg-secondary hover:bg-secondary/80 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
                     Next
                   </button>
                 )}

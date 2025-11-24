@@ -3,7 +3,7 @@
  * Generates PDF, CBZ, and ZIP files in the browser
  */
 
-import JSZip from 'jszip';
+import JSZip from "jszip";
 
 interface ChapterData {
   slug: string;
@@ -24,26 +24,26 @@ type ProgressCallback = (progress: DownloadProgress) => void;
  */
 function createPlaceholderBlob(): Blob {
   // Create a simple gray placeholder image (1x1 pixel PNG)
-  const canvas = typeof document !== 'undefined' ? document.createElement('canvas') : null;
-  
+  const canvas = typeof document !== "undefined" ? document.createElement("canvas") : null;
+
   if (canvas) {
     canvas.width = 100;
     canvas.height = 150;
-    const ctx = canvas.getContext('2d');
+    const ctx = canvas.getContext("2d");
     if (ctx) {
-      ctx.fillStyle = '#e5e7eb';
+      ctx.fillStyle = "#e5e7eb";
       ctx.fillRect(0, 0, 100, 150);
-      ctx.fillStyle = '#9ca3af';
-      ctx.font = '12px Arial';
-      ctx.textAlign = 'center';
-      ctx.fillText('Image', 50, 70);
-      ctx.fillText('Unavailable', 50, 85);
+      ctx.fillStyle = "#9ca3af";
+      ctx.font = "12px Arial";
+      ctx.textAlign = "center";
+      ctx.fillText("Image", 50, 70);
+      ctx.fillText("Unavailable", 50, 85);
     }
-    return new Promise(resolve => {
-      canvas.toBlob(blob => resolve(blob || new Blob()), 'image/png');
+    return new Promise((resolve) => {
+      canvas.toBlob((blob) => resolve(blob || new Blob()), "image/png");
     }) as any;
   }
-  
+
   // Fallback: return empty blob
   return new Blob();
 }
@@ -54,14 +54,14 @@ function createPlaceholderBlob(): Blob {
 async function fetchImageBlob(url: string): Promise<Blob> {
   try {
     console.log(`Fetching image: ${url}`);
-    
+
     // Try backend proxy first (recommended)
     try {
       const proxyUrl = `/api/proxy-image?url=${encodeURIComponent(url)}`;
       console.log(`  Trying proxy: ${proxyUrl}`);
-      
+
       const response = await fetch(proxyUrl, {
-        method: 'GET',
+        method: "GET",
         signal: AbortSignal.timeout(15000),
       });
 
@@ -79,11 +79,11 @@ async function fetchImageBlob(url: string): Promise<Blob> {
     // Fallback: Try direct fetch with CORS
     try {
       const response = await fetch(url, {
-        method: 'GET',
-        mode: 'cors',
-        credentials: 'omit',
+        method: "GET",
+        mode: "cors",
+        credentials: "omit",
         headers: {
-          'Accept': 'image/*',
+          Accept: "image/*",
         },
         signal: AbortSignal.timeout(10000),
       });
@@ -100,9 +100,9 @@ async function fetchImageBlob(url: string): Promise<Blob> {
     // Fallback: Try with no-cors mode
     try {
       const noCorsResponse = await fetch(url, {
-        method: 'GET',
-        mode: 'no-cors',
-        credentials: 'omit',
+        method: "GET",
+        mode: "no-cors",
+        credentials: "omit",
         signal: AbortSignal.timeout(10000),
       });
 
@@ -130,10 +130,7 @@ async function fetchImageBlob(url: string): Promise<Blob> {
 /**
  * Download all images in parallel with progress tracking
  */
-async function downloadAllImages(
-  chapters: ChapterData[],
-  onProgress?: ProgressCallback
-): Promise<Map<string, Blob[]>> {
+async function downloadAllImages(chapters: ChapterData[], onProgress?: ProgressCallback): Promise<Map<string, Blob[]>> {
   const imageMap = new Map<string, Blob[]>();
   let completed = 0;
   const total = chapters.reduce((sum, ch) => sum + ch.images.length, 0) || 1;
@@ -142,7 +139,7 @@ async function downloadAllImages(
     onProgress?.({
       current: 100,
       total: 100,
-      status: 'No images to download',
+      status: "No images to download",
     });
     return imageMap;
   }
@@ -183,7 +180,7 @@ async function downloadAllImages(
 
     await Promise.all(imagePromises);
     const successfulBlobs = blobs.filter((blob): blob is Blob => blob !== null);
-    
+
     console.log(`Chapter ${chapter.title}: Downloaded ${successfulBlobs.length}/${chapter.images.length} images (order maintained)`);
     imageMap.set(chapter.slug, successfulBlobs);
   }
@@ -194,15 +191,11 @@ async function downloadAllImages(
 /**
  * Generate PDF file with all images merged into 1 page
  */
-export async function generatePDF(
-  series: string,
-  chapters: ChapterData[],
-  onProgress?: ProgressCallback
-): Promise<Blob> {
+export async function generatePDF(series: string, chapters: ChapterData[], onProgress?: ProgressCallback): Promise<Blob> {
   onProgress?.({
     current: 0,
     total: 100,
-    status: 'Downloading images...',
+    status: "Downloading images...",
   });
 
   // Download all images
@@ -211,11 +204,11 @@ export async function generatePDF(
   onProgress?.({
     current: 50,
     total: 100,
-    status: 'Generating PDF...',
+    status: "Generating PDF...",
   });
 
   // Dynamic import for jsPDF
-  const { jsPDF } = await import('jspdf');
+  const { jsPDF } = await import("jspdf");
 
   // Get total images count
   const totalImages = Array.from(imageMap.values()).reduce((sum, blobs) => sum + blobs.length, 0);
@@ -223,9 +216,9 @@ export async function generatePDF(
 
   // Create PDF with A4 size and automatic page breaks
   const pdf = new jsPDF({
-    orientation: 'portrait',
-    unit: 'mm',
-    format: 'a4',
+    orientation: "portrait",
+    unit: "mm",
+    format: "a4",
   });
 
   const pageWidth = 210;
@@ -233,7 +226,7 @@ export async function generatePDF(
   const margin = 10;
   const contentWidth = pageWidth - margin * 2;
   const minBottomMargin = 15; // Minimum space at bottom before page break
-  
+
   let yPosition = pageHeight - margin;
 
   // Add all images with automatic page breaks (no titles)
@@ -261,20 +254,20 @@ export async function generatePDF(
               }
 
               // Add image to PDF
-              pdf.addImage(url, 'JPEG', margin, yPosition - imgHeight, contentWidth, imgHeight);
+              pdf.addImage(url, "JPEG", margin, yPosition - imgHeight, contentWidth, imgHeight);
               yPosition -= imgHeight + 2;
 
               URL.revokeObjectURL(url);
               console.log(`✓ Added image ${processedImages + 1}/${totalImages} at y=${yPosition}`);
               resolve();
             } catch (error) {
-              console.error('Error adding image:', error);
+              console.error("Error adding image:", error);
               resolve();
             }
           };
           img.onerror = () => {
             URL.revokeObjectURL(url);
-            console.error('Error loading image');
+            console.error("Error loading image");
             resolve();
           };
           img.src = url;
@@ -287,7 +280,7 @@ export async function generatePDF(
           status: `Adding images... ${processedImages}/${totalImages}`,
         });
       } catch (error) {
-        console.error('Error processing image:', error);
+        console.error("Error processing image:", error);
       }
     }
 
@@ -303,21 +296,17 @@ export async function generatePDF(
 
   console.log(`PDF generated: ${pageCount} pages, Total images: ${processedImages}/${totalImages}`);
 
-  return pdf.output('blob');
+  return pdf.output("blob");
 }
 
 /**
  * Generate CBZ (Comic Book ZIP) file
  */
-export async function generateCBZ(
-  series: string,
-  chapters: ChapterData[],
-  onProgress?: ProgressCallback
-): Promise<Blob> {
+export async function generateCBZ(series: string, chapters: ChapterData[], onProgress?: ProgressCallback): Promise<Blob> {
   onProgress?.({
     current: 0,
     total: 100,
-    status: 'Downloading images...',
+    status: "Downloading images...",
   });
 
   // Download all images
@@ -326,7 +315,7 @@ export async function generateCBZ(
   onProgress?.({
     current: 50,
     total: 100,
-    status: 'Creating CBZ file...',
+    status: "Creating CBZ file...",
   });
 
   const zip = new JSZip();
@@ -341,7 +330,7 @@ export async function generateCBZ(
     const blobs = imageMap.get(chapter.slug) || [];
 
     for (const blob of blobs) {
-      const filename = `${String(imageIndex).padStart(4, '0')}.jpg`;
+      const filename = `${String(imageIndex).padStart(4, "0")}.jpg`;
       chapterFolder.file(filename, blob);
       imageIndex++;
 
@@ -356,20 +345,20 @@ export async function generateCBZ(
 
   // Add ComicInfo.xml metadata
   const comicInfo = generateComicInfoXML(series, chapters);
-  zip.file('ComicInfo.xml', comicInfo);
+  zip.file("ComicInfo.xml", comicInfo);
 
   onProgress?.({
     current: 95,
     total: 100,
-    status: 'Finalizing CBZ...',
+    status: "Finalizing CBZ...",
   });
 
-  const blob = await zip.generateAsync({ type: 'blob' });
+  const blob = await zip.generateAsync({ type: "blob" });
 
   onProgress?.({
     current: 100,
     total: 100,
-    status: 'CBZ ready!',
+    status: "CBZ ready!",
   });
 
   return blob;
@@ -378,15 +367,11 @@ export async function generateCBZ(
 /**
  * Generate ZIP file with organized folder structure
  */
-export async function generateZIP(
-  series: string,
-  chapters: ChapterData[],
-  onProgress?: ProgressCallback
-): Promise<Blob> {
+export async function generateZIP(series: string, chapters: ChapterData[], onProgress?: ProgressCallback): Promise<Blob> {
   onProgress?.({
     current: 0,
     total: 100,
-    status: 'Downloading images...',
+    status: "Downloading images...",
   });
 
   // Download all images
@@ -395,7 +380,7 @@ export async function generateZIP(
   onProgress?.({
     current: 50,
     total: 100,
-    status: 'Creating ZIP file...',
+    status: "Creating ZIP file...",
   });
 
   const zip = new JSZip();
@@ -409,7 +394,7 @@ export async function generateZIP(
     const blobs = imageMap.get(chapter.slug) || [];
 
     for (let i = 0; i < blobs.length; i++) {
-      const filename = `${String(i + 1).padStart(3, '0')}.jpg`;
+      const filename = `${String(i + 1).padStart(3, "0")}.jpg`;
       chapterFolder.file(filename, blobs[i]);
 
       processedImages++;
@@ -430,33 +415,72 @@ export async function generateZIP(
     })),
     downloadedAt: new Date().toISOString(),
   };
-  zip.file('metadata.json', JSON.stringify(metadata, null, 2));
+  zip.file("metadata.json", JSON.stringify(metadata, null, 2));
 
   onProgress?.({
     current: 95,
     total: 100,
-    status: 'Finalizing ZIP...',
+    status: "Finalizing ZIP...",
   });
 
-  const blob = await zip.generateAsync({ type: 'blob' });
+  const blob = await zip.generateAsync({ type: "blob" });
 
   onProgress?.({
     current: 100,
     total: 100,
-    status: 'ZIP ready!',
+    status: "ZIP ready!",
   });
 
   return blob;
 }
 
 /**
+ * Sanitize filename to handle Unicode and special characters
+ */
+function sanitizeFilename(name: string): string {
+  let sanitized = name
+    // Replace smart quotes with regular quotes
+    .replace(/[""]/g, '"')
+    .replace(/['']/g, "'")
+    // Replace em/en dashes with hyphens
+    .replace(/[—–]/g, "-")
+    // Replace other common Unicode characters
+    .replace(/[…]/g, "...")
+    // Normalize Unicode characters (NFD = decompose, then remove combining marks)
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    // Replace remaining non-ASCII characters with underscores
+    .replace(/[^\x00-\x7F]/g, "_")
+    // Replace invalid filename characters with underscores
+    .replace(/[<>:"/\\|?*]/g, "_")
+    // Replace multiple underscores/spaces with single ones
+    .replace(/[_\s]+/g, "_")
+    // Remove leading/trailing underscores and spaces
+    .replace(/^[_\s]+|[_\s]+$/g, "")
+    .trim();
+
+  // Ensure filename is not empty
+  if (!sanitized || sanitized.length === 0) {
+    sanitized = "download";
+  }
+
+  // Limit filename length (max 200 chars to be safe)
+  if (sanitized.length > 200) {
+    sanitized = sanitized.substring(0, 200);
+  }
+
+  return sanitized;
+}
+
+/**
  * Trigger file download
  */
 export function downloadBlob(blob: Blob, filename: string): void {
+  const safeFilename = sanitizeFilename(filename);
   const url = URL.createObjectURL(blob);
-  const link = document.createElement('a');
+  const link = document.createElement("a");
   link.href = url;
-  link.download = filename;
+  link.download = safeFilename;
   document.body.appendChild(link);
   link.click();
   document.body.removeChild(link);
@@ -496,10 +520,5 @@ function generateComicInfoXML(series: string, chapters: ChapterData[]): string {
  * Escape XML special characters
  */
 function escapeXML(str: string): string {
-  return str
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&apos;');
+  return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&apos;");
 }
