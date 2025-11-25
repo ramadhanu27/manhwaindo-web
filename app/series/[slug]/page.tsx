@@ -2,6 +2,8 @@ import { getSeriesDetail } from '@/lib/api';
 import Image from 'next/image';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
+import ChaptersSection from '@/components/ChaptersSection';
+import BookmarkButton from '@/components/BookmarkButton';
 
 // Helper function to clean slugs
 const cleanSlug = (slug: string) => slug.replace(/\/+$/, '').trim();
@@ -38,7 +40,7 @@ export default async function SeriesDetailPage({
         <div className="relative container mx-auto px-4 py-8">
           <div className="flex flex-col md:flex-row gap-6">
             {/* Cover Image */}
-            <div className="flex-shrink-0">
+            <div className="flex-shrink-0 flex justify-center md:justify-start w-full md:w-auto">
               <div className="relative w-48 h-72 rounded-lg overflow-hidden shadow-2xl">
                 <Image
                   src={series.image || '/placeholder.jpg'}
@@ -97,12 +99,11 @@ export default async function SeriesDetailPage({
               </div>
 
               {/* Bookmark Button */}
-              <button className="w-full bg-blue-600 hover:bg-blue-700 text-white py-2.5 rounded-lg font-semibold transition-colors flex items-center justify-center gap-2">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M17.593 3.322c1.1.128 1.907 1.077 1.907 2.185V21L12 17.25 4.5 21V5.507c0-1.108.806-2.057 1.907-2.185a48.507 48.507 0 0 1 11.186 0Z" />
-                </svg>
-                Bookmark
-              </button>
+              <BookmarkButton
+                seriesSlug={slug}
+                seriesTitle={series.title}
+                seriesImage={series.image}
+              />
             </div>
           </div>
         </div>
@@ -196,37 +197,11 @@ export default async function SeriesDetailPage({
             )}
 
             {/* Chapter List */}
-            <div className="bg-card border border-border rounded-lg p-6">
-              <h2 className="text-xl font-bold mb-4">Chapter {series.title}</h2>
-              
-              {/* Search Bar */}
-              <div className="mb-6">
-                <input
-                  type="text"
-                  placeholder="Search Chapter. Example: 25 or 178"
-                  className="w-full px-4 py-2 bg-background border border-border rounded-lg text-foreground placeholder-muted-foreground focus:outline-none focus:border-primary"
-                />
-              </div>
-              
-              {series.chapters && series.chapters.length > 0 ? (
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
-                  {series.chapters.map((chapter: any, idx: number) => (
-                    <Link
-                      key={idx}
-                      href={`/series/${encodeURIComponent(cleanSlug(slug))}/${encodeURIComponent(cleanSlug(chapter.slug))}`}
-                      className="block p-4 bg-background border border-border rounded-lg hover:border-primary/50 hover:bg-background/80 transition-all group"
-                    >
-                      <div className="font-medium text-sm mb-2 line-clamp-1 group-hover:text-primary transition-colors">{chapter.title}</div>
-                      {chapter.time && (
-                        <div className="text-xs text-muted-foreground">{chapter.time}</div>
-                      )}
-                    </Link>
-                  ))}
-                </div>
-              ) : (
-                <p className="text-muted-foreground">No chapters available</p>
-              )}
-            </div>
+            <ChaptersSection
+              chapters={series.chapters || []}
+              seriesSlug={slug}
+              seriesTitle={series.title}
+            />
           </div>
         </div>
       </div>

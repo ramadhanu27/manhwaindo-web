@@ -1,7 +1,13 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
+
+interface Genre {
+  id: string;
+  name: string;
+  slug: string;
+}
 
 interface SearchFiltersProps {
   order?: string;
@@ -16,6 +22,29 @@ export default function SearchFilters({ order, type, status, genre, title }: Sea
   const searchParams = useSearchParams();
   const [titleInput, setTitleInput] = useState(title || '');
   const [genreInput, setGenreInput] = useState(genre || '');
+  const [genres, setGenres] = useState<Genre[]>([]);
+  const [loadingGenres, setLoadingGenres] = useState(true);
+
+  // Fetch genres from API
+  useEffect(() => {
+    const fetchGenres = async () => {
+      try {
+        const res = await fetch('https://apimanhwa.netlify.app/api/genres');
+        if (res.ok) {
+          const data = await res.json();
+          if (data.success && data.data) {
+            setGenres(data.data);
+          }
+        }
+      } catch (error) {
+        console.error('Error fetching genres:', error);
+      } finally {
+        setLoadingGenres(false);
+      }
+    };
+
+    fetchGenres();
+  }, []);
 
   const buildQueryString = (newParams: any) => {
     const params = new URLSearchParams(searchParams);
@@ -64,12 +93,15 @@ export default function SearchFilters({ order, type, status, genre, title }: Sea
     }
   };
 
-  const handleGenreChange = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter') {
-      const newGenre = (e.target as HTMLInputElement).value;
-      handleFilterChange('genre', newGenre);
-    }
-  };
+  // Update genreInput when genre prop changes
+  useEffect(() => {
+    setGenreInput(genre || '');
+  }, [genre]);
+
+  // Update titleInput when title prop changes
+  useEffect(() => {
+    setTitleInput(title || '');
+  }, [title]);
 
   return (
     <div className="mb-8 p-4 bg-card border border-border rounded-lg">
@@ -163,14 +195,21 @@ export default function SearchFilters({ order, type, status, genre, title }: Sea
         {/* Genre Filter */}
         <div>
           <label className="text-sm font-medium block mb-2 text-white">Genre</label>
-          <input 
-            type="text"
+          <select 
             value={genreInput}
-            placeholder="e.g. action, romance"
-            onKeyDown={handleGenreChange}
-            onChange={(e) => setGenreInput(e.target.value)}
-            className="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded text-sm text-white placeholder-slate-400 hover:border-slate-600 transition-colors focus:outline-none focus:border-primary"
-          />
+            onChange={(e) => handleFilterChange('genre', e.target.value)}
+            disabled={loadingGenres}
+            className="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded text-sm cursor-pointer text-white hover:border-slate-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            <option value="" className="bg-slate-900 text-white">
+              {loadingGenres ? 'Loading genres...' : 'All Genres'}
+            </option>
+            {genres.map((g) => (
+              <option key={g.id} value={g.slug} className="bg-slate-900 text-white">
+                {g.name}
+              </option>
+            ))}
+          </select>
         </div>
 
         {/* Search Title */}

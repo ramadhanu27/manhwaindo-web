@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { generatePDF, generateZIP, downloadBlob } from "@/lib/download-utils";
 import { getSeriesList, getSeriesDetail, getChapterImages } from "@/lib/api";
+import { isFavorite, addToFavorites, removeFromFavorites, isChapterBookmarked, addBookmark, removeBookmark } from "@/lib/bookmark-storage";
 
 interface Chapter {
   slug: string;
@@ -44,6 +45,7 @@ export default function DownloadFlow() {
     total: number;
     status: string;
   } | null>(null);
+  const [isFav, setIsFav] = useState(false);
 
   // Fetch series list on component mount and when page/submitted search changes
   useEffect(() => {
@@ -98,6 +100,30 @@ export default function DownloadFlow() {
       console.error(err);
     } finally {
       setLoading(false);
+    }
+  };
+
+  // Check favorite status when series detail loads
+  useEffect(() => {
+    if (seriesDetail) {
+      setIsFav(isFavorite(seriesDetail.slug));
+    }
+  }, [seriesDetail]);
+
+  // Toggle favorite
+  const handleToggleFavorite = () => {
+    if (!seriesDetail) return;
+
+    if (isFav) {
+      removeFromFavorites(seriesDetail.slug);
+      setIsFav(false);
+    } else {
+      addToFavorites({
+        slug: seriesDetail.slug,
+        title: seriesDetail.title,
+        image: seriesDetail.image,
+      });
+      setIsFav(true);
     }
   };
 
@@ -345,23 +371,6 @@ export default function DownloadFlow() {
             <h1 className="text-5xl md:text-6xl font-bold bg-gradient-to-r from-primary to-pink-500 bg-clip-text text-transparent mb-3">Download Manhwa</h1>
             <div className="h-1 bg-gradient-to-r from-transparent via-primary to-transparent rounded-full"></div>
           </div>
-          <p className="text-lg text-slate-300 max-w-2xl mx-auto">
-            {step === "search" ? (
-              "Pilih series favorit kamu dan download chapter dalam format PDF"
-            ) : (
-              <span className="flex items-center justify-center gap-2">
-                <svg className="w-5 h-5 text-primary" fill="currentColor" viewBox="0 0 20 20">
-                  <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z" />
-                  <path
-                    fillRule="evenodd"
-                    d="M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v11a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm3 4a1 1 0 000 2h.01a1 1 0 100-2H7zm3 0a1 1 0 000 2h3a1 1 0 100-2h-3zm-3 4a1 1 0 100 2h.01a1 1 0 100-2H7zm3 0a1 1 0 100 2h3a1 1 0 100-2h-3z"
-                    clipRule="evenodd"
-                  />
-                </svg>
-                {seriesDetail?.title}
-              </span>
-            )}
-          </p>
         </div>
 
         {/* Error Message with Animation */}

@@ -1,4 +1,4 @@
-import { getLastUpdate, getPopular, getProject } from '@/lib/api';
+import { getLastUpdate, getPopular, getProject, getSeriesDetail } from '@/lib/api';
 import SeriesCard from '@/components/SeriesCard';
 import HeroCarousel from '@/components/HeroCarousel';
 import ProjectUpdatesSection from '@/components/ProjectUpdatesSection';
@@ -31,12 +31,31 @@ export default async function Home() {
   const popularSeries = popularData.success ? deduplicateSeries(popularData.data) : [];
   const projectSeries = projectData.success ? deduplicateSeries(projectData.data) : [];
 
+  // Fetch detailed series data for carousel (synopsis and chapters)
+  const carouselSeriesBasic = popularSeries.slice(0, 4);
+  const carouselSeriesDetails = await Promise.all(
+    carouselSeriesBasic.map(series => getSeriesDetail(series.slug))
+  );
+
+  const carouselSeries = carouselSeriesBasic.map((series, idx) => {
+    const detail = carouselSeriesDetails[idx];
+    if (detail.success && detail.data) {
+      return {
+        ...series,
+        synopsis: detail.data.synopsis || series.synopsis,
+        chapters: detail.data.chapters || [],
+        genres: detail.data.genres || series.genres,
+      };
+    }
+    return series;
+  });
+
   return (
     <div className="min-h-screen bg-background">
       <div className="container mx-auto px-4 py-8">
         {/* Hero Carousel */}
         <section className="mb-12">
-          <HeroCarousel series={popularSeries.slice(0, 4)} />
+          <HeroCarousel series={carouselSeries} />
         </section>
 
         {/* Popular Today */}

@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useEffect, use } from 'react';
-import { getSeriesList } from '@/lib/api';
 import SeriesCard from '@/components/SeriesCard';
 import SearchGridView from '@/components/SearchGridView';
 import SearchListView from '@/components/SearchListView';
@@ -26,23 +25,44 @@ export default function SearchPage({
     const fetchData = async () => {
       setLoading(true);
 
-      // Always use series-list API
-      const filters: any = {};
-      if (order) filters.order = order;
-      if (type) filters.type = type;
-      if (status) filters.status = status;
-      if (genre) filters.genre = genre;
-      
-      console.log(`Using series-list API: /api/series-list?page=${page}`, filters);
-      const result = await getSeriesList(page, filters);
-      console.log('Series-list results:', result);
-      
-      setData(result);
-      setLoading(false);
+      try {
+        let url: string;
+
+        // If title is provided, use search API
+        if (title) {
+          url = `https://apimanhwa.netlify.app/api/search?q=${encodeURIComponent(title)}`;
+          console.log('Using search API:', url);
+        } else {
+          // Otherwise use series-list API with filters
+          const params = new URLSearchParams();
+          params.append('page', page.toString());
+          
+          if (order) params.append('order', order);
+          if (type) params.append('type', type);
+          if (status) params.append('status', status);
+          if (genre) params.append('genre', genre);
+          
+          url = `https://apimanhwa.netlify.app/api/series-list?${params.toString()}`;
+          console.log('Using series-list API:', url);
+        }
+        
+        const response = await fetch(url);
+        if (!response.ok) throw new Error('Failed to fetch series');
+        
+        const result = await response.json();
+        console.log('Search results:', result);
+        
+        setData(result);
+      } catch (error) {
+        console.error('Error fetching series:', error);
+        setData({ success: false, data: [] });
+      } finally {
+        setLoading(false);
+      }
     };
     
     fetchData();
-  }, [page, order, type, status, genre]);
+  }, [page, order, type, status, genre, title]);
 
   // Update page state when searchParams changes
   useEffect(() => {
@@ -82,14 +102,6 @@ export default function SearchPage({
   return (
     <div className="container mx-auto px-4 py-8">
       {/* Header */}
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold mb-2">Browse Manhwa</h1>
-        <p className="text-muted-foreground">
-          {results.length > 0
-            ? `Found ${results.length} series`
-            : 'Browse and filter manhwa series'}
-        </p>
-      </div>
 
       {/* Main Layout with Sidebar */}
       <div className="flex flex-col lg:flex-row gap-6 lg:gap-8">

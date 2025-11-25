@@ -71,17 +71,12 @@ export default function HeroCarousel({ series }: HeroCarouselProps) {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
             {/* Left Content */}
             <div className="max-w-xl">
-              {currentSeries.chapters && currentSeries.chapters.length > 0 && (
-                <p className="text-sm text-muted-foreground mb-2">
-                  {currentSeries.chapters[0]?.title}
-                </p>
-              )}
-              <h1 className="text-3xl md:text-5xl font-bold mb-4 line-clamp-2">
+              <h1 className="text-3xl md:text-5xl font-bold mb-6 line-clamp-2 text-white drop-shadow-lg">
                 {currentSeries.title}
               </h1>
               
               {currentSeries.synopsis && (
-                <p className="text-sm md:text-base text-muted-foreground mb-4 line-clamp-3">
+                <p className="text-sm md:text-base text-white mb-8 line-clamp-3 drop-shadow-md leading-relaxed">
                   {currentSeries.synopsis}
                 </p>
               )}

@@ -162,34 +162,6 @@ export default function SeriesPage({
       )}
 
       {/* Compact View */}
-      {view === 'compact' && (
-        <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 xl:grid-cols-10 gap-2 mb-8">
-          {series.map((item: any) => (
-            <Link
-              key={item.slug}
-              href={`/series/${encodeURIComponent(item.slug.replace(/\/+$/, '').trim())}`}
-              className="group"
-            >
-              <div className="relative aspect-[3/4] rounded overflow-hidden bg-muted">
-                {item.type && (
-                  <span className="absolute top-1 left-1 bg-purple-600 text-white px-1 py-0.5 text-[6px] font-bold rounded z-10">
-                    {item.type.charAt(0)}
-                  </span>
-                )}
-                <img
-                  src={item.image}
-                  alt={item.title}
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform"
-                  loading="lazy"
-                />
-              </div>
-              <p className="text-xs text-foreground mt-1 truncate group-hover:text-primary transition-colors">
-                {item.title}
-              </p>
-            </Link>
-          ))}
-        </div>
-      )}
 
       {/* Pagination */}
       <div className="flex justify-center gap-2 flex-wrap">
