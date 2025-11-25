@@ -25,8 +25,18 @@ export async function generatePDFInBrowser(images: string[], onProgress?: (curre
     const batchPromises = batch.map(async (imageUrl: string, batchIndex: number) => {
       const index = i + batchIndex;
       try {
-        const response = await fetch(`/api/proxy-image?url=${encodeURIComponent(imageUrl)}`);
-        if (!response.ok) return null;
+        // Try direct fetch first (works for most image hosts)
+        let response = await fetch(imageUrl, {
+          mode: "cors",
+          cache: "no-cache",
+        }).catch(() => null);
+
+        // If direct fetch fails, try proxy as fallback
+        if (!response || !response.ok) {
+          response = await fetch(`/api/proxy-image?url=${encodeURIComponent(imageUrl)}`);
+        }
+
+        if (!response || !response.ok) return null;
 
         const blob = await response.blob();
 
