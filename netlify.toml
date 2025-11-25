@@ -1,0 +1,17 @@
+[build]
+  command = "npm run build"
+  publish = ".next"
+
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+
+[functions]
+  # Increase function timeout for PDF generation
+  # Maximum for free tier is 26 seconds
+ node_bundler = "esbuild"
+  
+[[functions]]
+  functions = "api/*"
+  node_bundler = "esbuild"

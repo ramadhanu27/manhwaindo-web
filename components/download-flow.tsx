@@ -124,7 +124,7 @@ export default function DownloadFlow() {
     }
   };
 
-  // Download single chapter as PDF (direct download via API)
+  // Download single chapter as PDF (client-side generation for Netlify compatibility)
   const handleDownloadChapter = async (chapterSlug: string) => {
     if (!seriesDetail) return;
 
@@ -141,47 +141,28 @@ export default function DownloadFlow() {
       if (data.success && data.data?.images && data.data.images.length > 0) {
         const foundChapter = seriesDetail.chapters.find((ch) => ch.slug.replace(/\/+$/, "").trim() === chapterSlug);
 
-        const chapterData = [
-          {
-            slug: chapterSlug,
-            title: foundChapter?.title || data.data.title || "Chapter",
-            images: data.data.images,
-          },
-        ];
-
         setDownloadProgress({
-          current: 20,
+          current: 10,
           total: 100,
-          status: `Merging ${data.data.images.length} images...`,
+          status: `Downloading ${data.data.images.length} images...`,
         });
 
-        // Trigger server-side PDF generation and direct download
-        const response = await fetch("/api/generate-pdf", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            series: seriesDetail.title,
-            chapters: chapterData,
-          }),
+        // Use client-side PDF generation
+        const { generatePDFInBrowser } = await import("@/lib/pdf-client");
+
+        const blob = await generatePDFInBrowser(data.data.images, (current, total, status) => {
+          const progress = 10 + (current / total) * 80;
+          setDownloadProgress({
+            current: progress,
+            total: 100,
+            status,
+          });
         });
 
-        if (!response.ok) {
-          throw new Error("Failed to generate PDF");
-        }
-
         setDownloadProgress({
-          current: 60,
+          current: 95,
           total: 100,
-          status: "Membuat PDF...",
-        });
-
-        // Get PDF blob and trigger download
-        const blob = await response.blob();
-
-        setDownloadProgress({
-          current: 90,
-          total: 100,
-          status: "Menyimpan file...",
+          status: "Saving PDF...",
         });
 
         downloadBlob(blob, `${seriesDetail.title} - ${foundChapter?.title || "Chapter"}.pdf`);
@@ -189,10 +170,9 @@ export default function DownloadFlow() {
         setDownloadProgress({
           current: 100,
           total: 100,
-          status: "✓ Download selesai!",
+          status: "✓ Download complete!",
         });
 
-        // Hide progress after 2 seconds
         setTimeout(() => {
           setDownloadProgress(null);
         }, 2000);
