@@ -8,10 +8,5 @@
   status = 200
 
 [functions]
-  # Increase function timeout for PDF generation
-  # Maximum for free tier is 26 seconds
- node_bundler = "esbuild"
-  
-[[functions]]
-  functions = "api/*"
+  # Use esbuild for faster function bundling
   node_bundler = "esbuild"
