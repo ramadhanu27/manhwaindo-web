@@ -240,28 +240,25 @@ export default function DownloadFlow() {
         status: `Membuat PDF untuk ${chapterData.length} chapter...`,
       });
 
-      // If only 1 chapter, download as PDF via API
+      // If only 1 chapter, download as PDF (client-side)
       if (chapterData.length === 1) {
-        const response = await fetch("/api/generate-pdf", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            series: seriesDetail.title,
-            chapters: chapterData,
-          }),
-        });
+        const { generatePDFInBrowser } = await import("@/lib/pdf-client");
 
-        if (!response.ok) {
-          throw new Error("Failed to generate PDF");
-        }
+        const blob = await generatePDFInBrowser(chapterData[0].images, (current, total, status) => {
+          const progress = 25 + (current / total) * 65;
+          setDownloadProgress({
+            current: progress,
+            total: 100,
+            status,
+          });
+        });
 
         setDownloadProgress({
-          current: 80,
+          current: 95,
           total: 100,
-          status: "Menyimpan PDF...",
+          status: "Saving PDF...",
         });
 
-        const blob = await response.blob();
         downloadBlob(blob, `${seriesDetail.title} - ${chapterData[0].title}.pdf`);
 
         setDownloadProgress({
@@ -274,8 +271,9 @@ export default function DownloadFlow() {
           setDownloadProgress(null);
         }, 2000);
       } else {
-        // If 2+ chapters, create ZIP with individual PDFs via API
+        // If 2+ chapters, create ZIP with individual PDFs (client-side)
         const JSZip = (await import("jszip")).default;
+        const { generatePDFInBrowser } = await import("@/lib/pdf-client");
         const zip = new JSZip();
 
         for (let i = 0; i < chapterData.length; i++) {
@@ -284,21 +282,14 @@ export default function DownloadFlow() {
           setDownloadProgress({
             current: 25 + (i / chapterData.length) * 60,
             total: 100,
-            status: `Membuat PDF ${i + 1}/${chapterData.length}...`,
+            status: `Creating PDF ${i + 1}/${chapterData.length}...`,
           });
 
-          const response = await fetch("/api/generate-pdf", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              series: seriesDetail.title,
-              chapters: [chapter],
-            }),
-          });
-
-          if (response.ok) {
-            const blob = await response.blob();
+          try {
+            const blob = await generatePDFInBrowser(chapter.images);
             zip.file(`${i + 1}. ${chapter.title}.pdf`, blob);
+          } catch (error) {
+            console.error(`Failed to generate PDF for ${chapter.title}:`, error);
           }
         }
 
