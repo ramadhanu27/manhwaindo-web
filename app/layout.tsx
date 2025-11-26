@@ -16,6 +16,13 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="id" suppressHydrationWarning>
+      <head>
+        <script
+          async
+          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3983359568431138"
+          crossOrigin="anonymous"
+        ></script>
+      </head>
       <body className="font-sans antialiased">
         <Header />
         <main className="min-h-screen">
