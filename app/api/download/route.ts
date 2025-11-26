@@ -46,7 +46,7 @@ export async function GET(request: NextRequest) {
     // Step 1: Fetch series detail from external API
     console.log(`Fetching series: ${seriesSlug}`);
     const seriesResponse = await fetch(
-      `https://apimanhwa.netlify.app/api/series/${seriesSlug}`,
+      `https://manhwaindo-api-rust.vercel.app/api/series/${seriesSlug}`,
       { signal: AbortSignal.timeout(10000) }
     );
 
@@ -94,7 +94,7 @@ export async function GET(request: NextRequest) {
         try {
           console.log(`  Fetching images from: /api/chapter/${cleanChapterSlug}`);
           const chapterResponse = await fetch(
-            `https://apimanhwa.netlify.app/api/chapter/${cleanChapterSlug}`,
+            `https://manhwaindo-api-rust.vercel.app/api/chapter/${cleanChapterSlug}`,
             { signal: AbortSignal.timeout(10000) }
           );
           

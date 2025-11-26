@@ -34,7 +34,7 @@ export async function GET(request: NextRequest) {
       const response = await fetch(imageUrl, {
         headers: {
           'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
-          'Referer': 'https://apimanhwa.netlify.app/',
+          'Referer': 'https://manhwaindo-api-rust.vercel.app/',
         },
         signal: controller.signal,
       });
