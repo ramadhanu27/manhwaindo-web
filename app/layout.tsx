@@ -7,6 +7,46 @@ export const metadata: Metadata = {
   title: "ManhwaIndo - Baca Komik Manhwa Bahasa Indonesia",
   description: "ManhwaIndo merupakan situs baca komik online dengan koleksi terupdate. Kalian bisa membaca ratusan judul komik (manhwa) yang kami update setiap hari secara gratis.",
   keywords: ["manhwa", "komik", "manga", "webtoon", "indonesia", "baca online"],
+  metadataBase: new URL("https://manhwaindo.web.id"),
+  alternates: {
+    canonical: "https://manhwaindo.web.id",
+    languages: {
+      "id-ID": "https://manhwaindo.web.id",
+    },
+  },
+  openGraph: {
+    type: "website",
+    locale: "id_ID",
+    url: "https://manhwaindo.web.id",
+    siteName: "ManhwaIndo",
+    title: "ManhwaIndo - Baca Komik Manhwa Bahasa Indonesia",
+    description: "ManhwaIndo merupakan situs baca komik online dengan koleksi terupdate. Kalian bisa membaca ratusan judul komik (manhwa) yang kami update setiap hari secara gratis.",
+    images: [
+      {
+        url: "/og-image.jpg",
+        width: 1200,
+        height: 630,
+        alt: "ManhwaIndo",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "ManhwaIndo - Baca Komik Manhwa Bahasa Indonesia",
+    description: "ManhwaIndo merupakan situs baca komik online dengan koleksi terupdate. Kalian bisa membaca ratusan judul komik (manhwa) yang kami update setiap hari secara gratis.",
+    images: ["/og-image.jpg"],
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-video-preview": -1,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+    },
+  },
 };
 
 export default function RootLayout({
