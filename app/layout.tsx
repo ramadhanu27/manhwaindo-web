@@ -57,6 +57,17 @@ export default function RootLayout({
   return (
     <html lang="id" suppressHydrationWarning>
       <head>
+        {/* Google tag (gtag.js) */}
+        <script async src="https://www.googletagmanager.com/gtag/js?id=G-CG48R0Q9CE"></script>
+        <script>
+          {`
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+
+            gtag('config', 'G-CG48R0Q9CE');
+          `}
+        </script>
         <link rel="icon" href="/favicon.jpg" type="image/jpeg" />
         <meta name="clckd" content="0336c9b2d4f277ba40af02534815500f" />
         <script type='text/javascript' src='//pl28146074.effectivegatecpm.com/75/cc/7a/75cc7ac75f43124043e6b6b0b0a29218.js'></script>
