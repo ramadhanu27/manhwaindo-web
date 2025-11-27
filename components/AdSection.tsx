@@ -1,7 +1,7 @@
 export default function AdSection() {
   return (
     <section className="mb-12">
-      <div className="flex flex-col items-center justify-center gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-center justify-center">
         {/* First Ad */}
         <div className="flex justify-center">
           <script type="text/javascript">
