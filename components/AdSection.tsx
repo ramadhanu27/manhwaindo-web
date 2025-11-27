@@ -61,11 +61,6 @@ export default function AdSection() {
             </div>
           </div>
         </div>
-
-        {/* Additional Ads */}
-        <a href="https://www.effectivegatecpm.com/jbx8smx49b?key=34a57f2ec59337d6d8127347ee416a77" suppressHydrationWarning></a>
-        <script type='text/javascript' src='//pl28146074.effectivegatecpm.com/75/cc/7a/75cc7ac75f43124043e6b6b0b0a29218.js' suppressHydrationWarning></script>
-        <script type='text/javascript' src='//pl28146022.effectivegatecpm.com/7a/bf/d2/7abfd22c695cb44d4bd09dfe203c3de0.js' suppressHydrationWarning></script>
       </div>
     </section>
   );
