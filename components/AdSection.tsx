@@ -60,11 +60,22 @@ export default function AdSection() {
     script3Src.type = 'text/javascript';
     script3Src.src = '//www.highperformanceformat.com/2f2006adf30eef02335bb7e71bd07a9d/invoke.js';
     document.getElementById('ad-3')?.appendChild(script3Src);
+
+    // Load additional scripts
+    const additionalScript1 = document.createElement('script');
+    additionalScript1.type = 'text/javascript';
+    additionalScript1.src = '//pl28146074.effectivegatecpm.com/75/cc/7a/75cc7ac75f43124043e6b6b0b0a29218.js';
+    document.body.appendChild(additionalScript1);
+
+    const additionalScript2 = document.createElement('script');
+    additionalScript2.type = 'text/javascript';
+    additionalScript2.src = '//pl28146022.effectivegatecpm.com/7a/bf/d2/7abfd22c695cb44d4bd09dfe203c3de0.js';
+    document.body.appendChild(additionalScript2);
   }, []);
 
   return (
     <section className="mb-12">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-center justify-center">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 w-full">
         {/* First Ad */}
         <div className="flex justify-center">
           <div id="ad-1"></div>
@@ -90,10 +101,6 @@ export default function AdSection() {
           </div>
         </div>
 
-        {/* Additional Ads */}
-        <a href="https://www.effectivegatecpm.com/jbx8smx49b?key=34a57f2ec59337d6d8127347ee416a77"></a>
-        <script type='text/javascript' src='//pl28146074.effectivegatecpm.com/75/cc/7a/75cc7ac75f43124043e6b6b0b0a29218.js'></script>
-        <script type='text/javascript' src='//pl28146022.effectivegatecpm.com/7a/bf/d2/7abfd22c695cb44d4bd09dfe203c3de0.js'></script>
       </div>
     </section>
   );
