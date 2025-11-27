@@ -24,42 +24,6 @@ export default function RootLayout({
         <Header />
         <main className="min-h-screen">
           {children}
-          <script type="text/javascript">
-            {`
-              atOptions = {
-                'key' : '2f2006adf30eef02335bb7e71bd07a9d',
-                'format' : 'iframe',
-                'height' : 50,
-                'width' : 320,
-                'params' : {}
-              };
-            `}
-          </script>
-          <script type="text/javascript" src="//www.highperformanceformat.com/2f2006adf30eef02335bb7e71bd07a9d/invoke.js"></script>
-          <script type="text/javascript">
-            {`
-              atOptions = {
-                'key' : 'baf333c025010820ccafb97978a627a3',
-                'format' : 'iframe',
-                'height' : 90,
-                'width' : 728,
-                'params' : {}
-              };
-            `}
-          </script>
-          <script type="text/javascript" src="//www.highperformanceformat.com/baf333c025010820ccafb97978a627a3/invoke.js"></script>
-          <script type="text/javascript">
-            {`
-              atOptions = {
-                'key' : '5a89f4563ede24d6c7e045c77d636bd8',
-                'format' : 'iframe',
-                'height' : 60,
-                'width' : 468,
-                'params' : {}
-              };
-            `}
-          </script>
-          <script type="text/javascript" src="//www.highperformanceformat.com/5a89f4563ede24d6c7e045c77d636bd8/invoke.js"></script>
         </main>
         <Footer />
         <a href="https://www.effectivegatecpm.com/jbx8smx49b?key=34a57f2ec59337d6d8127347ee416a77"></a>

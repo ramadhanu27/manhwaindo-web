@@ -3,6 +3,7 @@ import SeriesCard from '@/components/SeriesCard';
 import HeroCarousel from '@/components/HeroCarousel';
 import ProjectUpdatesSection from '@/components/ProjectUpdatesSection';
 import LatestUpdateSection from '@/components/LatestUpdateSection';
+import AdSection from '@/components/AdSection';
 import Link from 'next/link';
 
 // Helper function to clean slugs
@@ -57,6 +58,9 @@ export default async function Home() {
         <section className="mb-12">
           <HeroCarousel series={carouselSeries} />
         </section>
+
+        {/* Ad Section */}
+        <AdSection />
 
         {/* Popular Today */}
         <section className="mb-12">
