@@ -20,7 +20,7 @@ export default function ContactPage() {
                 <div>
                   <h3 className="text-lg font-semibold text-blue-600 mb-2">Pasang Iklan di Situs ManhwaIndo</h3>
                   <p className="text-gray-700">
-                    ManhwaIndo adalah platform terpercaya untuk membaca komik manhwa bahasa Indonesia dengan jutaan pengunjung setiap bulannya.
+                    ManhwaIndo adalah platform terpercaya untuk membaca komik manhwa bahasa Indonesia.
                   </p>
                 </div>
 
