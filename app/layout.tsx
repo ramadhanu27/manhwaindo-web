@@ -68,7 +68,7 @@ export default function RootLayout({
             gtag('config', 'G-CG48R0Q9CE');
           `}
         </script>
-        <link rel="icon" href="/favicon.jpg" type="image/jpeg" />
+        <link rel="icon" href="/favicon.png" type="image/png" />
         <meta name="clckd" content="0336c9b2d4f277ba40af02534815500f" />
         <script type='text/javascript' src='//pl28146074.effectivegatecpm.com/75/cc/7a/75cc7ac75f43124043e6b6b0b0a29218.js'></script>
       </head>
