@@ -54,12 +54,12 @@ export default function AdSection() {
 
         {/* Fourth Ad - Placeholder */}
         <div className="flex justify-center">
-          <div className="w-full max-w-[728px] h-[90px] bg-gray-200 border-2 border-dashed border-gray-400 rounded flex items-center justify-center">
+          <a href="/contact" className="w-full max-w-[728px] h-[90px] bg-gray-200 border-2 border-dashed border-gray-400 rounded flex items-center justify-center hover:bg-gray-300 hover:border-gray-500 transition-colors">
             <div className="text-center">
               <p className="text-gray-600 font-semibold">Your Ad Here</p>
               <p className="text-gray-500 text-sm">728 x 90</p>
             </div>
-          </div>
+          </a>
         </div>
       </div>
     </section>

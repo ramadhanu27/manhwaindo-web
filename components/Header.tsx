@@ -40,6 +40,9 @@ export default function Header() {
             <Link href="/history" className="text-sm font-medium transition-colors hover:text-primary">
               History
             </Link>
+            <Link href="/contact" className="text-sm font-medium transition-colors hover:text-primary">
+              Pasang Iklan
+            </Link>
           </nav>
 
           {/* Search Bar */}
@@ -97,6 +100,9 @@ export default function Header() {
             </Link>
             <Link href="/history" className="block py-2 text-sm font-medium hover:text-primary">
               History
+            </Link>
+            <Link href="/contact" className="block py-2 text-sm font-medium hover:text-primary">
+              Pasang Iklan
             </Link>
           </div>
         )}
