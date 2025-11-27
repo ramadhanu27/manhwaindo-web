@@ -18,6 +18,7 @@ export default function RootLayout({
     <html lang="id" suppressHydrationWarning>
       <head>
         <meta name="clckd" content="0336c9b2d4f277ba40af02534815500f" />
+        <script type='text/javascript' src='//pl28146074.effectivegatecpm.com/75/cc/7a/75cc7ac75f43124043e6b6b0b0a29218.js'></script>
       </head>
       <body className="font-sans antialiased">
         <Header />
@@ -35,8 +36,33 @@ export default function RootLayout({
             `}
           </script>
           <script type="text/javascript" src="//www.highperformanceformat.com/2f2006adf30eef02335bb7e71bd07a9d/invoke.js"></script>
+          <script type="text/javascript">
+            {`
+              atOptions = {
+                'key' : 'baf333c025010820ccafb97978a627a3',
+                'format' : 'iframe',
+                'height' : 90,
+                'width' : 728,
+                'params' : {}
+              };
+            `}
+          </script>
+          <script type="text/javascript" src="//www.highperformanceformat.com/baf333c025010820ccafb97978a627a3/invoke.js"></script>
+          <script type="text/javascript">
+            {`
+              atOptions = {
+                'key' : '5a89f4563ede24d6c7e045c77d636bd8',
+                'format' : 'iframe',
+                'height' : 60,
+                'width' : 468,
+                'params' : {}
+              };
+            `}
+          </script>
+          <script type="text/javascript" src="//www.highperformanceformat.com/5a89f4563ede24d6c7e045c77d636bd8/invoke.js"></script>
         </main>
         <Footer />
+        <a href="https://www.effectivegatecpm.com/jbx8smx49b?key=34a57f2ec59337d6d8127347ee416a77"></a>
         <script type='text/javascript' src='//pl28146022.effectivegatecpm.com/7a/bf/d2/7abfd22c695cb44d4bd09dfe203c3de0.js'></script>
       </body>
     </html>
