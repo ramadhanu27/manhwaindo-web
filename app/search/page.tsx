@@ -30,7 +30,7 @@ export default function SearchPage({
 
         // If title is provided, use search API
         if (title) {
-          url = `https://manhwaindo-api-rust.vercel.app/api/search?q=${encodeURIComponent(title)}`;
+          url = `https://rdapi.vercel.app/api/search?q=${encodeURIComponent(title)}`;
           console.log('Using search API:', url);
         } else {
           // Otherwise use series-list API with filters
@@ -42,7 +42,7 @@ export default function SearchPage({
           if (status) params.append('status', status);
           if (genre) params.append('genre', genre);
           
-          url = `https://manhwaindo-api-rust.vercel.app/api/series-list?${params.toString()}`;
+          url = `https://rdapi.vercel.app/api/series-list?${params.toString()}`;
           console.log('Using series-list API:', url);
         }
         

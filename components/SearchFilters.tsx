@@ -29,7 +29,7 @@ export default function SearchFilters({ order, type, status, genre, title }: Sea
   useEffect(() => {
     const fetchGenres = async () => {
       try {
-        const res = await fetch('https://manhwaindo-api-rust.vercel.app/api/genres');
+        const res = await fetch('https://rdapi.vercel.app/api/genres');
         if (res.ok) {
           const data = await res.json();
           if (data.success && data.data) {
