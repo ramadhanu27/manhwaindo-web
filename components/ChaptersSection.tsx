@@ -2,6 +2,7 @@
 
 import { useState, useMemo } from 'react';
 import Link from 'next/link';
+import { extractSeriesSlug, encodeSlug } from '@/lib/slug-utils';
 
 interface Chapter {
   title: string;
@@ -35,8 +36,6 @@ export default function ChaptersSection({
     });
   }, [chapters, searchQuery]);
 
-  const cleanSlug = (slug: string) => slug.replace(/\/+$/, '').trim();
-
   return (
     <div className="bg-card border border-border rounded-lg p-6">
       <h2 className="text-xl font-bold mb-4">Chapter {seriesTitle}</h2>
@@ -59,7 +58,7 @@ export default function ChaptersSection({
             {filteredChapters.map((chapter: any, idx: number) => (
               <Link
                 key={idx}
-                href={`/series/${encodeURIComponent(cleanSlug(seriesSlug))}/${encodeURIComponent(cleanSlug(chapter.slug))}`}
+                href={`/series/${encodeSlug(seriesSlug)}/${encodeSlug(extractSeriesSlug(chapter.slug))}`}
                 className="block p-4 bg-background border border-border rounded-lg hover:border-primary/50 hover:bg-background/80 transition-all group"
               >
                 <div className="font-medium text-sm mb-2 line-clamp-1 group-hover:text-primary transition-colors">

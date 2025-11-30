@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
+import { extractSeriesSlug, encodeSlug } from '@/lib/slug-utils';
 
 interface Series {
   title: string;
@@ -96,7 +97,7 @@ export default function HeroCarousel({ series }: HeroCarouselProps) {
               )}
 
               <Link
-                href={`/series/${currentSeries.slug}`}
+                href={`/series/${encodeSlug(extractSeriesSlug(currentSeries.slug))}`}
                 className="inline-flex items-center gap-2 bg-primary hover:bg-primary/90 text-primary-foreground px-6 py-3 rounded-lg font-semibold transition-colors"
               >
                 Start Reading

@@ -2,9 +2,7 @@ import { getChapterImages } from '@/lib/api';
 import Image from 'next/image';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-
-// Helper function to clean slugs
-const cleanSlug = (slug: string) => slug.replace(/\/+$/, '').trim();
+import { extractSeriesSlug, encodeSlug } from '@/lib/slug-utils';
 
 export default async function ChapterPage({
   params,
@@ -12,6 +10,8 @@ export default async function ChapterPage({
   params: Promise<{ slug: string; chapter: string }>;
 }) {
   const { slug, chapter } = await params;
+  const cleanedSlug = extractSeriesSlug(decodeURIComponent(slug));
+  const cleanedChapter = extractSeriesSlug(decodeURIComponent(chapter));
   
   console.log('Chapter page params:', { slug, chapter });
   
@@ -24,7 +24,7 @@ export default async function ChapterPage({
           <h1 className="text-4xl font-bold mb-4">Invalid Chapter</h1>
           <p className="text-muted-foreground mb-4">Chapter slug is empty or invalid.</p>
           <Link
-            href={`/series/${encodeURIComponent(cleanSlug(slug))}`}
+            href={`/series/${encodeSlug(cleanedSlug)}`}
             className="inline-block px-6 py-3 bg-primary hover:bg-primary/90 text-primary-foreground rounded-lg font-semibold transition-colors"
           >
             Back to Series
@@ -34,7 +34,7 @@ export default async function ChapterPage({
     );
   }
   
-  const data = await getChapterImages(chapter);
+  const data = await getChapterImages(cleanedChapter);
   
   console.log('Chapter data:', data);
   
@@ -60,7 +60,7 @@ export default async function ChapterPage({
             <p className="text-xs font-mono text-left">API Response: {JSON.stringify(data)}</p>
           </div>
           <Link
-            href={`/series/${encodeURIComponent(cleanSlug(slug))}`}
+            href={`/series/${encodeSlug(cleanedSlug)}`}
             className="inline-block px-6 py-3 bg-primary hover:bg-primary/90 text-primary-foreground rounded-lg font-semibold transition-colors"
           >
             Back to Series
@@ -70,7 +70,7 @@ export default async function ChapterPage({
     );
   }
 
-  const chapterTitle = chapterData.title || chapter.replace(/-/g, ' ');
+  const chapterTitle = chapterData.title || cleanedChapter.replace(/-/g, ' ');
   // API returns prev/next in reverse order, so we swap them
   const prevChapter = chapterData.nextChapter;
   const nextChapter = chapterData.prevChapter;
@@ -123,7 +123,7 @@ export default async function ChapterPage({
           <div className="flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-3 flex-wrap">
             {prevChapter ? (
               <Link
-                href={`/series/${encodeURIComponent(cleanSlug(slug))}/${encodeURIComponent(cleanSlug(prevChapter))}`}
+                href={`/series/${encodeSlug(cleanedSlug)}/${encodeSlug(extractSeriesSlug(prevChapter))}`}
                 className="bg-secondary hover:bg-secondary/80 text-foreground px-3 sm:px-4 py-2 rounded font-semibold transition-colors text-sm sm:text-base"
               >
                 ← Previous
@@ -138,7 +138,7 @@ export default async function ChapterPage({
             </div>
             {nextChapter ? (
               <Link
-                href={`/series/${encodeURIComponent(cleanSlug(slug))}/${encodeURIComponent(cleanSlug(nextChapter))}`}
+                href={`/series/${encodeSlug(cleanedSlug)}/${encodeSlug(extractSeriesSlug(nextChapter))}`}
                 className="bg-secondary hover:bg-secondary/80 text-foreground px-3 sm:px-4 py-2 rounded font-semibold transition-colors text-sm sm:text-base"
               >
                 Next →
@@ -171,7 +171,7 @@ export default async function ChapterPage({
         <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4">
           {prevChapter ? (
             <Link
-              href={`/series/${encodeURIComponent(cleanSlug(slug))}/${encodeURIComponent(cleanSlug(prevChapter))}`}
+              href={`/series/${encodeSlug(cleanedSlug)}/${encodeSlug(extractSeriesSlug(prevChapter))}`}
               className="w-full sm:w-auto px-4 sm:px-6 py-2 sm:py-3 bg-secondary hover:bg-secondary/80 text-foreground rounded-lg font-semibold transition-colors text-center text-sm sm:text-base"
             >
               ← Previous Chapter
@@ -182,14 +182,14 @@ export default async function ChapterPage({
             </button>
           )}
           <Link
-            href={`/series/${encodeURIComponent(cleanSlug(slug))}`}
+            href={`/series/${encodeSlug(cleanedSlug)}`}
             className="w-full sm:w-auto px-4 sm:px-6 py-2 sm:py-3 bg-primary hover:bg-primary/90 text-primary-foreground text-center rounded-lg font-semibold transition-colors text-sm sm:text-base"
           >
             Chapter List
           </Link>
           {nextChapter ? (
             <Link
-              href={`/series/${encodeURIComponent(cleanSlug(slug))}/${encodeURIComponent(cleanSlug(nextChapter))}`}
+              href={`/series/${encodeSlug(cleanedSlug)}/${encodeSlug(extractSeriesSlug(nextChapter))}`}
               className="w-full sm:w-auto px-4 sm:px-6 py-2 sm:py-3 bg-secondary hover:bg-secondary/80 text-foreground rounded-lg font-semibold transition-colors text-center text-sm sm:text-base"
             >
               Next Chapter →

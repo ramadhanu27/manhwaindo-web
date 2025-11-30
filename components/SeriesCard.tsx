@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { extractSeriesSlug, cleanSlug, encodeSlug } from '@/lib/slug-utils';
 
 interface SeriesCardProps {
   title: string;
@@ -16,9 +17,6 @@ interface SeriesCardProps {
   isHot?: boolean;
   isNew?: boolean;
 }
-
-// Helper function to clean slugs
-const cleanSlug = (slug: string) => slug.replace(/\/+$/, '').trim();
 
 // Helper function to get badge color based on type
 const getTypeBadgeColor = (type?: string) => {
@@ -42,9 +40,10 @@ export default function SeriesCard({
   isNew = false,
 }: SeriesCardProps) {
   const displayType = type || 'Manhwa';
+  const cleanedSlug = extractSeriesSlug(slug);
   
   return (
-    <Link href={`/series/${encodeURIComponent(cleanSlug(slug))}`} className="group block">
+    <Link href={`/series/${encodeSlug(cleanedSlug)}`} className="group block">
       <div className="relative overflow-hidden rounded-lg bg-card border border-border hover:border-primary/50 transition-all duration-300 w-full">
         {/* Image */}
         <div className="relative aspect-[2/3] overflow-hidden bg-muted">

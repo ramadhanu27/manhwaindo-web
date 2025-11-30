@@ -3,12 +3,11 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import ViewToggle from './ViewToggle';
+import { extractSeriesSlug, encodeSlug } from '@/lib/slug-utils';
 
 interface LatestUpdateSectionProps {
   series: any[];
 }
-
-const cleanSlug = (slug: string) => slug.replace(/\/+$/, '').trim();
 
 export default function LatestUpdateSection({ series }: LatestUpdateSectionProps) {
   const [view, setView] = useState<'grid' | 'list' | 'compact'>('grid');
@@ -56,7 +55,7 @@ export default function LatestUpdateSection({ series }: LatestUpdateSectionProps
             <div key={item.slug} className="bg-card border border-border rounded-lg overflow-hidden hover:border-primary/50 transition-colors">
               <div className="flex gap-4 p-4">
                 {/* Thumbnail */}
-                <Link href={`/series/${encodeURIComponent(cleanSlug(item.slug))}`} className="flex-shrink-0">
+                <Link href={`/series/${encodeSlug(extractSeriesSlug(item.slug))}`} className="flex-shrink-0">
                   <div className="relative w-20 h-28 rounded overflow-hidden bg-muted">
                     {item.type && (
                       <span className="absolute top-0.5 left-0.5 bg-purple-600 text-white px-1.5 py-0.5 text-[9px] font-bold rounded">
@@ -73,7 +72,7 @@ export default function LatestUpdateSection({ series }: LatestUpdateSectionProps
 
                 {/* Info */}
                 <div className="flex-1 min-w-0">
-                  <Link href={`/series/${encodeURIComponent(cleanSlug(item.slug))}`}>
+                  <Link href={`/series/${encodeSlug(extractSeriesSlug(item.slug))}`}>
                     <h3 className="font-semibold text-sm line-clamp-2 mb-2 hover:text-primary transition-colors">
                       {item.title}
                     </h3>
@@ -84,7 +83,7 @@ export default function LatestUpdateSection({ series }: LatestUpdateSectionProps
                     {item.chapters && item.chapters.slice(0, 3).map((chapter: any, idx: number) => (
                       <Link
                         key={idx}
-                        href={`/series/${encodeURIComponent(cleanSlug(item.slug))}/${encodeURIComponent(cleanSlug(chapter.slug))}`}
+                        href={`/series/${encodeSlug(extractSeriesSlug(item.slug))}/${encodeSlug(extractSeriesSlug(chapter.slug))}`}
                         className="flex items-center justify-between text-xs hover:text-primary transition-colors group"
                       >
                         <span className="text-muted-foreground group-hover:text-primary truncate">
@@ -109,7 +108,7 @@ export default function LatestUpdateSection({ series }: LatestUpdateSectionProps
           {series.slice(0, 12).map((item: any) => (
             <Link
               key={item.slug}
-              href={`/series/${encodeURIComponent(cleanSlug(item.slug))}`}
+              href={`/series/${encodeSlug(extractSeriesSlug(item.slug))}`}
               className="flex items-center gap-4 p-4 bg-card border border-border rounded-lg hover:border-primary/50 hover:bg-background/50 transition-all group"
             >
               {/* Thumbnail */}
@@ -155,7 +154,7 @@ export default function LatestUpdateSection({ series }: LatestUpdateSectionProps
           {series.slice(0, 12).map((item: any) => (
             <Link
               key={item.slug}
-              href={`/series/${encodeURIComponent(cleanSlug(item.slug))}`}
+              href={`/series/${encodeSlug(extractSeriesSlug(item.slug))}`}
               className="group"
             >
               <div className="relative aspect-[2/3] rounded-lg overflow-hidden bg-muted hover:ring-2 hover:ring-primary transition-all">

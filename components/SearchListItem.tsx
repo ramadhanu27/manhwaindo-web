@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { getSeriesDetail } from '@/lib/api';
+import { extractSeriesSlug, encodeSlug } from '@/lib/slug-utils';
 
 interface SearchListItemProps {
   item: any;
@@ -31,9 +32,6 @@ export default function SearchListItem({ item }: SearchListItemProps) {
   const type = detail?.type || item.type || '';
   const chapters = detail?.chapters || item.chapters || [];
 
-  // Helper function to clean slugs
-  const cleanSlug = (slug: string) => slug.replace(/\/+$/, '').trim();
-
   // Helper function to get badge color based on type
   const getTypeBadgeColor = (type?: string) => {
     if (!type) return 'bg-gray-600';
@@ -46,7 +44,7 @@ export default function SearchListItem({ item }: SearchListItemProps) {
 
   return (
     <Link
-      href={`/series/${cleanSlug(item.slug)}`}
+      href={`/series/${encodeSlug(extractSeriesSlug(item.slug))}`}
       className="flex flex-col gap-3 p-4 bg-card border border-border rounded-lg hover:border-primary/50 hover:bg-background/50 transition-all group"
     >
       {/* Top Row: Thumbnail + Title + Meta */}

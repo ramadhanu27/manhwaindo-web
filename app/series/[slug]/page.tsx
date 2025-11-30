@@ -4,9 +4,7 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import ChaptersSection from '@/components/ChaptersSection';
 import BookmarkButton from '@/components/BookmarkButton';
-
-// Helper function to clean slugs
-const cleanSlug = (slug: string) => slug.replace(/\/+$/, '').trim();
+import { extractSeriesSlug, cleanSlug, encodeSlug } from '@/lib/slug-utils';
 
 export default async function SeriesDetailPage({
   params,
@@ -14,7 +12,8 @@ export default async function SeriesDetailPage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const data = await getSeriesDetail(slug);
+  const cleanedSlug = extractSeriesSlug(decodeURIComponent(slug));
+  const data = await getSeriesDetail(cleanedSlug);
   
   if (!data.success || !data.data) {
     notFound();
@@ -80,7 +79,7 @@ export default async function SeriesDetailPage({
               <div className="grid grid-cols-2 gap-3 mb-6">
                 {firstChapter && (
                   <Link
-                    href={`/series/${encodeURIComponent(cleanSlug(slug))}/${encodeURIComponent(cleanSlug(firstChapter.slug))}`}
+                    href={`/series/${encodeSlug(cleanedSlug)}/${encodeSlug(extractSeriesSlug(firstChapter.slug))}`}
                     className="bg-indigo-600 hover:bg-indigo-700 text-white text-center py-4 px-6 rounded-lg font-semibold transition-colors"
                   >
                     <div className="text-xs text-indigo-200 mb-1">First Chapter</div>
@@ -89,7 +88,7 @@ export default async function SeriesDetailPage({
                 )}
                 {latestChapter && latestChapter !== firstChapter && (
                   <Link
-                    href={`/series/${encodeURIComponent(cleanSlug(slug))}/${encodeURIComponent(cleanSlug(latestChapter.slug))}`}
+                    href={`/series/${encodeSlug(cleanedSlug)}/${encodeSlug(extractSeriesSlug(latestChapter.slug))}`}
                     className="bg-indigo-600 hover:bg-indigo-700 text-white text-center py-4 px-6 rounded-lg font-semibold transition-colors"
                   >
                     <div className="text-xs text-indigo-200 mb-1">New Chapter</div>
@@ -100,7 +99,7 @@ export default async function SeriesDetailPage({
 
               {/* Bookmark Button */}
               <BookmarkButton
-                seriesSlug={slug}
+                seriesSlug={cleanedSlug}
                 seriesTitle={series.title}
                 seriesImage={series.image}
               />
@@ -199,7 +198,7 @@ export default async function SeriesDetailPage({
             {/* Chapter List */}
             <ChaptersSection
               chapters={series.chapters || []}
-              seriesSlug={slug}
+              seriesSlug={cleanedSlug}
               seriesTitle={series.title}
             />
           </div>
