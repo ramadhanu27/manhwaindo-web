@@ -1,4 +1,4 @@
-import { getLastUpdate, getPopular, getProject, getSeriesDetail } from '@/lib/api';
+import { getLastUpdate, getPopular, getProject, getSeriesDetail, fetchActualImageUrl } from '@/lib/api';
 import SeriesCard from '@/components/SeriesCard';
 import HeroCarousel from '@/components/HeroCarousel';
 import ProjectUpdatesSection from '@/components/ProjectUpdatesSection';
@@ -38,17 +38,34 @@ export default async function Home() {
     carouselSeriesBasic.map(series => getSeriesDetail(series.slug))
   );
 
+  // Fetch actual images for carousel series
+  const carouselSeriesImages = await Promise.all(
+    carouselSeriesBasic.map(series => {
+      // Use url field if available, otherwise construct from slug
+      const seriesUrl = series.url || `https://www.manhwaindo.my/series/${series.slug}/`;
+      return fetchActualImageUrl(seriesUrl);
+    })
+  );
+
   const carouselSeries = carouselSeriesBasic.map((series, idx) => {
     const detail = carouselSeriesDetails[idx];
-    if (detail.success && detail.data) {
+    const actualImage = carouselSeriesImages[idx];
+    
+    // Handle both success flag and direct data properties
+    if (detail && (detail.success && detail.data || detail.data)) {
+      const data = detail.data || detail;
       return {
         ...series,
-        synopsis: detail.data.synopsis || series.synopsis,
-        chapters: detail.data.chapters || [],
-        genres: detail.data.genres || series.genres,
+        image: actualImage || series.image,
+        synopsis: data.synopsis || series.synopsis,
+        chapters: data.chapters || [],
+        genres: data.genres || series.genres,
       };
     }
-    return series;
+    return {
+      ...series,
+      image: actualImage || series.image,
+    };
   });
 
   return (

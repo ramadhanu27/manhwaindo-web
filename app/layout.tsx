@@ -70,15 +70,7 @@ export default function RootLayout({
         </script>
         <link rel="icon" href="/favicon.png" type="image/png" />
         <meta name="clckd" content="0336c9b2d4f277ba40af02534815500f" />
-        <script type='text/javascript' src='//pl28146074.effectivegatecpm.com/75/cc/7a/75cc7ac75f43124043e6b6b0b0a29218.js' suppressHydrationWarning></script>
-        <script type="text/javascript" data-cfasync="false" suppressHydrationWarning>
-          {`
-            /*<![CDATA[/* */
-            (function(){var k=window,z="d51c9e89aada8745df465ebb45899487",l=[["siteId",567+180+334+901+404+5255009],["minBid",0],["popundersPerIP","0"],["delayBetween",0],["default",false],["defaultPerDay",0],["topmostLayer","auto"]],a=["d3d3LmRpc3BsYXl2ZXJ0aXNpbmcuY29tL29jb29raWVqYXIubWluLmNzcw==","ZDNtem9rdHk5NTFjNXcuY2xvdWRmcm9udC5uZXQvTVd6L21yb2xsYmFyLm1pbi5qcw=="],i=-1,h,q,c=function(){clearTimeout(q);i++;if(a[i]&&!(1790346019000<(new Date).getTime()&&1<i)){h=k.document.createElement("script");h.type="text/javascript";h.async=!0;var j=k.document.getElementsByTagName("script")[0];h.src="https://"+atob(a[i]);h.crossOrigin="anonymous";h.onerror=c;h.onload=function(){clearTimeout(q);k[z.slice(0,16)+z.slice(0,16)]||c()};q=setTimeout(c,5E3);j.parentNode.insertBefore(h,j)}};if(!k[z]){try{Object.freeze(k[z]=l)}catch(e){}c()}})();
-            /*]]>/* */
-          `}
-        </script>
-      </head>
+             </head>
       <body className="font-sans antialiased" suppressHydrationWarning>
         <Header />
         <main className="min-h-screen">

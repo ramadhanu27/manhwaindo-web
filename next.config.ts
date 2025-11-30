@@ -4,6 +4,10 @@ const nextConfig: NextConfig = {
   images: {
     remotePatterns: [
       {
+        protocol: "http",
+        hostname: "**.gmbr.pro",
+      },
+      {
         protocol: "https",
         hostname: "**.gmbr.pro",
       },
@@ -22,6 +26,14 @@ const nextConfig: NextConfig = {
       {
         protocol: "https",
         hostname: "**.manhwaindo.app",
+      },
+      {
+        protocol: "https",
+        hostname: "**.manhwaindo.my",
+      },
+      {
+        protocol: "https",
+        hostname: "manhwaindo.my",
       },
     ],
   },
