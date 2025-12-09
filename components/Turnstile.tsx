@@ -1,6 +1,9 @@
 "use client";
 
-import { useEffect, useRef, useCallback } from "react";
+import { useEffect, useRef, useCallback, useState } from "react";
+
+// Fallback site key if env variable is not set
+const TURNSTILE_SITE_KEY = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY || "0x4AAAAAACEUW7xPCpPb8yS5";
 
 declare global {
   interface Window {
@@ -35,9 +38,19 @@ interface TurnstileProps {
 export default function Turnstile({ onVerify, onExpire, onError, theme = "dark", size = "normal", className = "" }: TurnstileProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const widgetIdRef = useRef<string | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   const renderWidget = useCallback(() => {
-    if (!containerRef.current || !window.turnstile) return;
+    if (!containerRef.current) {
+      console.error("Turnstile: Container ref not available");
+      return;
+    }
+
+    if (!window.turnstile) {
+      console.error("Turnstile: window.turnstile not available");
+      return;
+    }
 
     // Remove existing widget if any
     if (widgetIdRef.current) {
@@ -48,15 +61,32 @@ export default function Turnstile({ onVerify, onExpire, onError, theme = "dark",
       }
     }
 
-    // Render new widget
-    widgetIdRef.current = window.turnstile.render(containerRef.current, {
-      sitekey: process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY || "",
-      callback: onVerify,
-      "expired-callback": onExpire,
-      "error-callback": onError,
-      theme,
-      size,
-    });
+    try {
+      // Render new widget
+      widgetIdRef.current = window.turnstile.render(containerRef.current, {
+        sitekey: TURNSTILE_SITE_KEY,
+        callback: (token) => {
+          setIsLoading(false);
+          onVerify(token);
+        },
+        "expired-callback": () => {
+          setIsLoading(false);
+          onExpire?.();
+        },
+        "error-callback": () => {
+          setIsLoading(false);
+          setError("Verification failed. Please refresh the page.");
+          onError?.();
+        },
+        theme,
+        size,
+      });
+      setIsLoading(false);
+    } catch (err) {
+      console.error("Turnstile render error:", err);
+      setError("Failed to load verification widget");
+      setIsLoading(false);
+    }
   }, [onVerify, onExpire, onError, theme, size]);
 
   useEffect(() => {
@@ -67,7 +97,10 @@ export default function Turnstile({ onVerify, onExpire, onError, theme = "dark",
     }
 
     // Set callback for when script loads
-    window.onTurnstileLoad = renderWidget;
+    window.onTurnstileLoad = () => {
+      console.log("Turnstile script loaded");
+      renderWidget();
+    };
 
     // Check if script tag already exists
     const existingScript = document.querySelector('script[src*="turnstile"]');
@@ -76,6 +109,10 @@ export default function Turnstile({ onVerify, onExpire, onError, theme = "dark",
       script.src = "https://challenges.cloudflare.com/turnstile/v0/api.js?onload=onTurnstileLoad";
       script.async = true;
       script.defer = true;
+      script.onerror = () => {
+        setError("Failed to load Cloudflare script");
+        setIsLoading(false);
+      };
       document.head.appendChild(script);
     }
 
@@ -90,7 +127,18 @@ export default function Turnstile({ onVerify, onExpire, onError, theme = "dark",
     };
   }, [renderWidget]);
 
-  return <div ref={containerRef} className={`cf-turnstile ${className}`} />;
+  return (
+    <div className={className}>
+      {isLoading && (
+        <div className="flex items-center justify-center p-4">
+          <div className="w-6 h-6 border-2 border-primary/30 border-t-primary rounded-full animate-spin"></div>
+          <span className="ml-2 text-sm text-slate-400">Loading verification...</span>
+        </div>
+      )}
+      {error && <div className="p-4 bg-red-500/10 border border-red-500/30 rounded-lg text-red-400 text-sm text-center">{error}</div>}
+      <div ref={containerRef} className="cf-turnstile" />
+    </div>
+  );
 }
 
 // Hook for easy usage
