@@ -1,0 +1,206 @@
+# Cara Mendapatkan Sitelinks di Google Search
+
+## Apa itu Sitelinks?
+Sitelinks adalah link tambahan yang muncul di bawah hasil pencarian utama di Google, menampilkan halaman-halaman penting dari website Anda. Contoh: seperti detik.com yang menampilkan "detikNews", "detikSport", "Terpopuler", dll.
+
+## ✅ Yang Sudah Diterapkan
+
+### 1. Structured Data (JSON-LD)
+Sudah ditambahkan di `app/layout.tsx`:
+
+**WebSite Schema:**
+- Mendefinisikan nama website
+- URL utama
+- Deskripsi
+- SearchAction (kotak pencarian di Google)
+
+**BreadcrumbList Schema:**
+- Struktur navigasi website
+- Membantu Google memahami hierarki halaman
+
+### 2. Sitemap
+Sudah ada di `public/sitemap.xml` (auto-generated)
+- Berisi semua halaman penting
+- Update otomatis setiap build
+
+## 🎯 Langkah-Langkah Mendapatkan Sitelinks
+
+### 1. Submit ke Google Search Console
+1. Buka https://search.google.com/search-console
+2. Tambahkan property website Anda
+3. Verifikasi kepemilikan
+4. Submit sitemap: https://manhwaindo.web.id/sitemap.xml
+
+### 2. Pastikan Struktur Website Jelas
+✅ Sudah ada:
+- Header dengan navigasi utama
+- Footer dengan link penting
+- Struktur URL yang konsisten
+
+### 3. Buat Halaman Penting yang Jelas
+Halaman yang sebaiknya muncul sebagai sitelinks:
+
+**Sudah Ada:**
+- ✅ Home (/)
+- ✅ Daftar Manhwa (/series)
+- ✅ Pencarian (/search)
+- ✅ Bookmark (/bookmark)
+- ✅ History (/history)
+- ✅ Download (/download)
+
+**Tambahan yang Bisa Dibuat:**
+- Genre/Kategori
+- Manhwa Populer
+- Update Terbaru
+- Tentang Kami
+
+### 4. Optimasi Internal Linking
+Pastikan halaman penting di-link dari:
+- Header/Navigation
+- Footer
+- Homepage
+- Sidebar
+
+### 5. Tunggu Google Crawl & Index
+- Google akan otomatis crawl website
+- Sitelinks muncul setelah website dianggap berkualitas
+- Biasanya butuh waktu 2-4 minggu setelah website terindex
+
+## 📊 Kriteria Google untuk Menampilkan Sitelinks
+
+1. **Website Authority**
+   - Domain age
+   - Backlinks berkualitas
+   - Traffic yang konsisten
+
+2. **Struktur Website yang Baik**
+   - ✅ Navigasi yang jelas
+   - ✅ Sitemap XML
+   - ✅ Structured data
+   - ✅ Internal linking
+
+3. **Konten Berkualitas**
+   - Halaman yang relevan
+   - Update rutin
+   - User engagement tinggi
+
+4. **Search Volume**
+   - Banyak orang mencari brand Anda
+   - Branded search (contoh: "manhwaindo")
+
+## 🔍 Cara Mempercepat Munculnya Sitelinks
+
+### 1. Optimasi Header/Navigation
+Pastikan link penting ada di header:
+```tsx
+<nav>
+  <Link href="/">Home</Link>
+  <Link href="/series">Daftar Manhwa</Link>
+  <Link href="/search">Pencarian</Link>
+  <Link href="/bookmark">Bookmark</Link>
+</nav>
+```
+
+### 2. Optimasi Footer
+Tambahkan section "Quick Links" di footer dengan link ke halaman penting.
+
+### 3. Buat Halaman "Sitemap HTML"
+Selain XML sitemap, buat halaman HTML yang list semua halaman penting.
+
+### 4. Internal Linking
+Dari homepage, link ke halaman-halaman penting dengan anchor text yang jelas.
+
+### 5. Google Search Console
+- Submit sitemap
+- Request indexing untuk halaman penting
+- Monitor performance
+
+## ⚠️ Catatan Penting
+
+1. **Google yang Menentukan**
+   - Anda tidak bisa memilih sitelinks mana yang muncul
+   - Google otomatis memilih berdasarkan algoritma
+   - Bisa berubah-ubah sesuai query
+
+2. **Tidak Semua Website Dapat Sitelinks**
+   - Harus memenuhi kriteria tertentu
+   - Biasanya untuk website yang sudah established
+
+3. **Waktu yang Dibutuhkan**
+   - Minimal 2-4 minggu setelah terindex
+   - Bisa lebih lama untuk website baru
+   - Bergantung pada authority dan traffic
+
+## 🚀 Action Items
+
+**Immediate (Sudah Selesai):**
+- ✅ Tambah structured data (WebSite schema)
+- ✅ Tambah breadcrumb schema
+- ✅ Sitemap XML sudah ada
+
+**Short Term (1-2 Minggu):**
+- [ ] Submit ke Google Search Console
+- [ ] Submit sitemap
+- [ ] Request indexing untuk halaman utama
+- [ ] Optimasi internal linking
+
+**Long Term (1-3 Bulan):**
+- [ ] Build backlinks berkualitas
+- [ ] Increase traffic
+- [ ] Regular content updates
+- [ ] Monitor Google Search Console
+
+## 📈 Monitoring
+
+Setelah deploy, monitor di:
+1. **Google Search Console**
+   - Search appearance
+   - Coverage
+   - Sitemaps
+
+2. **Google Search**
+   - Cari "site:manhwaindo.web.id"
+   - Cari "manhwaindo"
+   - Lihat apakah sitelinks muncul
+
+3. **Rich Results Test**
+   - https://search.google.com/test/rich-results
+   - Test structured data
+
+## 🎯 Expected Timeline
+
+- **Week 1-2:** Website terindex di Google
+- **Week 3-4:** Halaman utama mulai ranking
+- **Month 2-3:** Sitelinks mulai muncul (jika traffic cukup)
+- **Month 3+:** Sitelinks stabil dan lengkap
+
+## 💡 Tips Tambahan
+
+1. **Branded Search**
+   - Encourage users untuk search "manhwaindo"
+   - Bukan hanya "baca manhwa"
+
+2. **Social Media**
+   - Share link website di social media
+   - Build brand awareness
+
+3. **Quality Content**
+   - Update rutin
+   - Konten original
+   - User engagement tinggi
+
+4. **Mobile Friendly**
+   - ✅ Sudah responsive
+   - ✅ Fast loading
+   - ✅ Good UX
+
+---
+
+**Kesimpulan:**
+Structured data sudah ditambahkan. Sekarang fokus ke:
+1. Submit ke Google Search Console
+2. Build traffic & backlinks
+3. Tunggu Google crawl & index
+4. Monitor progress
+
+Sitelinks akan muncul otomatis jika website memenuhi kriteria Google.

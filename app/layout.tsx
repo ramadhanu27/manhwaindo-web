@@ -69,6 +69,78 @@ export default function RootLayout({
         <link rel="dns-prefetch" href="https://www.google-analytics.com" />
         <link rel="dns-prefetch" href="https://challenges.cloudflare.com" />
 
+        {/* Structured Data - Organization & Sitelinks Search Box */}
+        <script
+          type="application/ld+json"
+          suppressHydrationWarning
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "WebSite",
+              name: "ManhwaIndo",
+              alternateName: "Manhwa Indo",
+              url: "https://manhwaindo.web.id",
+              description: "Baca komik manhwa bahasa Indonesia gratis. Update setiap hari dengan koleksi terlengkap.",
+              potentialAction: {
+                "@type": "SearchAction",
+                target: {
+                  "@type": "EntryPoint",
+                  urlTemplate: "https://manhwaindo.web.id/search?q={search_term_string}",
+                },
+                "query-input": "required name=search_term_string",
+              },
+              publisher: {
+                "@type": "Organization",
+                name: "ManhwaIndo",
+                url: "https://manhwaindo.web.id",
+                logo: {
+                  "@type": "ImageObject",
+                  url: "https://manhwaindo.web.id/favicon.png",
+                },
+                sameAs: ["https://manhwaindo.web.id"],
+              },
+            }),
+          }}
+        />
+
+        {/* Breadcrumb List for better navigation structure */}
+        <script
+          type="application/ld+json"
+          suppressHydrationWarning
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "BreadcrumbList",
+              itemListElement: [
+                {
+                  "@type": "ListItem",
+                  position: 1,
+                  name: "Home",
+                  item: "https://manhwaindo.web.id",
+                },
+                {
+                  "@type": "ListItem",
+                  position: 2,
+                  name: "Daftar Manhwa",
+                  item: "https://manhwaindo.web.id/series",
+                },
+                {
+                  "@type": "ListItem",
+                  position: 3,
+                  name: "Pencarian",
+                  item: "https://manhwaindo.web.id/search",
+                },
+                {
+                  "@type": "ListItem",
+                  position: 4,
+                  name: "Bookmark",
+                  item: "https://manhwaindo.web.id/bookmark",
+                },
+              ],
+            }),
+          }}
+        />
+
         {/* Google tag (gtag.js) - Deferred for performance */}
         <script async src="https://www.googletagmanager.com/gtag/js?id=G-CG48R0Q9CE" suppressHydrationWarning></script>
         <script suppressHydrationWarning>
