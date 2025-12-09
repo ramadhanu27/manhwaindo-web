@@ -23,11 +23,9 @@ export default function Footer() {
         <div className="border-t border-gray-800 pt-8">
           <div className="max-w-4xl mx-auto text-center">
             <div className="flex items-center justify-center gap-2 mb-4">
-              <div className="w-8 h-8 bg-gradient-to-br from-green-400 to-green-600 rounded-lg flex items-center justify-center">
-                <span className="text-white font-bold text-sm">M</span>
-              </div>
+              <img src="/favicon.ico" alt="ManhwaIndo" className="w-8 h-8 rounded-lg" />
               <span className="text-lg font-bold text-white">
-                Manhwa<span className="text-green-400">Indo</span>
+                Manhwa<span className="text-purple-400">Indo</span>
               </span>
             </div>
             <p className="text-xs text-gray-500 mb-4 leading-relaxed">

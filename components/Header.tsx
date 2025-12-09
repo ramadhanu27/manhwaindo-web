@@ -42,11 +42,9 @@ export default function Header() {
             {/* Logo */}
             <Link href="/" className="flex-shrink-0">
               <div className="flex items-center gap-2">
-                <div className="w-10 h-10 bg-gradient-to-br from-green-400 to-green-600 rounded-lg flex items-center justify-center">
-                  <span className="text-white font-bold text-xl">M</span>
-                </div>
+                <img src="/favicon.ico" alt="ManhwaIndo" className="w-10 h-10 rounded-lg" />
                 <span className="text-xl font-bold text-white hidden sm:block">
-                  Manhwa<span className="text-green-400">Indo</span>
+                  Manhwa<span className="text-purple-400">Indo</span>
                 </span>
               </div>
             </Link>
