@@ -13,15 +13,15 @@ export default function BookmarkPage() {
   const [bookmarks, setBookmarks] = useState<BookmarkedChapter[]>([]);
   const [favorites, setFavorites] = useState<FavoriteSeries[]>([]);
 
-  useEffect(() => {
-    loadData();
-  }, []);
-
   const loadData = () => {
     setContinueReading(getReadingProgress());
     setBookmarks(getBookmarks());
     setFavorites(getFavorites());
   };
+
+  useEffect(() => {
+    loadData();
+  }, []);
 
   const handleClearProgress = (seriesSlug: string) => {
     clearReadingProgress(seriesSlug);
