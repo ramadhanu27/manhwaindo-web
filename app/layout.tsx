@@ -64,15 +64,30 @@ export default function RootLayout({
   return (
     <html lang="id" suppressHydrationWarning>
       <head suppressHydrationWarning>
-        {/* Google tag (gtag.js) */}
+        {/* Preconnect to external domains for faster loading */}
+        <link rel="preconnect" href="https://www.googletagmanager.com" />
+        <link rel="dns-prefetch" href="https://www.google-analytics.com" />
+        <link rel="dns-prefetch" href="https://challenges.cloudflare.com" />
+
+        {/* Google tag (gtag.js) - Deferred for performance */}
         <script async src="https://www.googletagmanager.com/gtag/js?id=G-CG48R0Q9CE" suppressHydrationWarning></script>
         <script suppressHydrationWarning>
           {`
             window.dataLayer = window.dataLayer || [];
             function gtag(){dataLayer.push(arguments);}
             gtag('js', new Date());
-
-            gtag('config', 'G-CG48R0Q9CE');
+            gtag('config', 'G-CG48R0Q9CE', {
+              'send_page_view': false
+            });
+            
+            // Send pageview after page is interactive
+            if (document.readyState === 'complete') {
+              gtag('event', 'page_view');
+            } else {
+              window.addEventListener('load', function() {
+                gtag('event', 'page_view');
+              });
+            }
           `}
         </script>
         <meta name="clckd" content="0336c9b2d4f277ba40af02534815500f" />

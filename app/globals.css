@@ -63,12 +63,7 @@ body {
 
 .skeleton {
   animation: shimmer 2s infinite;
-  background: linear-gradient(
-    to right,
-    hsl(var(--muted)) 4%,
-    hsl(var(--muted-foreground) / 0.2) 25%,
-    hsl(var(--muted)) 36%
-  );
+  background: linear-gradient(to right, hsl(var(--muted)) 4%, hsl(var(--muted-foreground) / 0.2) 25%, hsl(var(--muted)) 36%);
   background-size: 1000px 100%;
 }
 
@@ -105,4 +100,45 @@ body {
   background-color: rgb(234 179 8 / 0.2);
   color: rgb(250 204 21);
   border: 1px solid rgb(234 179 8 / 0.3);
+}
+
+/* Performance Optimizations */
+/* Use content-visibility for off-screen content */
+.content-visibility-auto {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 500px;
+}
+
+/* Optimize animations */
+.will-change-transform {
+  will-change: transform;
+}
+
+/* Reduce layout shifts with aspect ratio */
+.aspect-ratio-box {
+  position: relative;
+  width: 100%;
+}
+
+.aspect-ratio-box::before {
+  content: "";
+  display: block;
+  padding-top: 150%; /* 2:3 aspect ratio for manga covers */
+}
+
+.aspect-ratio-box > * {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+/* Font loading optimization */
+@font-face {
+  font-family: "Inter";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: local("Inter"), local("Inter-Regular");
 }
