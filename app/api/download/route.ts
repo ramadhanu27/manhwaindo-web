@@ -1,8 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
 
-// Use Edge Runtime for Cloudflare Pages compatibility
-export const runtime = "edge";
-
 /**
  * GET /api/download/chapters
  * Fetch chapter images data from external API

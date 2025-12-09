@@ -7,10 +7,7 @@
     "build": "next build && next-sitemap",
     "start": "next start",
     "lint": "eslint",
-    "postbuild": "next-sitemap",
-    "pages:build": "npx @cloudflare/next-on-pages",
-    "pages:dev": "npx wrangler pages dev .vercel/output/static --compatibility-flags=nodejs_compat",
-    "pages:deploy": "npm run pages:build && npx wrangler pages deploy"
+    "postbuild": "next-sitemap"
   },
   "dependencies": {
     "image-size": "^2.0.2",
