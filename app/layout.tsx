@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import Header from "@/components/Header";
-import Footer from "@/components/Footer";
+import ClientLayout from "@/components/ClientLayout";
 
 export const metadata: Metadata = {
   title: "ManhwaIndo - Baca Komik Manhwa Bahasa Indonesia",
@@ -79,9 +78,7 @@ export default function RootLayout({
         <meta name="clckd" content="0336c9b2d4f277ba40af02534815500f" />
       </head>
       <body className="font-sans antialiased" suppressHydrationWarning>
-        <Header />
-        <main className="min-h-screen">{children}</main>
-        <Footer />
+        <ClientLayout>{children}</ClientLayout>
       </body>
     </html>
   );

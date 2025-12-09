@@ -31,9 +31,9 @@ export default function Header() {
             <Link href="/search" className="text-sm font-medium transition-colors hover:text-primary">
               Explore
             </Link>
-            {/* <Link href="/download" className="text-sm font-medium transition-colors hover:text-primary">
+            <Link href="/download" className="text-sm font-medium transition-colors hover:text-primary">
               Download
-            </Link> */}
+            </Link>
             <Link href="/bookmark" className="text-sm font-medium transition-colors hover:text-primary">
               Bookmark
             </Link>
