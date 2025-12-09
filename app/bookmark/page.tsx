@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { getReadingProgress, getBookmarks, getFavorites, clearReadingProgress, removeBookmark, removeFromFavorites, formatDate, type ReadingProgress, type BookmarkedChapter, type FavoriteSeries } from "@/lib/bookmark-storage";
@@ -13,15 +13,15 @@ export default function BookmarkPage() {
   const [bookmarks, setBookmarks] = useState<BookmarkedChapter[]>([]);
   const [favorites, setFavorites] = useState<FavoriteSeries[]>([]);
 
-  useEffect(() => {
-    loadData();
-  }, []);
-
-  const loadData = () => {
+  const loadData = useCallback(() => {
     setContinueReading(getReadingProgress());
     setBookmarks(getBookmarks());
     setFavorites(getFavorites());
-  };
+  }, []);
+
+  useEffect(() => {
+    loadData();
+  }, [loadData]);
 
   const handleClearProgress = (seriesSlug: string) => {
     clearReadingProgress(seriesSlug);
