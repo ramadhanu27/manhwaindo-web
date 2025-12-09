@@ -2,8 +2,18 @@
 
 import { useEffect, useRef, useCallback, useState } from "react";
 
-// Fallback site key if env variable is not set
-const TURNSTILE_SITE_KEY = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY || "0x4AAAAAACEUW7xPCpPb8yS5";
+// Cloudflare Turnstile test keys (for development)
+// Always passes: 1x00000000000000000000AA
+// Always blocks: 2x00000000000000000000AB
+// Forces interactive: 3x00000000000000000000FF
+
+// Production site key
+const PRODUCTION_SITE_KEY = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY || "0x4AAAAAACEUW7xPCpPb8yS5";
+
+// Use test key for localhost, production key otherwise
+const isLocalhost = typeof window !== "undefined" && (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1");
+
+const TURNSTILE_SITE_KEY = isLocalhost ? "1x00000000000000000000AA" : PRODUCTION_SITE_KEY;
 
 declare global {
   interface Window {

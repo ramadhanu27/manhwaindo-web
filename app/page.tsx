@@ -1,21 +1,17 @@
-import { getLastUpdate, getPopular, getProject, getSeriesDetail, fetchActualImageUrl } from '@/lib/api';
-import SeriesCard from '@/components/SeriesCard';
-import HeroCarousel from '@/components/HeroCarousel';
-import ProjectUpdatesSection from '@/components/ProjectUpdatesSection';
-import LatestUpdateSection from '@/components/LatestUpdateSection';
-import AdSection from '@/components/AdSection';
-import Link from 'next/link';
+import { getLastUpdate, getPopular, getProject, getSeriesDetail, fetchActualImageUrl } from "@/lib/api";
+import SeriesCard from "@/components/SeriesCard";
+import HeroCarousel from "@/components/HeroCarousel";
+import ProjectUpdatesSection from "@/components/ProjectUpdatesSection";
+import LatestUpdateSection from "@/components/LatestUpdateSection";
+import Sidebar from "@/components/Sidebar";
+import Link from "next/link";
 
 // Helper function to clean slugs
-const cleanSlug = (slug: string) => slug.replace(/\/+$/, '').trim();
+const cleanSlug = (slug: string) => slug.replace(/\/+$/, "").trim();
 
 export default async function Home() {
   // Fetch data
-  const [lastUpdateData, popularData, projectData] = await Promise.all([
-    getLastUpdate(1),
-    getPopular(),
-    getProject(1),
-  ]);
+  const [lastUpdateData, popularData, projectData] = await Promise.all([getLastUpdate(1), getPopular(), getProject(1)]);
 
   // Deduplicate series by slug to avoid React key errors
   const deduplicateSeries = (series: any[]) => {
@@ -34,13 +30,11 @@ export default async function Home() {
 
   // Fetch detailed series data for carousel (synopsis and chapters)
   const carouselSeriesBasic = popularSeries.slice(0, 4);
-  const carouselSeriesDetails = await Promise.all(
-    carouselSeriesBasic.map(series => getSeriesDetail(series.slug))
-  );
+  const carouselSeriesDetails = await Promise.all(carouselSeriesBasic.map((series) => getSeriesDetail(series.slug)));
 
   // Fetch actual images for carousel series
   const carouselSeriesImages = await Promise.all(
-    carouselSeriesBasic.map(series => {
+    carouselSeriesBasic.map((series) => {
       // Use url field if available, otherwise construct from slug
       const seriesUrl = series.url || `https://www.manhwaindo.my/series/${series.slug}/`;
       return fetchActualImageUrl(seriesUrl);
@@ -50,9 +44,9 @@ export default async function Home() {
   const carouselSeries = carouselSeriesBasic.map((series, idx) => {
     const detail = carouselSeriesDetails[idx];
     const actualImage = carouselSeriesImages[idx];
-    
+
     // Handle both success flag and direct data properties
-    if (detail && (detail.success && detail.data || detail.data)) {
+    if (detail && ((detail.success && detail.data) || detail.data)) {
       const data = detail.data || detail;
       return {
         ...series,
@@ -68,45 +62,39 @@ export default async function Home() {
     };
   });
 
+  // Prepare popular manga for sidebar
+  const sidebarPopularManga = popularSeries.slice(0, 10).map((series: any) => ({
+    slug: series.slug,
+    title: series.title,
+    image: series.image,
+    genres: series.genres || [],
+    rating: series.rating,
+  }));
+
   return (
-    <div className="min-h-screen bg-background">
-      <div className="container mx-auto px-4 py-8">
-        {/* Hero Carousel */}
-        <section className="mb-12">
-          <HeroCarousel series={carouselSeries} />
-        </section>
-
-        {/* Ad Section */}
-        <AdSection />
-
-        {/* Popular Today */}
-        <section className="mb-12">
-          <div className="flex items-center justify-between mb-6">
-            <h2 className="text-2xl font-bold">Popular Today</h2>
+    <div className="min-h-screen bg-[#0f1319]">
+      <div className="container mx-auto px-4 py-6">
+        {/* Main Layout with Sidebar */}
+        <div className="flex flex-col lg:flex-row gap-6">
+          {/* Sidebar - Desktop only, appears on LEFT */}
+          <div className="hidden lg:block lg:w-80 flex-shrink-0 lg:order-2">
+            <Sidebar popularManga={sidebarPopularManga} />
           </div>
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-7 gap-4">
-            {popularSeries.slice(0, 7).map((series: any) => (
-              <SeriesCard
-                key={series.slug}
-                title={series.title}
-                slug={series.slug}
-                image={series.image}
-                type={series.type}
-                rating={series.rating}
-                isHot={true}
-              />
-            ))}
-          </div>
-        </section>
 
-      {/* Project Updates */}
-      <ProjectUpdatesSection series={projectSeries} />
+          {/* Main Content - appears on RIGHT in code but LEFT visually due to order */}
+          <main className="flex-1 min-w-0 lg:order-1">
+            {/* Hero Carousel / Featured */}
+            <section className="mb-8">
+              <HeroCarousel series={carouselSeries} />
+            </section>
 
-      
+            {/* Project Updates */}
+            <ProjectUpdatesSection series={projectSeries} />
 
-      {/* Latest Update */}
-      <LatestUpdateSection series={lastUpdateSeries} />
-
+            {/* Latest Update */}
+            <LatestUpdateSection series={lastUpdateSeries} />
+          </main>
+        </div>
       </div>
     </div>
   );

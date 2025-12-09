@@ -347,14 +347,14 @@ export default function DownloadFlow() {
   if (loading && step === "search") {
     return (
       <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900/20 to-slate-900">
-        <div className="container mx-auto px-4 py-8">
+        <div className="container mx-auto px-4 py-6">
           <div className="flex justify-center items-center min-h-[400px]">
             <div className="text-center">
               <div className="relative w-16 h-16 mx-auto mb-6">
-                <div className="absolute inset-0 border-4 border-primary/30 rounded-full"></div>
-                <div className="absolute inset-0 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
+                <div className="absolute inset-0 border-4 border-green-500/30 rounded-full"></div>
+                <div className="absolute inset-0 border-4 border-green-500 border-t-transparent rounded-full animate-spin"></div>
               </div>
-              <p className="text-lg font-medium bg-gradient-to-r from-primary to-purple-400 bg-clip-text text-transparent">Loading series...</p>
+              <p className="text-lg font-medium text-green-400">Loading series...</p>
             </div>
           </div>
         </div>
@@ -363,35 +363,31 @@ export default function DownloadFlow() {
   }
 
   return (
-    <div className="min-h-screen bg-background">
-      <div className="container mx-auto px-4 py-8">
-        {/* Header with Gradient */}
-        <div className="mb-12 text-center">
-          <div className="inline-block mb-4">
-            <h1 className="text-5xl md:text-6xl font-bold bg-gradient-to-r from-primary to-pink-500 bg-clip-text text-transparent mb-3">Download Manhwa</h1>
-            <div className="h-1 bg-gradient-to-r from-transparent via-primary to-transparent rounded-full"></div>
+    <div className="min-h-screen bg-[#0f1319]">
+      <div className="container mx-auto px-4 py-6">
+        {/* Header */}
+        <div className="bg-[#1a1f2e] rounded-xl border border-gray-800 overflow-hidden mb-6">
+          <div className="px-6 py-8 text-center">
+            <div className="w-16 h-16 mx-auto mb-4 bg-gradient-to-br from-green-400 to-green-600 rounded-2xl flex items-center justify-center">
+              <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+              </svg>
+            </div>
+            <h1 className="text-3xl md:text-4xl font-bold text-white mb-2">Download Manhwa</h1>
+            <p className="text-gray-400">Pilih series dan chapter untuk didownload dalam format PDF atau ZIP</p>
           </div>
         </div>
 
-        {/* Error Message with Animation */}
+        {/* Error Message */}
         {error && (
-          <div className="mb-8 max-w-2xl mx-auto animate-in fade-in slide-in-from-top duration-300">
-            <div className="relative overflow-hidden rounded-xl bg-gradient-to-r from-red-500/10 via-red-500/5 to-red-500/10 border border-red-500/30 p-5 backdrop-blur-sm">
-              <div className="absolute inset-0 bg-gradient-to-r from-red-500/5 to-transparent"></div>
-              <div className="relative flex gap-4 items-start">
-                <div className="flex-shrink-0 w-10 h-10 rounded-full bg-red-500/20 flex items-center justify-center">
-                  <svg className="w-5 h-5 text-red-400" fill="currentColor" viewBox="0 0 20 20">
-                    <path
-                      fillRule="evenodd"
-                      d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z"
-                      clipRule="evenodd"
-                    />
-                  </svg>
-                </div>
-                <div className="flex-1">
-                  <h3 className="text-red-400 font-semibold mb-1">Oops! Terjadi kesalahan</h3>
-                  <p className="text-red-300/90 text-sm">{error}</p>
-                </div>
+          <div className="mb-6 bg-red-500/10 border border-red-500/30 rounded-xl p-4">
+            <div className="flex gap-3 items-start">
+              <svg className="w-6 h-6 text-red-400 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+              </svg>
+              <div>
+                <h3 className="text-red-400 font-semibold mb-1">Oops! Terjadi kesalahan</h3>
+                <p className="text-red-300 text-sm">{error}</p>
               </div>
             </div>
           </div>
@@ -401,89 +397,85 @@ export default function DownloadFlow() {
         {step === "search" && (
           <>
             {/* Search Input */}
-            <div className="mb-8 max-w-2xl mx-auto">
-              <form onSubmit={handleSearchSubmit} className="flex gap-2">
-                <input
-                  type="text"
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  placeholder="Cari series manhwa..."
-                  className="flex-1 px-4 py-3 bg-slate-800/50 border border-slate-700/50 rounded-lg text-white placeholder-slate-400 focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/30 transition-all"
-                />
-                <button
-                  type="submit"
-                  className="px-6 py-3 bg-gradient-to-r from-primary to-purple-500 hover:from-primary/90 hover:to-purple-500/90 text-white font-semibold rounded-lg transition-all duration-300 hover:shadow-lg hover:shadow-primary/50 flex items-center gap-2">
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                  </svg>
-                  Cari
-                </button>
-              </form>
+            <div className="bg-[#1a1f2e] rounded-xl border border-gray-800 overflow-hidden mb-6">
+              <div className="px-4 py-3 bg-gradient-to-r from-[#1e3a5f] to-[#2d5a8a]">
+                <h2 className="text-lg font-bold text-white">Cari Series</h2>
+              </div>
+              <div className="p-4">
+                <form onSubmit={handleSearchSubmit} className="flex gap-2">
+                  <input
+                    type="text"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    placeholder="Cari series manhwa..."
+                    className="flex-1 px-4 py-3 bg-[#2a3142] border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-green-500 transition-colors"
+                  />
+                  <button type="submit" className="px-6 py-3 bg-green-500 hover:bg-green-600 text-white font-semibold rounded-lg transition-colors flex items-center gap-2">
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                    </svg>
+                    Cari
+                  </button>
+                </form>
+              </div>
             </div>
 
-            {/* Series Grid with Glassmorphic Cards */}
+            {/* Series Grid */}
             {searchResults.length > 0 && (
-              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4 md:gap-6">
-                {searchResults.map((result) => (
-                  <button
-                    key={result.slug}
-                    onClick={() => handleSelectSeries(result.slug)}
-                    disabled={loading}
-                    className="group relative overflow-hidden rounded-2xl bg-gradient-to-br from-slate-800/50 to-slate-900/50 border border-slate-700/50 hover:border-primary/50 backdrop-blur-sm transition-all duration-500 hover:scale-105 hover:shadow-2xl hover:shadow-primary/20 disabled:opacity-50 disabled:cursor-not-allowed">
-                    {/* Image Container */}
-                    <div className="relative aspect-[2/3] overflow-hidden bg-slate-800/50">
-                      <img src={result.image || "/placeholder.jpg"} alt={result.title} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
+              <div className="bg-[#1a1f2e] rounded-xl border border-gray-800 overflow-hidden mb-6">
+                <div className="px-4 py-3 bg-gradient-to-r from-[#1e3a5f] to-[#2d5a8a]">
+                  <h2 className="text-lg font-bold text-white">Daftar Series</h2>
+                </div>
+                <div className="p-4 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
+                  {searchResults.map((result) => (
+                    <button
+                      key={result.slug}
+                      onClick={() => handleSelectSeries(result.slug)}
+                      disabled={loading}
+                      className="group relative overflow-hidden rounded-lg bg-[#2a3142] border border-gray-700 hover:border-green-500 transition-all hover:ring-2 hover:ring-green-500/50 disabled:opacity-50 disabled:cursor-not-allowed text-left">
+                      {/* Image Container */}
+                      <div className="relative aspect-[2/3] overflow-hidden bg-gray-700">
+                        <img src={result.image || "/placeholder.jpg"} alt={result.title} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300" />
 
-                      {/* Gradient Overlay */}
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-60 group-hover:opacity-40 transition-opacity duration-300"></div>
-
-                      {/* Rating Badge */}
-                      {result.rating && (
-                        <div className="absolute top-3 right-3 bg-gradient-to-br from-yellow-400/90 to-orange-500/90 backdrop-blur-md rounded-full px-3 py-1.5 shadow-lg transform group-hover:scale-110 transition-transform duration-300">
-                          <div className="flex items-center gap-1.5">
-                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4 text-white">
-                              <path
-                                fillRule="evenodd"
-                                d="M10.868 2.884c-.321-.772-1.415-.772-1.736 0l-1.83 4.401-4.753.381c-.833.067-1.171 1.107-.536 1.651l3.62 3.102-1.106 4.637c-.194.813.691 1.456 1.405 1.02L10 15.591l4.069 2.485c.713.436 1.598-.207 1.404-1.02l-1.106-4.637 3.62-3.102c.635-.544.297-1.584-.536-1.65l-4.752-.382-1.831-4.401z"
-                                clipRule="evenodd"
-                              />
-                            </svg>
-                            <span className="text-xs font-bold text-white">{result.rating}</span>
+                        {/* Rating Badge */}
+                        {result.rating && (
+                          <div className="absolute top-2 right-2 bg-yellow-500/90 backdrop-blur-sm rounded px-2 py-1 shadow-lg">
+                            <div className="flex items-center gap-1">
+                              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-3 h-3 text-white">
+                                <path
+                                  fillRule="evenodd"
+                                  d="M10.868 2.884c-.321-.772-1.415-.772-1.736 0l-1.83 4.401-4.753.381c-.833.067-1.171 1.107-.536 1.651l3.62 3.102-1.106 4.637c-.194.813.691 1.456 1.405 1.02L10 15.591l4.069 2.485c.713.436 1.598-.207 1.404-1.02l-1.106-4.637 3.62-3.102c.635-.544.297-1.584-.536-1.65l-4.752-.382-1.831-4.401z"
+                                  clipRule="evenodd"
+                                />
+                              </svg>
+                              <span className="text-xs font-bold text-white">{result.rating}</span>
+                            </div>
                           </div>
-                        </div>
-                      )}
+                        )}
 
-                      {/* Hover Icon */}
-                      <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                        <div className="w-14 h-14 rounded-full bg-primary/90 backdrop-blur-sm flex items-center justify-center transform scale-0 group-hover:scale-100 transition-transform duration-300">
-                          <svg className="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-                          </svg>
-                        </div>
+                        {/* Type Badge */}
+                        {result.type && <span className="absolute top-2 left-2 bg-purple-600 text-white px-2 py-0.5 text-xs font-bold rounded">{result.type.charAt(0).toUpperCase()}</span>}
                       </div>
-                    </div>
 
-                    {/* Info Section */}
-                    <div className="p-3 bg-gradient-to-br from-slate-800/80 to-slate-900/80 backdrop-blur-sm">
-                      <h3 className="font-semibold text-sm line-clamp-2 mb-1.5 text-slate-100 group-hover:text-primary transition-colors duration-300">{result.title}</h3>
-                      {result.type && (
-                        <p className="text-xs text-slate-400 line-clamp-1 flex items-center gap-1">
-                          <span className="w-1.5 h-1.5 rounded-full bg-primary"></span>
-                          {result.type}
-                        </p>
-                      )}
-                    </div>
-                  </button>
-                ))}
+                      {/* Info Section */}
+                      <div className="p-3">
+                        <h3 className="font-semibold text-sm line-clamp-2 text-white group-hover:text-green-400 transition-colors">{result.title}</h3>
+                      </div>
+                    </button>
+                  ))}
+                </div>
               </div>
             )}
 
             {/* Pagination */}
             {searchResults.length > 0 && (
-              <div className="mt-12 flex justify-center gap-2 flex-wrap">
+              <div className="flex justify-center gap-2 flex-wrap">
                 {/* Previous Button */}
                 {currentPage > 1 && (
-                  <button onClick={() => setCurrentPage(Math.max(1, currentPage - 1))} disabled={loading} className="px-4 py-2 bg-secondary hover:bg-secondary/80 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
+                  <button
+                    onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
+                    disabled={loading}
+                    className="px-4 py-2 bg-[#2a3142] border border-gray-700 hover:border-green-500 text-white rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
                     Previous
                   </button>
                 )}
@@ -495,7 +487,7 @@ export default function DownloadFlow() {
                     <button
                       onClick={() => setCurrentPage(1)}
                       disabled={loading}
-                      className="px-3 py-2 bg-background border border-border hover:bg-primary hover:text-primary-foreground hover:border-primary rounded-lg transition-colors text-sm disabled:opacity-50 disabled:cursor-not-allowed">
+                      className="px-3 py-2 bg-[#2a3142] border border-gray-700 hover:bg-green-500 hover:text-white hover:border-green-500 text-white rounded-lg transition-colors text-sm disabled:opacity-50 disabled:cursor-not-allowed">
                       1
                     </button>
                   )}
