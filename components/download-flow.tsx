@@ -127,6 +127,13 @@ export default function DownloadFlow() {
     }
   };
 
+  // Go back to search
+  const handleBack = () => {
+    setStep("search");
+    setSeriesDetail(null);
+    setSelectedChapters(new Set());
+  };
+
   // Step 3: Toggle Chapter Selection
   const handleChapterToggle = (chapterSlug: string) => {
     const cleanSlug = chapterSlug.replace(/\/+$/, "").trim();
@@ -493,7 +500,7 @@ export default function DownloadFlow() {
                   )}
 
                   {/* Show current page */}
-                  <span className="px-3 py-2 bg-primary border border-primary text-primary-foreground rounded-lg text-sm">{currentPage}</span>
+                  <span className="px-3 py-2 bg-green-500 border border-green-500 text-white rounded-lg text-sm">{currentPage}</span>
 
                   {/* Show next few pages */}
                   {currentPage < 5 &&
@@ -502,7 +509,7 @@ export default function DownloadFlow() {
                         key={pageNum}
                         onClick={() => setCurrentPage(pageNum)}
                         disabled={loading}
-                        className="px-3 py-2 bg-background border border-border hover:bg-primary hover:text-primary-foreground hover:border-primary rounded-lg transition-colors text-sm disabled:opacity-50 disabled:cursor-not-allowed">
+                        className="px-3 py-2 bg-[#2a3142] border border-gray-700 hover:bg-green-500 hover:text-white hover:border-green-500 text-white rounded-lg transition-colors text-sm disabled:opacity-50 disabled:cursor-not-allowed">
                         {pageNum}
                       </button>
                     ))}
@@ -510,7 +517,7 @@ export default function DownloadFlow() {
                   {/* Show ellipsis and last page */}
                   {currentPage < 50 && (
                     <>
-                      <span className="px-2 py-2 text-muted-foreground">...</span>
+                      <span className="px-2 py-2 text-gray-500">...</span>
                       <button
                         onClick={() => setCurrentPage(200)}
                         disabled={loading}
@@ -523,7 +530,7 @@ export default function DownloadFlow() {
                   {/* If we're near the end, show last few pages */}
                   {currentPage >= 50 && currentPage < 195 && (
                     <>
-                      <span className="px-2 py-2 text-muted-foreground">...</span>
+                      <span className="px-2 py-2 text-gray-500">...</span>
                       {[currentPage - 1, currentPage + 1, currentPage + 2].map((pageNum) => (
                         <button
                           key={pageNum}
@@ -533,7 +540,7 @@ export default function DownloadFlow() {
                           {pageNum}
                         </button>
                       ))}
-                      <span className="px-2 py-2 text-muted-foreground">...</span>
+                      <span className="px-2 py-2 text-gray-500">...</span>
                       <button
                         onClick={() => setCurrentPage(200)}
                         disabled={loading}
@@ -546,7 +553,7 @@ export default function DownloadFlow() {
                   {/* If we're at the very end */}
                   {currentPage >= 195 && currentPage < 200 && (
                     <>
-                      <span className="px-2 py-2 text-muted-foreground">...</span>
+                      <span className="px-2 py-2 text-gray-500">...</span>
                       {[196, 197, 198, 199].map((pageNum) => (
                         <button
                           key={pageNum}
@@ -565,7 +572,7 @@ export default function DownloadFlow() {
                   <button
                     onClick={() => setCurrentPage(Math.min(200, currentPage + 1))}
                     disabled={loading}
-                    className="px-4 py-2 bg-secondary hover:bg-secondary/80 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
+                    className="px-4 py-2 bg-green-500 hover:bg-green-600 text-white rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
                     Next
                   </button>
                 )}
@@ -573,13 +580,13 @@ export default function DownloadFlow() {
             )}
 
             {searchResults.length === 0 && !loading && (
-              <div className="text-center py-20">
-                <div className="w-24 h-24 mx-auto mb-6 rounded-full bg-gradient-to-br from-slate-800 to-slate-900 flex items-center justify-center border border-slate-700">
-                  <svg className="w-12 h-12 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <div className="bg-[#1a1f2e] rounded-xl border border-gray-800 p-12 text-center">
+                <div className="w-20 h-20 mx-auto mb-6 rounded-2xl bg-gray-800 flex items-center justify-center">
+                  <svg className="w-10 h-10 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                   </svg>
                 </div>
-                <p className="text-xl text-slate-400 font-medium">Tidak ada series yang tersedia</p>
+                <p className="text-xl text-gray-400 font-medium">Tidak ada series yang tersedia</p>
               </div>
             )}
           </>
@@ -588,84 +595,82 @@ export default function DownloadFlow() {
         {/* Step 2: Series Detail & Chapter Selection */}
         {step === "detail" && seriesDetail && (
           <div className="max-w-5xl mx-auto">
+            {/* Back Button */}
+            <button onClick={handleBack} className="flex items-center gap-2 mb-6 text-gray-400 hover:text-white transition-colors">
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+              </svg>
+              Kembali ke daftar
+            </button>
+
             {/* Series Info Card */}
-            <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-slate-800/50 to-slate-900/50 border border-slate-700/50 backdrop-blur-sm p-8 mb-8 shadow-2xl">
-              {/* Background Pattern */}
-              <div className="absolute inset-0 opacity-5">
-                <div
-                  className="absolute inset-0"
-                  style={{
-                    backgroundImage: "radial-gradient(circle at 2px 2px, white 1px, transparent 0)",
-                    backgroundSize: "32px 32px",
-                  }}></div>
+            <div className="bg-[#1a1f2e] rounded-xl border border-gray-800 overflow-hidden mb-6">
+              <div className="px-4 py-3 bg-gradient-to-r from-[#1e3a5f] to-[#2d5a8a]">
+                <h2 className="text-lg font-bold text-white">Detail Series</h2>
               </div>
 
-              <div className="relative flex flex-col md:flex-row gap-8 mb-8">
-                {/* Series Image */}
-                {seriesDetail.image && (
-                  <div className="flex-shrink-0">
-                    <div className="relative group">
-                      <div className="absolute -inset-1 bg-gradient-to-r from-primary via-purple-500 to-pink-500 rounded-2xl blur opacity-50 group-hover:opacity-75 transition duration-300"></div>
-                      <img src={seriesDetail.image} alt={seriesDetail.title} className="relative w-48 h-72 object-cover rounded-2xl shadow-2xl" />
-                    </div>
-                  </div>
-                )}
-
-                {/* Series Details */}
-                <div className="flex-1 min-w-0">
-                  <h2 className="text-4xl font-bold bg-gradient-to-r from-white via-slate-100 to-slate-300 bg-clip-text text-transparent mb-4">{seriesDetail.title}</h2>
-
-                  <div className="flex flex-wrap gap-4 mb-4">
-                    {seriesDetail.rating && (
-                      <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-yellow-500/20 to-orange-500/20 border border-yellow-500/30">
-                        <svg className="w-5 h-5 text-yellow-400" fill="currentColor" viewBox="0 0 20 20">
-                          <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                        </svg>
-                        <span className="text-yellow-400 font-bold">{seriesDetail.rating}</span>
-                      </div>
-                    )}
-                    {seriesDetail.status && (
-                      <div className="px-4 py-2 rounded-full bg-gradient-to-r from-green-500/20 to-emerald-500/20 border border-green-500/30">
-                        <span className="text-green-400 font-medium">{seriesDetail.status}</span>
-                      </div>
-                    )}
-                  </div>
-
-                  {seriesDetail.genres && seriesDetail.genres.length > 0 && (
-                    <div className="flex flex-wrap gap-2 mb-4">
-                      {seriesDetail.genres.map((genre) => (
-                        <span
-                          key={genre}
-                          className="px-3 py-1.5 bg-gradient-to-r from-primary/20 to-purple-500/20 border border-primary/30 text-primary rounded-full text-sm font-medium hover:from-primary/30 hover:to-purple-500/30 transition-all duration-300">
-                          {genre}
-                        </span>
-                      ))}
+              <div className="p-6">
+                <div className="flex flex-col md:flex-row gap-6 mb-6">
+                  {/* Series Image */}
+                  {seriesDetail.image && (
+                    <div className="flex-shrink-0">
+                      <img src={seriesDetail.image} alt={seriesDetail.title} className="w-40 h-60 object-cover rounded-lg border border-gray-700" />
                     </div>
                   )}
 
-                  {seriesDetail.synopsis && <p className="text-slate-300 text-sm leading-relaxed line-clamp-4">{seriesDetail.synopsis}</p>}
+                  {/* Series Details */}
+                  <div className="flex-1 min-w-0">
+                    <h2 className="text-2xl font-bold text-white mb-4">{seriesDetail.title}</h2>
+
+                    <div className="flex flex-wrap gap-3 mb-4">
+                      {seriesDetail.rating && (
+                        <div className="flex items-center gap-2 px-3 py-1.5 rounded bg-yellow-500/20 border border-yellow-500/30">
+                          <svg className="w-4 h-4 text-yellow-400" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                          </svg>
+                          <span className="text-yellow-400 font-bold text-sm">{seriesDetail.rating}</span>
+                        </div>
+                      )}
+                      {seriesDetail.status && (
+                        <div className="px-3 py-1.5 rounded bg-green-500/20 border border-green-500/30">
+                          <span className="text-green-400 font-medium text-sm">{seriesDetail.status}</span>
+                        </div>
+                      )}
+                    </div>
+
+                    {seriesDetail.genres && seriesDetail.genres.length > 0 && (
+                      <div className="flex flex-wrap gap-2 mb-4">
+                        {seriesDetail.genres.map((genre) => (
+                          <span key={genre} className="px-3 py-1 bg-[#2a3142] border border-gray-700 text-gray-300 rounded text-xs font-medium">
+                            {genre}
+                          </span>
+                        ))}
+                      </div>
+                    )}
+
+                    {seriesDetail.synopsis && <p className="text-gray-400 text-sm leading-relaxed line-clamp-4">{seriesDetail.synopsis}</p>}
+                  </div>
                 </div>
               </div>
+            </div>
 
-              {/* Chapter Selection Header */}
-              <div className="relative border-t border-slate-700/50 pt-6">
-                <div className="flex items-center justify-between mb-6">
-                  <h3 className="text-2xl font-bold text-white flex items-center gap-3">
-                    <span className="w-10 h-10 rounded-full bg-gradient-to-br from-primary to-purple-500 flex items-center justify-center text-lg">📚</span>
-                    Pilih Chapter
-                    <span className="text-lg font-normal text-slate-400">({selectedChapters.size} dipilih)</span>
-                  </h3>
+            {/* Chapter Selection */}
+            <div className="bg-[#1a1f2e] rounded-xl border border-gray-800 overflow-hidden">
+              <div className="px-4 py-3 bg-gradient-to-r from-[#1e3a5f] to-[#2d5a8a] flex items-center justify-between">
+                <h3 className="text-lg font-bold text-white flex items-center gap-2">
+                  📚 Pilih Chapter
+                  <span className="text-sm font-normal text-gray-300">({selectedChapters.size} dipilih)</span>
+                </h3>
 
-                  {/* Select All Button */}
-                  <button
-                    onClick={handleSelectAll}
-                    className="px-5 py-2.5 bg-gradient-to-r from-slate-700 to-slate-600 hover:from-slate-600 hover:to-slate-500 text-white rounded-xl transition-all duration-300 text-sm font-medium shadow-lg hover:shadow-xl hover:scale-105">
-                    {selectedChapters.size === seriesDetail.chapters.length ? "✕ Batalkan Semua" : "✓ Pilih Semua"}
-                  </button>
-                </div>
+                {/* Select All Button */}
+                <button onClick={handleSelectAll} className="px-4 py-1.5 bg-green-500 hover:bg-green-600 text-white rounded-lg transition-colors text-sm font-medium">
+                  {selectedChapters.size === seriesDetail.chapters.length ? "✕ Batalkan Semua" : "✓ Pilih Semua"}
+                </button>
+              </div>
 
+              <div className="p-4">
                 {/* Chapters List */}
-                <div className="space-y-3 max-h-[500px] overflow-y-auto pr-2 custom-scrollbar">
+                <div className="space-y-2 max-h-[400px] overflow-y-auto pr-2">
                   {seriesDetail.chapters && seriesDetail.chapters.length > 0 ? (
                     seriesDetail.chapters.map((chapter, index) => {
                       const chapterSlug = chapter.slug.replace(/\/+$/, "").trim();

@@ -4,6 +4,7 @@ import HeroCarousel from "@/components/HeroCarousel";
 import ProjectUpdatesSection from "@/components/ProjectUpdatesSection";
 import LatestUpdateSection from "@/components/LatestUpdateSection";
 import Sidebar from "@/components/Sidebar";
+import AnnouncementBanner from "@/components/AnnouncementBanner";
 import Link from "next/link";
 
 // Helper function to clean slugs
@@ -84,9 +85,12 @@ export default async function Home() {
           {/* Main Content - appears on RIGHT in code but LEFT visually due to order */}
           <main className="flex-1 min-w-0 lg:order-1">
             {/* Hero Carousel / Featured */}
-            <section className="mb-8">
+            <section className="mb-6">
               <HeroCarousel series={carouselSeries} />
             </section>
+
+            {/* Announcement Banner */}
+            <AnnouncementBanner />
 
             {/* Project Updates */}
             <ProjectUpdatesSection series={projectSeries} />
