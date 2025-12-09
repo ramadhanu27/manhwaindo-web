@@ -47,6 +47,14 @@ export const metadata: Metadata = {
       "max-snippet": -1,
     },
   },
+  icons: {
+    icon: [
+      { url: "/favicon.ico", sizes: "any" },
+      { url: "/favicon.png", sizes: "32x32", type: "image/png" },
+    ],
+    apple: [{ url: "/favicon.png", sizes: "180x180", type: "image/png" }],
+    shortcut: "/favicon.ico",
+  },
 };
 
 export default function RootLayout({
@@ -68,14 +76,11 @@ export default function RootLayout({
             gtag('config', 'G-CG48R0Q9CE');
           `}
         </script>
-        <link rel="icon" href="/favicon.png" type="image/png" />
         <meta name="clckd" content="0336c9b2d4f277ba40af02534815500f" />
-             </head>
+      </head>
       <body className="font-sans antialiased" suppressHydrationWarning>
         <Header />
-        <main className="min-h-screen">
-          {children}
-        </main>
+        <main className="min-h-screen">{children}</main>
         <Footer />
       </body>
     </html>
