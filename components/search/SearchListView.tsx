@@ -1,4 +1,4 @@
-import SearchListItem from '@/components/SearchListItem';
+import SearchListItem from "@/components/search/SearchListItem";
 
 interface SearchListViewProps {
   results: any[];

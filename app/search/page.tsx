@@ -1,12 +1,12 @@
 "use client";
 
 import { useState, useEffect, use } from "react";
-import SeriesCard from "@/components/SeriesCard";
-import SearchGridView from "@/components/SearchGridView";
-import SearchListView from "@/components/SearchListView";
-import SearchFilters from "@/components/SearchFilters";
-import SearchListItem from "@/components/SearchListItem";
-import ViewToggle from "@/components/ViewToggle";
+import SeriesCard from "@/components/series/SeriesCard";
+import SearchGridView from "@/components/search/SearchGridView";
+import SearchListView from "@/components/search/SearchListView";
+import SearchFilters from "@/components/search/SearchFilters";
+import SearchListItem from "@/components/search/SearchListItem";
+import ViewToggle from "@/components/search/ViewToggle";
 import Link from "next/link";
 
 export default function SearchPage({ searchParams }: { searchParams: Promise<{ q?: string; page?: string; order?: string; type?: string; status?: string; genre?: string; title?: string }> }) {

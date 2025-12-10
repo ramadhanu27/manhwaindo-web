@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import Turnstile from "@/components/Turnstile";
+import Turnstile from "@/components/security/Turnstile";
 
 interface TurnstileGateProps {
   children: React.ReactNode;

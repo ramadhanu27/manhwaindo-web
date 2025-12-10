@@ -1,11 +1,11 @@
 import { getLastUpdate, getPopular, getProject, getSeriesDetail, fetchActualImageUrl } from "@/lib/api";
-import SeriesCard from "@/components/SeriesCard";
-import HeroCarousel from "@/components/HeroCarousel";
-import ProjectUpdatesSection from "@/components/ProjectUpdatesSection";
-import LatestUpdateSection from "@/components/LatestUpdateSection";
-import Sidebar from "@/components/Sidebar";
-import AnnouncementBanner from "@/components/AnnouncementBanner";
-import AdSection from "@/components/AdSection";
+import SeriesCard from "@/components/series/SeriesCard";
+import HeroCarousel from "@/components/home/HeroCarousel";
+import ProjectUpdatesSection from "@/components/home/ProjectUpdatesSection";
+import LatestUpdateSection from "@/components/home/LatestUpdateSection";
+import Sidebar from "@/components/layout/Sidebar";
+import AnnouncementBanner from "@/components/home/AnnouncementBanner";
+import AdSection from "@/components/ads/AdSection";
 import Link from "next/link";
 
 // Helper function to clean slugs

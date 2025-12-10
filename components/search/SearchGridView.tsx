@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import SeriesCard from "@/components/SeriesCard";
+import SeriesCard from "@/components/series/SeriesCard";
 import { getSeriesDetail } from "@/lib/api";
 
 interface SearchGridViewProps {

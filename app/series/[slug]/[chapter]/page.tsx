@@ -3,7 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { extractSeriesSlug, encodeSlug } from "@/lib/slug-utils";
-import ChapterNavigation from "@/components/ChapterNavigation";
+import ChapterNavigation from "@/components/chapter/ChapterNavigation";
 
 export default async function ChapterPage({ params }: { params: Promise<{ slug: string; chapter: string }> }) {
   const { slug, chapter } = await params;

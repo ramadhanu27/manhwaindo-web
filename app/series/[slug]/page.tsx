@@ -2,9 +2,9 @@ import { getSeriesDetail, getPopular } from "@/lib/api";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import ChaptersSection from "@/components/ChaptersSection";
-import BookmarkButton from "@/components/BookmarkButton";
-import Sidebar from "@/components/Sidebar";
+import ChaptersSection from "@/components/series/ChaptersSection";
+import BookmarkButton from "@/components/series/BookmarkButton";
+import Sidebar from "@/components/layout/Sidebar";
 import { extractSeriesSlug, cleanSlug, encodeSlug } from "@/lib/slug-utils";
 
 export default async function SeriesDetailPage({ params }: { params: Promise<{ slug: string }> }) {
