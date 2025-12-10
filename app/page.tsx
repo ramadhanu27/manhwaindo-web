@@ -5,6 +5,7 @@ import ProjectUpdatesSection from "@/components/ProjectUpdatesSection";
 import LatestUpdateSection from "@/components/LatestUpdateSection";
 import Sidebar from "@/components/Sidebar";
 import AnnouncementBanner from "@/components/AnnouncementBanner";
+import AdSection from "@/components/AdSection";
 import Link from "next/link";
 
 // Helper function to clean slugs
@@ -94,6 +95,9 @@ export default async function Home() {
 
             {/* Project Updates */}
             <ProjectUpdatesSection series={projectSeries} />
+
+            {/* Ad Section */}
+            <AdSection />
 
             {/* Latest Update */}
             <LatestUpdateSection series={lastUpdateSeries} />

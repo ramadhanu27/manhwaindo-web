@@ -174,18 +174,6 @@ export default async function SeriesDetailPage({ params }: { params: Promise<{ s
               </div>
             </div>
 
-            {/* Warning Box */}
-            <div className="bg-orange-500/10 border border-orange-500/30 rounded-xl p-4 mb-6">
-              <div className="flex items-start gap-3">
-                <svg className="w-6 h-6 text-orange-400 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-                </svg>
-                <p className="text-orange-300 text-sm">
-                  <strong>Peringatan:</strong> Komik ini mungkin mengandung konten kekerasan, berdarah, atau seksual yang tidak sesuai untuk pembaca di bawah umur.
-                </p>
-              </div>
-            </div>
-
             {/* Chapter List Section */}
             <div className="bg-[#1a1f2e] rounded-xl border border-gray-800 overflow-hidden mb-6">
               <div className="px-4 py-3 bg-gradient-to-r from-[#1e3a5f] to-[#2d5a8a] flex items-center justify-between">

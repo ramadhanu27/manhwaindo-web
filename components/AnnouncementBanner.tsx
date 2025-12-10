@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 
 interface Announcement {
@@ -8,32 +8,53 @@ interface Announcement {
   type: "info" | "warning" | "success" | "new";
   title: string;
   message: string;
-  link?: string;
-  linkText?: string;
+  link?: string | null;
+  linkText?: string | null;
+  active: boolean;
 }
-
-const announcements: Announcement[] = [
-  {
-    id: "1",
-    type: "new",
-    title: "🎉 Fitur Baru!",
-    message: "Sekarang kamu bisa download chapter dalam format PDF dan ZIP. Coba fitur download baru kami!",
-    link: "/download",
-    linkText: "Coba Sekarang",
-  },
-  {
-    id: "2",
-    type: "info",
-    title: "📢 Pengumuman",
-    message: "Website ManhwaIndo telah diperbarui dengan tampilan baru yang lebih modern dan responsif.",
-  },
-];
 
 export default function AnnouncementBanner() {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isVisible, setIsVisible] = useState(true);
+  const [announcements, setAnnouncements] = useState<Announcement[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  if (!isVisible || announcements.length === 0) return null;
+  useEffect(() => {
+    const fetchAnnouncements = async () => {
+      try {
+        const res = await fetch("/api/announcements", {
+          cache: "no-store",
+          headers: {
+            "Cache-Control": "no-cache",
+          },
+        });
+        const data = await res.json();
+
+        if (data.enabled && data.announcements?.length > 0) {
+          setAnnouncements(data.announcements);
+        }
+      } catch (error) {
+        console.error("Error fetching announcements:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchAnnouncements();
+  }, []);
+
+  // Auto-rotate announcements every 5 seconds
+  useEffect(() => {
+    if (announcements.length <= 1) return;
+
+    const interval = setInterval(() => {
+      setCurrentIndex((prev) => (prev + 1) % announcements.length);
+    }, 5000);
+
+    return () => clearInterval(interval);
+  }, [announcements.length]);
+
+  if (loading || !isVisible || announcements.length === 0) return null;
 
   const announcement = announcements[currentIndex];
 

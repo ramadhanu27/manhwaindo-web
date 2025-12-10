@@ -1,0 +1,23 @@
+{
+  "enabled": true,
+  "announcements": [
+    {
+      "id": "1",
+      "type": "new",
+      "title": "🎉 Fitur Baru!",
+      "message": "Sekarang kamu bisa download chapter dalam format PDF dan ZIP. Coba fitur download baru kami!",
+      "link": "/download",
+      "linkText": "Coba Sekarang",
+      "active": true
+    },
+    {
+      "id": "2",
+      "type": "info",
+      "title": "📢 Pengumuman",
+      "message": "Website ManhwaIndo telah diperbarui dengan tampilan baru yang lebih modern dan responsif.",
+      "link": null,
+      "linkText": null,
+      "active": true
+    }
+  ]
+}

@@ -25,7 +25,7 @@ export default function ProjectUpdatesSection({ series }: ProjectUpdatesSectionP
           <div className="flex items-center justify-between px-4 py-3 bg-gradient-to-r from-[#1e3a5f] to-[#2d5a8a]">
             <h2 className="text-lg font-bold text-white">Project Update</h2>
           </div>
-          <div className="p-4 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+          <div className="p-4 grid grid-cols-1 md:grid-cols-2 gap-4">
             {series.slice(0, 12).map((item: any) => (
               <div key={item.slug} className="bg-[#2a3142] rounded-lg h-48 animate-pulse" />
             ))}
@@ -53,13 +53,13 @@ export default function ProjectUpdatesSection({ series }: ProjectUpdatesSectionP
         <div className="p-4">
           {view === "grid" && (
             // Grid View - Card style like reference
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {series.slice(0, 12).map((item: any) => (
                 <div key={item.slug} className="bg-[#2a3142] rounded-lg overflow-hidden hover:ring-2 hover:ring-green-500/50 transition-all group">
                   <div className="flex gap-3 p-3">
                     {/* Thumbnail */}
                     <Link href={`/series/${encodeSlug(extractSeriesSlug(item.slug))}`} className="flex-shrink-0">
-                      <div className="relative w-16 h-24 rounded overflow-hidden bg-gray-700">
+                      <div className="relative w-20 h-28 rounded overflow-hidden bg-gray-700">
                         {item.type && <span className="absolute top-0 left-0 bg-purple-600 text-white px-1.5 py-0.5 text-[9px] font-bold">{item.type.charAt(0).toUpperCase()}</span>}
                         <img src={item.image || "/placeholder.jpg"} alt={item.title} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300" />
                       </div>
