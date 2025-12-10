@@ -25,7 +25,7 @@ export async function middleware(request: NextRequest) {
     // If maintenance mode is enabled, redirect to maintenance page
     if (data.enabled) {
       // Check if IP is allowed (for admin access)
-      const clientIP = request.ip || request.headers.get("x-forwarded-for") || "";
+      const clientIP = request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "";
       const allowedIPs = data.allowedIPs || [];
 
       if (!allowedIPs.includes(clientIP)) {
