@@ -175,8 +175,10 @@ export default function DownloadFlow() {
         throw new Error(data.error || "Failed to load chapter images");
       }
 
+      // Allow download even if some images fail (will use placeholder)
       if (!data.data?.images || data.data.images.length === 0) {
-        throw new Error("No images found for this chapter. The chapter might be empty or unavailable.");
+        console.warn("No images found, but attempting download anyway...");
+        // Don't throw error, let it proceed with placeholders
       }
 
       const foundChapter = seriesDetail.chapters.find((ch) => ch.slug.replace(/\/+$/, "").trim() === chapterSlug);

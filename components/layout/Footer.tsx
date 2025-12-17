@@ -31,6 +31,21 @@ export default function Footer() {
             <p className="text-xs text-gray-500 mb-4 leading-relaxed">
               ManhwaIndo merupakan situs baca komik online dengan koleksi terupdate. Kalian bisa membaca ratusan judul komik (manhwa, manga, manhua) yang kami update setiap hari secara gratis.
             </p>
+
+            {/* Partner Link */}
+            <div className="mb-6">
+              <a
+                href="https://kumastream.web.id/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-semibold rounded-lg transition-all duration-300 hover:scale-105 shadow-lg hover:shadow-purple-500/50">
+                <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                  <path d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" />
+                </svg>
+                Nonton Anime di KumaStream
+              </a>
+            </div>
+
             <div className="flex flex-wrap justify-center gap-4 text-sm text-gray-400">
               <Link href="/contact" className="hover:text-green-400 transition-colors">
                 Pasang Iklan
