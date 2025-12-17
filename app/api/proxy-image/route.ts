@@ -25,61 +25,102 @@ export async function GET(request: NextRequest) {
 
     console.log(`Proxying image: ${imageUrl}`);
 
-    // Fetch image from external server with longer timeout
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 30000); // 30 second timeout
-
-    try {
-      const response = await fetch(imageUrl, {
+    // Try multiple strategies to fetch the image
+    const strategies = [
+      // Strategy 1: Full browser headers
+      {
         headers: {
           "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36",
           Referer: "https://www.manhwaindo.my/",
-          Origin: "https://www.manhwaindo.my",
           Accept: "image/avif,image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8",
-          "Accept-Encoding": "gzip, deflate, br",
           "Accept-Language": "id-ID,id;q=0.9,en-US;q=0.8,en;q=0.7",
           "Cache-Control": "no-cache",
-          Pragma: "no-cache",
-          "Sec-Ch-Ua": '"Google Chrome";v="131", "Chromium";v="131", "Not_A Brand";v="24"',
-          "Sec-Ch-Ua-Mobile": "?0",
-          "Sec-Ch-Ua-Platform": '"Windows"',
           "Sec-Fetch-Dest": "image",
           "Sec-Fetch-Mode": "no-cors",
           "Sec-Fetch-Site": "cross-site",
         },
-        signal: controller.signal,
-      });
-
-      if (!response.ok) {
-        console.error(`Image fetch failed: ${response.status}`);
-        clearTimeout(timeoutId);
-        return NextResponse.json({ error: `Failed to fetch image: ${response.status}` }, { status: response.status });
-      }
-
-      const blob = await response.blob();
-      clearTimeout(timeoutId);
-      console.log(`✓ Image proxied: ${blob.size} bytes`);
-
-      // Return image with proper headers
-      return new NextResponse(blob, {
-        status: 200,
+      },
+      // Strategy 2: Minimal headers (sometimes works better)
+      {
         headers: {
-          "Content-Type": blob.type || "image/jpeg",
-          "Cache-Control": "public, max-age=86400", // Cache for 24 hours
-          "Access-Control-Allow-Origin": "*",
+          "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
+          Referer: "https://www.manhwaindo.my/",
         },
-      });
-    } catch (fetchError) {
-      clearTimeout(timeoutId);
-      console.error("Image fetch error:", fetchError);
+      },
+      // Strategy 3: Different referer
+      {
+        headers: {
+          "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36",
+          Referer: imageUrl.substring(0, imageUrl.lastIndexOf("/") + 1),
+          Accept: "image/*",
+        },
+      },
+      // Strategy 4: No referer (last resort)
+      {
+        headers: {
+          "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36",
+          Accept: "image/*",
+        },
+      },
+    ];
 
-      // Handle timeout specifically
-      if (fetchError instanceof Error && fetchError.name === "AbortError") {
-        return NextResponse.json({ error: "Image fetch timeout" }, { status: 504 });
+    let lastError: any = null;
+
+    // Try each strategy
+    for (let i = 0; i < strategies.length; i++) {
+      const strategy = strategies[i];
+      console.log(`Trying strategy ${i + 1}/${strategies.length}...`);
+
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 15000); // 15 second timeout per attempt
+
+      try {
+        const response = await fetch(imageUrl, {
+          headers: strategy.headers as HeadersInit,
+          signal: controller.signal,
+          redirect: "follow",
+        });
+
+        clearTimeout(timeoutId);
+
+        if (response.ok) {
+          const blob = await response.blob();
+          console.log(`✓ Image proxied successfully with strategy ${i + 1}: ${blob.size} bytes`);
+
+          // Return image with proper headers
+          return new NextResponse(blob, {
+            status: 200,
+            headers: {
+              "Content-Type": blob.type || "image/jpeg",
+              "Cache-Control": "public, max-age=86400", // Cache for 24 hours
+              "Access-Control-Allow-Origin": "*",
+            },
+          });
+        } else {
+          console.warn(`Strategy ${i + 1} failed: ${response.status}`);
+          lastError = new Error(`HTTP ${response.status}`);
+        }
+      } catch (fetchError: any) {
+        clearTimeout(timeoutId);
+        console.warn(`Strategy ${i + 1} error:`, fetchError.message);
+        lastError = fetchError;
       }
 
-      return NextResponse.json({ error: "Failed to fetch image" }, { status: 500 });
+      // Small delay between retries
+      if (i < strategies.length - 1) {
+        await new Promise((resolve) => setTimeout(resolve, 500));
+      }
     }
+
+    // All strategies failed
+    console.error(`All strategies failed for: ${imageUrl}`);
+    return NextResponse.json(
+      {
+        error: "Failed to fetch image after multiple attempts",
+        details: lastError?.message || "Unknown error",
+      },
+      { status: 403 }
+    );
   } catch (error) {
     console.error("Image proxy error:", error);
     return NextResponse.json({ error: "Failed to proxy image" }, { status: 500 });
