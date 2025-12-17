@@ -112,6 +112,36 @@ export async function GET(request: NextRequest) {
       }
     }
 
+    // Last resort: Try external CORS proxies
+    console.log("Trying external CORS proxies...");
+    const corsProxies = [`https://corsproxy.io/?${encodeURIComponent(imageUrl)}`, `https://api.allorigins.win/raw?url=${encodeURIComponent(imageUrl)}`];
+
+    for (const proxyUrl of corsProxies) {
+      try {
+        console.log(`Trying external proxy: ${proxyUrl.substring(0, 50)}...`);
+        const response = await fetch(proxyUrl, {
+          signal: AbortSignal.timeout(10000),
+        });
+
+        if (response.ok) {
+          const blob = await response.blob();
+          if (blob.size > 0) {
+            console.log(`✓ Image fetched via external proxy: ${blob.size} bytes`);
+            return new NextResponse(blob, {
+              status: 200,
+              headers: {
+                "Content-Type": blob.type || "image/jpeg",
+                "Cache-Control": "public, max-age=86400",
+                "Access-Control-Allow-Origin": "*",
+              },
+            });
+          }
+        }
+      } catch (proxyError) {
+        console.warn(`External proxy failed:`, proxyError);
+      }
+    }
+
     // All strategies failed
     console.error(`All strategies failed for: ${imageUrl}`);
     return NextResponse.json(
