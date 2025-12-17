@@ -90,6 +90,9 @@ export default async function Home() {
               <HeroCarousel series={carouselSeries} />
             </section>
 
+            {/* SEO H1 - Visually Hidden but accessible */}
+            <h1 className="sr-only">Baca Manhwa Terbaru Bahasa Indonesia Gratis - Update Setiap Hari</h1>
+
             {/* Announcement Banner */}
             <AnnouncementBanner />
 

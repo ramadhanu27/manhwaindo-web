@@ -3,9 +3,30 @@ import "./globals.css";
 import ClientLayout from "@/components/layout/ClientLayout";
 
 export const metadata: Metadata = {
-  title: "ManhwaIndo - Baca Komik Manhwa Bahasa Indonesia",
-  description: "ManhwaIndo merupakan situs baca komik online dengan koleksi terupdate. Kalian bisa membaca ratusan judul komik (manhwa) yang kami update setiap hari secara gratis.",
-  keywords: ["manhwa", "komik", "manga", "webtoon", "indonesia", "baca online"],
+  title: {
+    default: "ManhwaIndo - Baca Komik Manhwa Bahasa Indonesia",
+    template: "%s | ManhwaIndo",
+  },
+  description: "Baca manhwa terbaru gratis! Koleksi lengkap komik bahasa Indonesia, update harian. Nikmati ratusan judul populer tanpa biaya.",
+  keywords: [
+    "manhwa",
+    "manhwa indonesia",
+    "baca manhwa",
+    "komik",
+    "manga",
+    "webtoon",
+    "komik online",
+    "baca komik gratis",
+    "manhwa terbaru",
+    "manhwa update",
+    "komik indonesia",
+    "baca online",
+    "manhwa bahasa indonesia",
+    "webtoon indonesia",
+  ],
+  authors: [{ name: "ManhwaIndo Team" }],
+  creator: "ManhwaIndo",
+  publisher: "ManhwaIndo",
   metadataBase: new URL("https://manhwaindo.web.id"),
   alternates: {
     canonical: "https://manhwaindo.web.id",
@@ -19,25 +40,39 @@ export const metadata: Metadata = {
     url: "https://manhwaindo.web.id",
     siteName: "ManhwaIndo",
     title: "ManhwaIndo - Baca Komik Manhwa Bahasa Indonesia",
-    description: "ManhwaIndo merupakan situs baca komik online dengan koleksi terupdate. Kalian bisa membaca ratusan judul komik (manhwa) yang kami update setiap hari secara gratis.",
+    description: "Baca komik manhwa terbaru bahasa Indonesia gratis! Update setiap hari dengan koleksi terlengkap. Nikmati ratusan judul manhwa populer tanpa biaya.",
     images: [
       {
-        url: "/og-image.jpg",
+        url: "/og-image.png",
         width: 1200,
         height: 630,
-        alt: "ManhwaIndo",
+        alt: "ManhwaIndo - Baca Komik Manhwa Bahasa Indonesia",
+        type: "image/png",
+      },
+      {
+        url: "/favicon.png",
+        width: 512,
+        height: 512,
+        alt: "ManhwaIndo Logo",
+        type: "image/png",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
+    site: "@manhwaindo",
+    creator: "@manhwaindo",
     title: "ManhwaIndo - Baca Komik Manhwa Bahasa Indonesia",
-    description: "ManhwaIndo merupakan situs baca komik online dengan koleksi terupdate. Kalian bisa membaca ratusan judul komik (manhwa) yang kami update setiap hari secara gratis.",
-    images: ["/og-image.jpg"],
+    description: "Baca komik manhwa terbaru bahasa Indonesia gratis! Update setiap hari dengan koleksi terlengkap.",
+    images: {
+      url: "/og-image.png",
+      alt: "ManhwaIndo - Baca Komik Manhwa Bahasa Indonesia",
+    },
   },
   robots: {
     index: true,
     follow: true,
+    nocache: false,
     googleBot: {
       index: true,
       follow: true,
@@ -54,6 +89,8 @@ export const metadata: Metadata = {
     apple: [{ url: "/favicon.png", sizes: "180x180", type: "image/png" }],
     shortcut: "/favicon.ico",
   },
+  manifest: "/manifest.json",
+  category: "entertainment",
 };
 
 export default function RootLayout({
@@ -66,6 +103,11 @@ export default function RootLayout({
       <head suppressHydrationWarning>
         {/* Ahrefs Site Verification */}
         <meta name="ahrefs-site-verification" content="254a1d3e14472f0c6ece86ded5ff047d89fc21a719bb194b225cfa3fb0902474" />
+
+        {/* Content Freshness Signals */}
+        <meta property="og:updated_time" content={new Date().toISOString()} />
+        <meta property="article:modified_time" content={new Date().toISOString()} />
+        <meta httpEquiv="last-modified" content={new Date().toUTCString()} />
 
         {/* Preconnect to external domains for faster loading */}
         <link rel="preconnect" href="https://www.googletagmanager.com" />

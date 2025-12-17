@@ -59,51 +59,70 @@ export default function Turnstile({ onVerify, onExpire, onError, theme = "dark",
   const [error, setError] = useState<string | null>(null);
 
   const renderWidget = useCallback(() => {
-    if (!containerRef.current) {
-      console.error("Turnstile: Container ref not available");
-      return;
-    }
-
-    if (!window.turnstile) {
-      console.error("Turnstile: window.turnstile not available");
-      return;
-    }
-
-    // Remove existing widget if any
-    if (widgetIdRef.current) {
-      try {
-        window.turnstile.remove(widgetIdRef.current);
-      } catch {
-        // Widget might already be removed
+    // Add small delay to ensure container is mounted
+    setTimeout(() => {
+      if (!containerRef.current) {
+        console.warn("Turnstile: Container ref not available, retrying...");
+        // Retry once after another delay
+        setTimeout(() => {
+          if (!containerRef.current) {
+            console.error("Turnstile: Container ref still not available after retry");
+            setIsLoading(false);
+            return;
+          }
+          attemptRender();
+        }, 100);
+        return;
       }
-    }
 
-    try {
-      // Render new widget
-      widgetIdRef.current = window.turnstile.render(containerRef.current, {
-        sitekey: TURNSTILE_SITE_KEY,
-        callback: (token) => {
-          setIsLoading(false);
-          onVerify(token);
-        },
-        "expired-callback": () => {
-          setIsLoading(false);
-          onExpire?.();
-        },
-        "error-callback": () => {
-          setIsLoading(false);
-          setError("Verification failed. Please refresh the page.");
-          onError?.();
-        },
-        theme,
-        size,
-        appearance,
-      });
-      setIsLoading(false);
-    } catch (err) {
-      console.error("Turnstile render error:", err);
-      setError("Failed to load verification widget");
-      setIsLoading(false);
+      attemptRender();
+    }, 50);
+
+    function attemptRender() {
+      if (!containerRef.current) return;
+
+      if (!window.turnstile) {
+        console.error("Turnstile: window.turnstile not available");
+        setIsLoading(false);
+        return;
+      }
+
+      // Remove existing widget if any
+      if (widgetIdRef.current) {
+        try {
+          window.turnstile.remove(widgetIdRef.current);
+        } catch {
+          // Widget might already be removed
+        }
+      }
+
+      try {
+        // Render new widget
+        widgetIdRef.current = window.turnstile.render(containerRef.current, {
+          sitekey: TURNSTILE_SITE_KEY,
+          callback: (token) => {
+            setIsLoading(false);
+            onVerify(token);
+          },
+          "expired-callback": () => {
+            setIsLoading(false);
+            onExpire?.();
+          },
+          "error-callback": () => {
+            setIsLoading(false);
+            setError("Verification failed. Please refresh the page.");
+            onError?.();
+          },
+          theme,
+          size,
+          appearance,
+        });
+        setIsLoading(false);
+      } catch (err) {
+        console.error("Turnstile render error:", err);
+        setError("Failed to load verification widget");
+        setIsLoading(false);
+      }
     }
   }, [onVerify, onExpire, onError, theme, size, appearance]);
 

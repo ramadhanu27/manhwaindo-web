@@ -1,0 +1,35 @@
+{
+  "name": "ManhwaIndo - Baca Komik Manhwa Bahasa Indonesia",
+  "short_name": "ManhwaIndo",
+  "description": "Baca komik manhwa terbaru bahasa Indonesia gratis! Update setiap hari dengan koleksi terlengkap.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0f1319",
+  "theme_color": "#10b981",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/favicon.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/favicon.ico",
+      "sizes": "48x48",
+      "type": "image/x-icon"
+    }
+  ],
+  "categories": ["entertainment", "books", "comics"],
+  "lang": "id-ID",
+  "dir": "ltr",
+  "scope": "/",
+  "screenshots": [
+    {
+      "src": "/og-image.png",
+      "sizes": "1200x630",
+      "type": "image/png",
+      "label": "ManhwaIndo Homepage"
+    }
+  ]
+}
