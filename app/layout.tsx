@@ -64,6 +64,9 @@ export default function RootLayout({
   return (
     <html lang="id" suppressHydrationWarning>
       <head suppressHydrationWarning>
+        {/* Ahrefs Site Verification */}
+        <meta name="ahrefs-site-verification" content="254a1d3e14472f0c6ece86ded5ff047d89fc21a719bb194b225cfa3fb0902474" />
+
         {/* Preconnect to external domains for faster loading */}
         <link rel="preconnect" href="https://www.googletagmanager.com" />
         <link rel="dns-prefetch" href="https://www.google-analytics.com" />
@@ -162,6 +165,10 @@ export default function RootLayout({
             }
           `}
         </script>
+
+        {/* Ahrefs Analytics */}
+        <script src="https://analytics.ahrefs.com/analytics.js" data-key="JbUlo1ey9vQe5o0YENL6Lw" async suppressHydrationWarning></script>
+
         <meta name="clckd" content="0336c9b2d4f277ba40af02534815500f" />
       </head>
       <body className="font-sans antialiased" suppressHydrationWarning>
