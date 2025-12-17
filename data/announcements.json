@@ -9,15 +9,6 @@
       "link": "/download",
       "linkText": "Coba Sekarang",
       "active": true
-    },
-    {
-      "id": "2",
-      "type": "info",
-      "title": "📢 Pengumuman",
-      "message": "Website ManhwaIndo telah diperbarui dengan tampilan baru yang lebih modern dan responsif.",
-      "link": null,
-      "linkText": null,
-      "active": true
     }
   ]
 }

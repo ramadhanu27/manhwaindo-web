@@ -13,8 +13,13 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: "Missing url parameter" }, { status: 400 });
     }
 
-    // Validate URL is from expected domain
-    if (!imageUrl.includes("img-id.gmbr.pro") && !imageUrl.includes("gmbr.pro")) {
+    // Validate URL is from expected domains (allow common image hosting services)
+    const allowedDomains = ["gmbr.pro", "img-id.gmbr.pro", "manhwaindo.my", "manhwaindo.com", "manhwaindo.net", "manhwaindo.id", "i.imgur.com", "cdn.discordapp.com", "media.discordapp.net"];
+
+    const isValidDomain = allowedDomains.some((domain) => imageUrl.includes(domain));
+
+    if (!isValidDomain) {
+      console.warn(`Blocked image from untrusted domain: ${imageUrl}`);
       return NextResponse.json({ error: "Invalid image domain" }, { status: 403 });
     }
 
@@ -27,8 +32,13 @@ export async function GET(request: NextRequest) {
     try {
       const response = await fetch(imageUrl, {
         headers: {
-          "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
-          Referer: "https://rdapi.vercel.app//",
+          "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+          Referer: "https://manhwaindo.my/",
+          Origin: "https://manhwaindo.my",
+          Accept: "image/avif,image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8",
+          "Accept-Language": "en-US,en;q=0.9",
+          "Cache-Control": "no-cache",
+          Pragma: "no-cache",
         },
         signal: controller.signal,
       });

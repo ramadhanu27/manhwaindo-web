@@ -49,82 +49,106 @@ function createPlaceholderBlob(): Blob {
 }
 
 /**
- * Fetch image as blob using backend proxy
+ * Fetch image as blob using backend proxy with retry logic
  */
-async function fetchImageBlob(url: string): Promise<Blob> {
-  try {
-    console.log(`Fetching image: ${url}`);
+async function fetchImageBlob(url: string, retries = 3): Promise<Blob> {
+  let lastError: Error | null = null;
 
-    // Try backend proxy first (recommended)
+  for (let attempt = 1; attempt <= retries; attempt++) {
     try {
-      const proxyUrl = `/api/proxy-image?url=${encodeURIComponent(url)}`;
-      console.log(`  Trying proxy: ${proxyUrl}`);
+      console.log(`Fetching image (attempt ${attempt}/${retries}): ${url}`);
 
-      const response = await fetch(proxyUrl, {
-        method: "GET",
-        signal: AbortSignal.timeout(15000),
-      });
+      // Try backend proxy first (recommended)
+      try {
+        const proxyUrl = `/api/proxy-image?url=${encodeURIComponent(url)}`;
+        console.log(`  Trying proxy: ${proxyUrl}`);
 
-      if (response.ok) {
-        const blob = await response.blob();
-        if (blob.size > 0) {
-          console.log(`✓ Image fetched (proxy): ${blob.size} bytes`);
-          return blob;
+        const response = await fetch(proxyUrl, {
+          method: "GET",
+          signal: AbortSignal.timeout(30000), // 30 second timeout
+        });
+
+        if (response.ok) {
+          const blob = await response.blob();
+          if (blob.size > 0) {
+            console.log(`✓ Image fetched (proxy, attempt ${attempt}): ${blob.size} bytes`);
+            return blob;
+          }
+        } else {
+          console.warn(`Proxy returned status ${response.status}`);
         }
+      } catch (proxyError) {
+        console.log(`Proxy fetch failed (attempt ${attempt}):`, proxyError instanceof Error ? proxyError.message : proxyError);
       }
-    } catch (proxyError) {
-      console.log(`Proxy fetch failed, trying direct fetch...`);
-    }
 
-    // Fallback: Try direct fetch with CORS
-    try {
-      const response = await fetch(url, {
-        method: "GET",
-        mode: "cors",
-        credentials: "omit",
-        headers: {
-          Accept: "image/*",
-        },
-        signal: AbortSignal.timeout(10000),
-      });
+      // Fallback: Try direct fetch with CORS
+      try {
+        const response = await fetch(url, {
+          method: "GET",
+          mode: "cors",
+          credentials: "omit",
+          headers: {
+            Accept: "image/*",
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
+          },
+          signal: AbortSignal.timeout(20000), // 20 second timeout
+        });
 
-      if (response.ok) {
-        const blob = await response.blob();
-        console.log(`✓ Image fetched (direct): ${blob.size} bytes`);
-        return blob;
-      }
-    } catch (directError) {
-      console.log(`Direct fetch failed, trying no-cors mode...`);
-    }
-
-    // Fallback: Try with no-cors mode
-    try {
-      const noCorsResponse = await fetch(url, {
-        method: "GET",
-        mode: "no-cors",
-        credentials: "omit",
-        signal: AbortSignal.timeout(10000),
-      });
-
-      if (noCorsResponse.status === 0 || noCorsResponse.ok) {
-        const blob = await noCorsResponse.blob();
-        if (blob.size > 0) {
-          console.log(`✓ Image fetched (no-cors): ${blob.size} bytes`);
-          return blob;
+        if (response.ok) {
+          const blob = await response.blob();
+          if (blob.size > 0) {
+            console.log(`✓ Image fetched (direct, attempt ${attempt}): ${blob.size} bytes`);
+            return blob;
+          }
         }
+      } catch (directError) {
+        console.log(`Direct fetch failed (attempt ${attempt}):`, directError instanceof Error ? directError.message : directError);
       }
-    } catch (noCorsError) {
-      console.log(`No-cors fetch also failed, using placeholder...`);
-    }
 
-    // Last resort: Use placeholder image
-    console.warn(`⚠ Using placeholder for: ${url}`);
-    return createPlaceholderBlob();
-  } catch (error) {
-    console.error(`Error fetching image from ${url}:`, error);
-    // Return placeholder instead of throwing
-    return createPlaceholderBlob();
+      // Fallback: Try with no-cors mode
+      try {
+        const noCorsResponse = await fetch(url, {
+          method: "GET",
+          mode: "no-cors",
+          credentials: "omit",
+          signal: AbortSignal.timeout(20000),
+        });
+
+        if (noCorsResponse.status === 0 || noCorsResponse.ok) {
+          const blob = await noCorsResponse.blob();
+          if (blob.size > 0) {
+            console.log(`✓ Image fetched (no-cors, attempt ${attempt}): ${blob.size} bytes`);
+            return blob;
+          }
+        }
+      } catch (noCorsError) {
+        lastError = noCorsError instanceof Error ? noCorsError : new Error(String(noCorsError));
+        console.log(`No-cors fetch failed (attempt ${attempt}):`, lastError.message);
+      }
+
+      // Wait before retry (exponential backoff)
+      if (attempt < retries) {
+        const delay = Math.min(1000 * Math.pow(2, attempt - 1), 5000);
+        console.log(`Waiting ${delay}ms before retry...`);
+        await new Promise((resolve) => setTimeout(resolve, delay));
+      }
+    } catch (error) {
+      lastError = error instanceof Error ? error : new Error(String(error));
+      console.error(`Error in attempt ${attempt}:`, lastError.message);
+
+      if (attempt < retries) {
+        const delay = Math.min(1000 * Math.pow(2, attempt - 1), 5000);
+        await new Promise((resolve) => setTimeout(resolve, delay));
+      }
+    }
   }
+
+  // Last resort: Use placeholder image
+  console.warn(`⚠ All attempts failed for: ${url}. Using placeholder.`);
+  if (lastError) {
+    console.error(`Last error:`, lastError);
+  }
+  return createPlaceholderBlob();
 }
 
 /**

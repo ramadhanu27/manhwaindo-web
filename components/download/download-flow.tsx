@@ -171,50 +171,56 @@ export default function DownloadFlow() {
 
       const data = await getChapterImages(chapterSlug);
 
-      if (data.success && data.data?.images && data.data.images.length > 0) {
-        const foundChapter = seriesDetail.chapters.find((ch) => ch.slug.replace(/\/+$/, "").trim() === chapterSlug);
-
-        setDownloadProgress({
-          current: 10,
-          total: 100,
-          status: `Downloading ${data.data.images.length} images...`,
-        });
-
-        // Use client-side PDF generation
-        const { generatePDFInBrowser } = await import("@/lib/pdf-client");
-
-        const blob = await generatePDFInBrowser(data.data.images, (current, total, status) => {
-          const progress = 10 + (current / total) * 80;
-          setDownloadProgress({
-            current: progress,
-            total: 100,
-            status,
-          });
-        });
-
-        setDownloadProgress({
-          current: 95,
-          total: 100,
-          status: "Saving PDF...",
-        });
-
-        downloadBlob(blob, `${seriesDetail.title} - ${foundChapter?.title || "Chapter"}.pdf`);
-
-        setDownloadProgress({
-          current: 100,
-          total: 100,
-          status: "✓ Download complete!",
-        });
-
-        setTimeout(() => {
-          setDownloadProgress(null);
-        }, 2000);
-      } else {
-        throw new Error("No images found for this chapter");
+      if (!data.success) {
+        throw new Error(data.error || "Failed to load chapter images");
       }
+
+      if (!data.data?.images || data.data.images.length === 0) {
+        throw new Error("No images found for this chapter. The chapter might be empty or unavailable.");
+      }
+
+      const foundChapter = seriesDetail.chapters.find((ch) => ch.slug.replace(/\/+$/, "").trim() === chapterSlug);
+
+      setDownloadProgress({
+        current: 10,
+        total: 100,
+        status: `Downloading ${data.data.images.length} images...`,
+      });
+
+      // Use client-side PDF generation
+      const { generatePDFInBrowser } = await import("@/lib/pdf-client");
+
+      const blob = await generatePDFInBrowser(data.data.images, (current, total, status) => {
+        const progress = 10 + (current / total) * 80;
+        setDownloadProgress({
+          current: progress,
+          total: 100,
+          status,
+        });
+      });
+
+      setDownloadProgress({
+        current: 95,
+        total: 100,
+        status: "Saving PDF...",
+      });
+
+      downloadBlob(blob, `${seriesDetail.title} - ${foundChapter?.title || "Chapter"}.pdf`);
+
+      setDownloadProgress({
+        current: 100,
+        total: 100,
+        status: "✓ Download complete!",
+      });
+
+      setTimeout(() => {
+        setDownloadProgress(null);
+      }, 2000);
     } catch (err) {
       setDownloadProgress(null);
-      setError(err instanceof Error ? err.message : "Download failed");
+      const errorMessage = err instanceof Error ? err.message : "Download failed. Please try again.";
+      setError(errorMessage);
+      console.error("Download error:", err);
     }
   };
 
@@ -237,6 +243,7 @@ export default function DownloadFlow() {
       const chapterData: ChapterImages[] = [];
       const selectedChapterArray = Array.from(selectedChapters);
       const totalChapters = selectedChapterArray.length;
+      const failedChapters: string[] = [];
 
       for (let i = 0; i < selectedChapterArray.length; i++) {
         const chapterSlug = selectedChapterArray[i];
@@ -257,14 +264,25 @@ export default function DownloadFlow() {
               title: foundChapter?.title || data.data.title || "Chapter",
               images: data.data.images,
             });
+          } else {
+            const foundChapter = seriesDetail.chapters.find((ch) => ch.slug.replace(/\/+$/, "").trim() === chapterSlug);
+            failedChapters.push(foundChapter?.title || chapterSlug);
+            console.warn(`Chapter ${chapterSlug} has no images or failed to load`);
           }
         } catch (err) {
+          const foundChapter = seriesDetail.chapters.find((ch) => ch.slug.replace(/\/+$/, "").trim() === chapterSlug);
+          failedChapters.push(foundChapter?.title || chapterSlug);
           console.error(`Error fetching chapter ${chapterSlug}:`, err);
         }
       }
 
       if (chapterData.length === 0) {
-        throw new Error("No chapter images found. Please try again.");
+        throw new Error(`No chapter images found. ${failedChapters.length > 0 ? `Failed chapters: ${failedChapters.join(", ")}` : "Please try again."}`);
+      }
+
+      // Show warning if some chapters failed
+      if (failedChapters.length > 0) {
+        console.warn(`${failedChapters.length} chapter(s) failed to load:`, failedChapters);
       }
 
       setDownloadProgress({
@@ -338,16 +356,21 @@ export default function DownloadFlow() {
         setDownloadProgress({
           current: 100,
           total: 100,
-          status: "✓ Download selesai!",
+          status: `✓ Download selesai! ${failedChapters.length > 0 ? `(${failedChapters.length} chapter gagal)` : ""}`,
         });
 
         setTimeout(() => {
           setDownloadProgress(null);
-        }, 2000);
+          if (failedChapters.length > 0) {
+            setError(`Warning: ${failedChapters.length} chapter(s) failed to download: ${failedChapters.join(", ")}`);
+          }
+        }, 3000);
       }
     } catch (err) {
       setDownloadProgress(null);
-      setError(err instanceof Error ? err.message : "Download failed");
+      const errorMessage = err instanceof Error ? err.message : "Download failed. Please try again.";
+      setError(errorMessage);
+      console.error("Download error:", err);
     }
   };
 
