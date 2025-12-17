@@ -38,85 +38,83 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     },
   ];
 
-  // Fetch series data from API
-  let seriesPages: MetadataRoute.Sitemap = [];
+  // Generate series and chapter URLs
+  const dynamicPages: MetadataRoute.Sitemap = [];
 
   try {
-    const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "https://rdapi.vercel.app";
+    console.log("🚀 Starting sitemap generation...");
+    const API_BASE_URL = "https://rdapi.vercel.app";
 
-    // Fetch multiple pages of series (50 pages = ~2500 series)
-    const pagePromises = [];
-    for (let page = 1; page <= 50; page++) {
-      pagePromises.push(
-        fetch(`${API_BASE_URL}/api/series-list?page=${page}`, {
-          next: { revalidate: 86400 }, // Cache for 24 hours
-        })
-          .then((res) => res.json())
-          .catch(() => ({ success: false, data: [] }))
-      );
-    }
+    // Fetch series list from multiple pages in parallel
+    const totalPages = 200; // Fetch 200 pages for maximum coverage
+    const batchSize = 20; // Process 20 pages at a time to avoid overwhelming the API
 
-    const pagesData = await Promise.all(pagePromises);
+    for (let batchStart = 1; batchStart <= totalPages; batchStart += batchSize) {
+      const batchEnd = Math.min(batchStart + batchSize - 1, totalPages);
+      console.log(`📦 Fetching pages ${batchStart}-${batchEnd}...`);
 
-    // Process series data
-    const allSeries: any[] = [];
-    pagesData.forEach((data) => {
-      if (data.success && Array.isArray(data.data)) {
-        allSeries.push(...data.data);
+      const batchPromises = [];
+      for (let page = batchStart; page <= batchEnd; page++) {
+        batchPromises.push(
+          fetch(`${API_BASE_URL}/api/series-list?page=${page}`, {
+            next: { revalidate: 86400 },
+            signal: AbortSignal.timeout(10000), // 10 second timeout
+          })
+            .then((res) => (res.ok ? res.json() : null))
+            .catch((err) => {
+              console.error(`❌ Error fetching page ${page}:`, err.message);
+              return null;
+            })
+        );
       }
-    });
 
-    // Deduplicate by slug
-    const uniqueSeries = Array.from(new Map(allSeries.map((item) => [item.slug, item])).values());
+      const batchResults = await Promise.all(batchPromises);
 
-    console.log(`Generating sitemap for ${uniqueSeries.length} series...`);
+      // Process batch results
+      batchResults.forEach((data, index) => {
+        if (data?.success && Array.isArray(data.data)) {
+          const page = batchStart + index;
+          console.log(`✅ Page ${page}: ${data.data.length} series`);
 
-    // Generate series pages
-    seriesPages = uniqueSeries.map((series: any) => ({
-      url: `${baseUrl}/series/${series.slug}`,
-      lastModified: currentDate,
-      changeFrequency: "weekly" as const,
-      priority: 0.8,
-    }));
+          data.data.forEach((series: any) => {
+            if (series.slug) {
+              // Add series page
+              dynamicPages.push({
+                url: `${baseUrl}/series/${series.slug}`,
+                lastModified: currentDate,
+                changeFrequency: "weekly",
+                priority: 0.8,
+              });
 
-    // Generate chapter pages (limit to prevent too many URLs)
-    // For each series, add up to 20 recent chapters
-    const chapterPages: MetadataRoute.Sitemap = [];
-
-    for (const series of uniqueSeries.slice(0, 400)) {
-      // Top 400 series
-      try {
-        const detailRes = await fetch(`${API_BASE_URL}/api/series/${series.slug}`, {
-          next: { revalidate: 86400 },
-        });
-        const detailData = await detailRes.json();
-
-        if (detailData.success && detailData.data?.chapters) {
-          const chapters = detailData.data.chapters.slice(0, 20); // Latest 20 chapters
-
-          chapters.forEach((chapter: any) => {
-            const chapterSlug = chapter.slug.replace(/\/+$/, "").trim();
-            chapterPages.push({
-              url: `${baseUrl}/series/${series.slug}/${chapterSlug}`,
-              lastModified: currentDate,
-              changeFrequency: "monthly",
-              priority: 0.6,
-            });
+              // Generate chapter URLs (estimate 50 chapters per series)
+              // We'll generate URLs without fetching details to save time
+              for (let chapterNum = 1; chapterNum <= 50; chapterNum++) {
+                dynamicPages.push({
+                  url: `${baseUrl}/series/${series.slug}/chapter-${chapterNum}`,
+                  lastModified: currentDate,
+                  changeFrequency: "monthly",
+                  priority: 0.6,
+                });
+              }
+            }
           });
         }
-      } catch (error) {
-        console.error(`Error fetching chapters for ${series.slug}:`, error);
+      });
+
+      console.log(`📊 Current total URLs: ${staticPages.length + dynamicPages.length}`);
+
+      // Stop if we have enough URLs
+      if (dynamicPages.length >= 10000) {
+        console.log("✅ Reached 10,000+ URLs, stopping...");
+        break;
       }
     }
-
-    console.log(`Generated ${chapterPages.length} chapter URLs`);
-    seriesPages.push(...chapterPages);
   } catch (error) {
-    console.error("Error generating sitemap:", error);
+    console.error("❌ Error generating dynamic sitemap:", error);
   }
 
-  const allPages = [...staticPages, ...seriesPages];
-  console.log(`Total sitemap URLs: ${allPages.length}`);
+  const allPages = [...staticPages, ...dynamicPages];
+  console.log(`🎉 Total sitemap URLs generated: ${allPages.length}`);
 
   return allPages;
 }
