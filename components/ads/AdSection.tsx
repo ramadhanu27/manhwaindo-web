@@ -1,55 +1,97 @@
-'use client';
+"use client";
+
+import { useEffect, useState } from "react";
 
 export default function AdSection() {
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
+  // Don't render ads during SSR to avoid hydration mismatch
+  if (!isMounted) {
+    return (
+      <section className="mb-12">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-center justify-center">
+          {/* Placeholder for ads during SSR */}
+          {[1, 2, 3, 4].map((i) => (
+            <div key={i} className="flex justify-center">
+              <div className="w-full max-w-[728px] h-[90px] bg-gray-800/50 rounded animate-pulse" />
+            </div>
+          ))}
+        </div>
+      </section>
+    );
+  }
+
   return (
-    <section className="mb-12" suppressHydrationWarning>
+    <section className="mb-12">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-center justify-center">
         {/* First Ad */}
-        <div className="flex justify-center" suppressHydrationWarning>
-          <script type="text/javascript" suppressHydrationWarning>
-            {`
-              atOptions = {
-                'key' : 'baf333c025010820ccafb97978a627a3',
-                'format' : 'iframe',
-                'height' : 90,
-                'width' : 728,
-                'params' : {}
-              };
-            `}
-          </script>
-          <script type="text/javascript" src="//www.highperformanceformat.com/baf333c025010820ccafb97978a627a3/invoke.js" suppressHydrationWarning></script>
+        <div className="flex justify-center">
+          <div suppressHydrationWarning>
+            <script
+              type="text/javascript"
+              suppressHydrationWarning
+              dangerouslySetInnerHTML={{
+                __html: `
+                atOptions = {
+                  'key' : 'baf333c025010820ccafb97978a627a3',
+                  'format' : 'iframe',
+                  'height' : 90,
+                  'width' : 728,
+                  'params' : {}
+                };
+              `,
+              }}
+            />
+            <script type="text/javascript" src="//www.highperformanceformat.com/baf333c025010820ccafb97978a627a3/invoke.js" suppressHydrationWarning />
+          </div>
         </div>
 
         {/* Second Ad */}
-        <div className="flex justify-center" suppressHydrationWarning>
-          <script type="text/javascript" suppressHydrationWarning>
-            {`
-              atOptions = {
-                'key' : '5a89f4563ede24d6c7e045c77d636bd8',
-                'format' : 'iframe',
-                'height' : 90,
-                'width' : 728,
-                'params' : {}
-              };
-            `}
-          </script>
-          <script type="text/javascript" src="//www.highperformanceformat.com/5a89f4563ede24d6c7e045c77d636bd8/invoke.js" suppressHydrationWarning></script>
+        <div className="flex justify-center">
+          <div suppressHydrationWarning>
+            <script
+              type="text/javascript"
+              suppressHydrationWarning
+              dangerouslySetInnerHTML={{
+                __html: `
+                atOptions = {
+                  'key' : '5a89f4563ede24d6c7e045c77d636bd8',
+                  'format' : 'iframe',
+                  'height' : 90,
+                  'width' : 728,
+                  'params' : {}
+                };
+              `,
+              }}
+            />
+            <script type="text/javascript" src="//www.highperformanceformat.com/5a89f4563ede24d6c7e045c77d636bd8/invoke.js" suppressHydrationWarning />
+          </div>
         </div>
 
         {/* Third Ad */}
-        <div className="flex justify-center" suppressHydrationWarning>
-          <script type="text/javascript" suppressHydrationWarning>
-            {`
-              atOptions = {
-                'key' : '2f2006adf30eef02335bb7e71bd07a9d',
-                'format' : 'iframe',
-                'height' : 90,
-                'width' : 728,
-                'params' : {}
-              };
-            `}
-          </script>
-          <script type="text/javascript" src="//www.highperformanceformat.com/2f2006adf30eef02335bb7e71bd07a9d/invoke.js" suppressHydrationWarning></script>
+        <div className="flex justify-center">
+          <div suppressHydrationWarning>
+            <script
+              type="text/javascript"
+              suppressHydrationWarning
+              dangerouslySetInnerHTML={{
+                __html: `
+                atOptions = {
+                  'key' : '2f2006adf30eef02335bb7e71bd07a9d',
+                  'format' : 'iframe',
+                  'height' : 90,
+                  'width' : 728,
+                  'params' : {}
+                };
+              `,
+              }}
+            />
+            <script type="text/javascript" src="//www.highperformanceformat.com/2f2006adf30eef02335bb7e71bd07a9d/invoke.js" suppressHydrationWarning />
+          </div>
         </div>
 
         {/* Fourth Ad - Placeholder */}

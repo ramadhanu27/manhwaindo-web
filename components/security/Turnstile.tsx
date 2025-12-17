@@ -7,6 +7,11 @@ import { useEffect, useRef, useCallback, useState } from "react";
 // Always blocks: 2x00000000000000000000AB
 // Forces interactive: 3x00000000000000000000FF
 
+// Appearance modes:
+// - "always": Widget is always visible (default interactive mode)
+// - "execute": Invisible challenge that executes automatically (recommended for better UX)
+// - "interaction-only": Only shows when user interaction is needed
+
 // Production site key
 const PRODUCTION_SITE_KEY = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY || "0x4AAAAAACEUW7xPCpPb8yS5";
 
@@ -26,7 +31,8 @@ declare global {
           "expired-callback"?: () => void;
           "error-callback"?: () => void;
           theme?: "light" | "dark" | "auto";
-          size?: "normal" | "compact";
+          size?: "normal" | "compact" | "flexible";
+          appearance?: "always" | "execute" | "interaction-only";
         }
       ) => string;
       reset: (widgetId: string) => void;
@@ -41,11 +47,12 @@ interface TurnstileProps {
   onExpire?: () => void;
   onError?: () => void;
   theme?: "light" | "dark" | "auto";
-  size?: "normal" | "compact";
+  size?: "normal" | "compact" | "flexible";
+  appearance?: "always" | "execute" | "interaction-only";
   className?: string;
 }
 
-export default function Turnstile({ onVerify, onExpire, onError, theme = "dark", size = "normal", className = "" }: TurnstileProps) {
+export default function Turnstile({ onVerify, onExpire, onError, theme = "dark", size = "flexible", appearance = "execute", className = "" }: TurnstileProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const widgetIdRef = useRef<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -90,6 +97,7 @@ export default function Turnstile({ onVerify, onExpire, onError, theme = "dark",
         },
         theme,
         size,
+        appearance,
       });
       setIsLoading(false);
     } catch (err) {
@@ -97,7 +105,7 @@ export default function Turnstile({ onVerify, onExpire, onError, theme = "dark",
       setError("Failed to load verification widget");
       setIsLoading(false);
     }
-  }, [onVerify, onExpire, onError, theme, size]);
+  }, [onVerify, onExpire, onError, theme, size, appearance]);
 
   useEffect(() => {
     // Check if script is already loaded
