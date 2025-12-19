@@ -6,10 +6,6 @@ compatibility_flags = ["nodejs_compat"]
 # Pages configuration
 pages_build_output_dir = ".vercel/output/static"
 
-# Build configuration
-[build]
-command = "npm run build && npx @cloudflare/next-on-pages"
-
 # Environment variables (optional - can also be set in Cloudflare Dashboard)
 # [vars]
 # NEXT_PUBLIC_API_URL = "https://rdapi.vercel.app"
