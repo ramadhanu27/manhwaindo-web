@@ -1,0 +1,17 @@
+{
+  "enabled": false,
+  "type": "welcome",
+  "title": "👋 Selamat Datang di ManhwaIndo!",
+  "message": "Nikmati ribuan chapter manhwa gratis. Jangan lupa bookmark website ini ya!",
+  "image": null,
+  "buttonText": "Mengerti",
+  "buttonLink": null,
+  "secondaryButtonText": "Bookmark Sekarang",
+  "secondaryButtonLink": "/bookmark",
+  "showOnce": true,
+  "delay": 2000,
+  "backdrop": true,
+  "closable": true,
+  "position": "center",
+  "theme": "default"
+}

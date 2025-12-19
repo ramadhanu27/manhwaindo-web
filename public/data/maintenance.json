@@ -1,0 +1,13 @@
+{
+  "enabled": false,
+  "title": "Sedang Dalam Perbaikan",
+  "message": "Website sedang dalam maintenance. Kami akan segera kembali!",
+  "estimatedTime": "1-2 jam",
+  "showCountdown": false,
+  "endTime": null,
+  "allowedIPs": [],
+  "socialLinks": {
+    "telegram": "https://t.me/manhwaindo",
+    "email": "jiawialo@gmail.com"
+  }
+}
