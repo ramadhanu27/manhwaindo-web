@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 
 // Edge Runtime for Cloudflare Pages
-export const runtime = "edge";
+
 
 // Disable caching for this route
 export const dynamic = "force-dynamic";
