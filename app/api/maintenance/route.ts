@@ -1,22 +1,15 @@
 import { NextResponse } from "next/server";
-import fs from "fs";
-import path from "path";
+import maintenanceData from "@/data/maintenance.json";
+
+// Edge Runtime for Cloudflare Pages
+export const runtime = "edge";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
 
 export async function GET() {
   try {
-    const filePath = path.join(process.cwd(), "data", "maintenance.json");
-
-    if (!fs.existsSync(filePath)) {
-      return NextResponse.json({ enabled: false });
-    }
-
-    const fileContent = fs.readFileSync(filePath, "utf-8");
-    const data = JSON.parse(fileContent);
-
-    return NextResponse.json(data, {
+    return NextResponse.json(maintenanceData, {
       headers: {
         "Cache-Control": "no-store, no-cache, must-revalidate",
       },

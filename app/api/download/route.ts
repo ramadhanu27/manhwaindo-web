@@ -1,5 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 
+// Edge Runtime for Cloudflare Pages
+export const runtime = "edge";
+
+const API_BASE_URL = "https://rdapi.vercel.app";
+
 /**
  * GET /api/download/chapters
  * Fetch chapter images data from external API

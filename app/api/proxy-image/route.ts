@@ -1,5 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 
+// Edge Runtime for Cloudflare Pages
+export const runtime = "edge";
+
 /**
  * GET /api/proxy-image?url={imageUrl}
  * Proxy image requests to bypass CORS issues
