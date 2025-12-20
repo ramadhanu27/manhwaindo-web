@@ -41,6 +41,9 @@ yarn-error.log*
 .open-next
 .dev.vars
 
+# Note: functions/ directory is needed for Cloudflare Pages deployment
+# It contains the compiled worker from .open-next/
+
 # typescript
 *.tsbuildinfo
 next-env.d.ts
