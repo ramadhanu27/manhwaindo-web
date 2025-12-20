@@ -1,4 +1,10 @@
 import type { NextConfig } from "next";
+import { setupDevPlatform } from "@cloudflare/next-on-pages/next-dev";
+
+// Setup dev platform for Cloudflare
+if (process.env.NODE_ENV === "development") {
+  setupDevPlatform();
+}
 
 const nextConfig: NextConfig = {
   // Compress output for faster loading
