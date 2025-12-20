@@ -4,10 +4,10 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build && npx opennextjs-cloudflare build",
+    "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "pages:build": "npx opennextjs-cloudflare build",
+    "pages:build": "next build && npx opennextjs-cloudflare build",
     "pages:dev": "wrangler pages dev .open-next/assets --compatibility-flag=nodejs_compat",
     "pages:deploy": "wrangler pages deploy .open-next/assets"
   },
