@@ -34,15 +34,20 @@ function copyDir(src, dest) {
 
 // Main execution
 try {
-  console.log("Copying OpenNext worker to functions directory...");
+  console.log("Copying OpenNext files for Cloudflare Pages deployment...");
 
-  // Copy worker.js
+  // Copy worker.js to functions directory
   copyFile(".open-next/worker.js", "functions/_worker.js");
 
-  // Copy cloudflare directory
+  // Copy cloudflare directory to functions
   copyDir(".open-next/cloudflare", "functions/cloudflare");
 
-  console.log("✅ Copy complete!");
+  // Copy server functions to functions directory
+  if (fs.existsSync(".open-next/server-functions")) {
+    copyDir(".open-next/server-functions", "functions/server-functions");
+  }
+
+  console.log("✅ Worker files copied successfully!");
 } catch (error) {
   console.error("❌ Error copying files:", error.message);
   process.exit(1);
