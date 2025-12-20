@@ -4,12 +4,12 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build && next-sitemap",
+    "build": "npx @opennextjs/cloudflare build",
+    "build:next": "next build && next-sitemap",
     "start": "next start",
     "lint": "eslint",
-    "cf:build": "npx @opennextjs/cloudflare",
-    "cf:preview": "npm run cf:build && npx wrangler dev",
-    "cf:deploy": "npm run cf:build && npx wrangler deploy"
+    "preview": "npx @opennextjs/cloudflare build && npx wrangler dev",
+    "deploy": "npx @opennextjs/cloudflare build && npx wrangler deploy"
   },
   "dependencies": {
     "image-size": "^2.0.2",
