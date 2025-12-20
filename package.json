@@ -7,7 +7,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "pages:build": "next build && npx opennextjs-cloudflare build",
+    "pages:build": "next build && npx opennextjs-cloudflare build && npm run copy-worker",
+    "copy-worker": "powershell -Command \"Copy-Item -Path '.open-next/worker.js' -Destination 'functions/_worker.js' -Force; Copy-Item -Path '.open-next/cloudflare' -Destination 'functions/cloudflare' -Recurse -Force\"",
     "pages:dev": "wrangler pages dev .open-next/assets --compatibility-flag=nodejs_compat",
     "pages:deploy": "wrangler pages deploy .open-next/assets"
   },
