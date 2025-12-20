@@ -1,4 +1,4 @@
-import type { OpenNextConfig } from "open-next/types/open-next";
+import type { OpenNextConfig } from "@opennextjs/cloudflare";
 
 const config: OpenNextConfig = {
   default: {
