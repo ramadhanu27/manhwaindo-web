@@ -1,12 +1,26 @@
-# Manhwaindo Web - Deployment Guide
+# ManhwaIndo Web - Deployment Guide
+
+## ⚠️ Important: CSS Not Loading Issue
+
+There's currently an issue with static assets (CSS/JS) not being served correctly on Cloudflare Pages with OpenNext. This is being investigated.
+
+### Temporary Workaround
+
+Until the issue is resolved, you can:
+
+1. Use local development: `npm run dev`
+2. Wait for the fix to be deployed
+
+### Current Status
+
+- ✅ Server-side rendering works
+- ✅ HTML is generated correctly
+- ❌ Static assets (CSS, JS) return 404
+- 🔧 Fix in progress
 
 ## Cloudflare Pages Deployment
 
-This project uses **OpenNext** to deploy Next.js to Cloudflare Pages.
-
-### Build Configuration
-
-**In Cloudflare Pages Dashboard:**
+**Build Configuration:**
 
 - **Build command**: `npm run pages:build`
 - **Build output directory**: `.open-next/assets`
@@ -17,19 +31,13 @@ This project uses **OpenNext** to deploy Next.js to Cloudflare Pages.
 1. `npm run pages:build` runs:
 
    - `next build` - Builds the Next.js app
-   - `npx opennextjs-cloudflare build` - Converts Next.js build to Cloudflare format
-   - `npm run copy-worker` - Copies the worker to `functions/` directory
+   - `npx opennextjs-cloudflare build` - Converts to Cloudflare format
+   - `npm run copy-worker` - Copies worker files
 
 2. The build generates:
-
-   - `.open-next/assets/` - Static assets (HTML, CSS, JS, images)
-   - `.open-next/worker.js` - Cloudflare Worker for server-side rendering
-   - `functions/_worker.js` - Copy of worker for Cloudflare Pages Functions
+   - `.open-next/assets/` - Static assets
+   - `functions/_worker.js` - Cloudflare Worker for SSR
    - `functions/cloudflare/` - Worker dependencies
-
-3. Cloudflare Pages serves:
-   - Static files from `.open-next/assets/`
-   - Dynamic routes via `functions/_worker.js`
 
 ### Local Development
 
@@ -42,28 +50,23 @@ npm run pages:build
 
 # Test locally with Wrangler
 npm run pages:dev
-
-# Deploy to Cloudflare (if using CLI)
-npm run pages:deploy
 ```
-
-### Important Notes
-
-- The `functions/` directory **must be committed** to Git
-- `.open-next/` is ignored but `functions/` contains the built worker
-- Build must complete successfully before deployment
-- Cloudflare Pages will automatically use `functions/_worker.js` for all routes
 
 ### Troubleshooting
 
-**404 Error on deployment:**
+**CSS not loading in production:**
 
-- Ensure `functions/_worker.js` exists after build
-- Check Cloudflare Pages build logs
-- Verify build command is `npm run pages:build`
+- This is a known issue being fixed
+- The problem is static assets not being served correctly
+- A fix is being deployed
 
 **Build fails:**
 
-- Check Node.js version (requires 18+)
-- Clear `.next` and `.open-next` folders
-- Run `npm install` to ensure all dependencies are installed
+- Clear cache: Delete `.next` and `.open-next` folders
+- Reinstall: `npm install`
+- Rebuild: `npm run pages:build`
+
+**Development server errors:**
+
+- Clear cache: Delete `.next` folder
+- Restart: `npm run dev`
