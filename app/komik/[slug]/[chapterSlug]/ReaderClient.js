@@ -39,7 +39,7 @@ export default function ReaderClient({ images, manhwaSlug, manhwaTitle, chapterT
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [showSettings]);
 
-  // Smooth Auto Scroll Implementation via requestAnimationFrame
+  // Smooth Auto Scroll Implementation via requestAnimationFrame (time-delta based)
   useEffect(() => {
     if (!autoScrollActive) {
       if (autoScrollRef.current) {
@@ -49,8 +49,17 @@ export default function ReaderClient({ images, manhwaSlug, manhwaTitle, chapterT
       return;
     }
 
-    const scroll = () => {
-      window.scrollBy(0, autoScrollSpeed * 0.4);
+    let lastTime = performance.now();
+
+    const scroll = (time) => {
+      const delta = (time - lastTime) / 16.666; // Normalize to 60fps frames
+      lastTime = time;
+
+      // Scroll speed in pixels per 60fps frame:
+      // speed 1: 1.5px, speed 2: 3px, speed 5: 7.5px, speed 10: 15px
+      const pixelsToScroll = autoScrollSpeed * 1.5 * delta;
+
+      window.scrollBy(0, pixelsToScroll);
       autoScrollRef.current = requestAnimationFrame(scroll);
     };
 
