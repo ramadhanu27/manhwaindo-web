@@ -15,7 +15,7 @@ export default function Footer() {
           {/* Brand */}
           <div>
             <div className="flex items-center gap-2 mb-4">
-              <span className="text-lg font-bold text-dark-100">GaleriKomik</span>
+              <span className="text-lg font-bold text-dark-100">ManhwaIndo</span>
             </div>
             <p className="text-sm text-dark-400 leading-relaxed">
               Platform baca komik online terlengkap. Nikmati ribuan judul manhwa, manga, dan manhua dengan update tercepat.
@@ -52,7 +52,7 @@ export default function Footer() {
         <div className="section-divider mt-8 mb-6" />
 
         <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
-          <p className="text-xs text-dark-500">© 2026 GaleriKomik. All rights reserved.</p>
+          <p className="text-xs text-dark-500">© 2026 ManhwaIndo. All rights reserved.</p>
         </div>
       </div>
     </footer>

@@ -5,15 +5,15 @@ import Footer from "./components/Footer";
 import ThemeProvider from "./components/ThemeProvider";
 import HitTracker from "./components/HitTracker";
 
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://galerikomik.cyou";
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://manhwaindo-web.vercel.app";
 
 export const metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
-    default: "GaleriKomik - Baca Komik Manhwa Manga Manhua Online Gratis",
-    template: "%s | GaleriKomik",
+    default: "ManhwaIndo - Baca Komik Manhwa Manga Manhua Online Gratis",
+    template: "%s | ManhwaIndo",
   },
-  description: "Baca manhwa, manga, dan manhua terbaru secara online gratis bahasa Indonesia. Update cepat setiap hari, koleksi terlengkap hanya di GaleriKomik. Ribuan judul dari Korea, Jepang, dan China.",
+  description: "Baca manhwa, manga, dan manhua terbaru secara online gratis bahasa Indonesia. Update cepat setiap hari, koleksi terlengkap hanya di ManhwaIndo. Ribuan judul dari Korea, Jepang, dan China.",
   keywords: [
     "baca komik",
     "manhwa",
@@ -30,27 +30,27 @@ export const metadata = {
     "manhwa indonesia",
     "manga online",
     "baca komik gratis",
-    "galerikomik",
+    "manhwaindo",
     "baca manhwa online",
     "komik terbaru",
     "manhwa terbaru",
   ],
   icons: {
-    icon: "/favicon.jpg",
-    shortcut: "/favicon.jpg",
-    apple: "/favicon.jpg",
+    icon: "/favicon.png",
+    shortcut: "/favicon.png",
+    apple: "/favicon.png",
   },
   openGraph: {
-    title: "GaleriKomik - Baca Komik Manhwa Manga Manhua Online Gratis",
+    title: "ManhwaIndo - Baca Komik Manhwa Manga Manhua Online Gratis",
     description: "Baca manhwa, manga, dan manhua terbaru secara online gratis bahasa Indonesia. Update cepat setiap hari.",
     url: SITE_URL,
-    siteName: "GaleriKomik",
+    siteName: "ManhwaIndo",
     locale: "id_ID",
     type: "website",
   },
   twitter: {
     card: "summary_large_image",
-    title: "GaleriKomik - Baca Komik Online Gratis",
+    title: "ManhwaIndo - Baca Komik Online Gratis",
     description: "Baca manhwa, manga, dan manhua terbaru secara online gratis bahasa Indonesia.",
   },
   robots: {
@@ -78,7 +78,7 @@ export default function RootLayout({ children }) {
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "WebSite",
-    name: "GaleriKomik",
+    name: "ManhwaIndo",
     url: SITE_URL,
     description: "Baca manhwa, manga, dan manhua terbaru secara online gratis bahasa Indonesia.",
     inLanguage: "id",

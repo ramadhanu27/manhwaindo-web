@@ -81,8 +81,8 @@ export default function Navbar() {
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
           <a href="/" className="flex items-center gap-1 group text-xl font-extrabold tracking-tight">
-            <span className="text-dark-100 group-hover:text-white transition-colors">Galeri</span>
-            <span className="text-accent-500">Komik</span>
+            <span className="text-dark-100 group-hover:text-white transition-colors">Manhwa</span>
+            <span className="text-accent-500">Indo</span>
           </a>
 
           {/* Desktop nav links */}

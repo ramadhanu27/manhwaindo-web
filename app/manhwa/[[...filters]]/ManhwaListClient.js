@@ -198,18 +198,18 @@ export default function ManhwaListClient({ initialGenre = "", initialStatus = ""
   })();
 
   const pageDescription = (() => {
-    if (search) return `Hasil pencarian "${search}" di GaleriKomik.`;
+    if (search) return `Hasil pencarian "${search}" di ManhwaIndo.`;
     const parts = [];
     if (genre) parts.push(`genre ${genre.split(",").join(", ")}`);
     if (type) parts.push(`tipe ${type}`);
     if (status) parts.push(`status ${status}`);
-    if (parts.length > 0) return `Daftar komik ${parts.join(", ")} di GaleriKomik. Baca online gratis bahasa Indonesia.`;
-    return "Jelajahi koleksi lengkap manhwa, manga, dan manhua di GaleriKomik.";
+    if (parts.length > 0) return `Daftar komik ${parts.join(", ")} di ManhwaIndo. Baca online gratis bahasa Indonesia.`;
+    return "Jelajahi koleksi lengkap manhwa, manga, dan manhua di ManhwaIndo.";
   })();
 
   // Update document title dynamically
   useEffect(() => {
-    document.title = pageTitle === "Jelajahi Komik" ? "Daftar Komik | GaleriKomik" : `${pageTitle} | GaleriKomik`;
+    document.title = pageTitle === "Jelajahi Komik" ? "Daftar Komik | ManhwaIndo" : `${pageTitle} | ManhwaIndo`;
   }, [pageTitle]);
 
   // Active filter tags

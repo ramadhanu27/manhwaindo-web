@@ -49,7 +49,7 @@ export default function AdminLogin() {
               </svg>
             </div>
             <h1 className="text-xl font-bold text-dark-100">Admin Panel</h1>
-            <p className="text-sm text-dark-400 mt-1">GaleriKomik CMS</p>
+            <p className="text-sm text-dark-400 mt-1">ManhwaIndo CMS</p>
           </div>
 
           {/* Form */}

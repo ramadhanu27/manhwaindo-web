@@ -1,7 +1,7 @@
 // Run: node scripts/generate-sitemap.mjs
 // Generates public/sitemap.xml locally (API not blocked from your PC)
 
-const SITE_URL = "https://galerikomik.cyou";
+const SITE_URL = "https://manhwaindo-web.vercel.app";
 
 async function fetchAPI(endpoint, params = {}) {
   const url = new URL(`https://manhwaindo.web.id/wp-json/flavor/v1/${endpoint}`);

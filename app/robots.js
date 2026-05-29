@@ -1,4 +1,4 @@
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://galerikomik.cyou";
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://manhwaindo-web.vercel.app";
 
 export default function robots() {
   return {

@@ -38,8 +38,8 @@ export async function generateMetadata({ params }) {
   const title = parts.length > 0 ? `Komik ${parts.join(" ")}` : "Daftar Komik";
   const description =
     parts.length > 0
-      ? `Baca komik ${parts.join(", ")} online gratis bahasa Indonesia di GaleriKomik. Koleksi terlengkap & update tercepat.`
-      : "Jelajahi koleksi lengkap manhwa, manga, dan manhua di GaleriKomik. Filter berdasarkan genre, status, tipe, dan rating.";
+      ? `Baca komik ${parts.join(", ")} online gratis bahasa Indonesia di ManhwaIndo. Koleksi terlengkap & update tercepat.`
+      : "Jelajahi koleksi lengkap manhwa, manga, dan manhua di ManhwaIndo. Filter berdasarkan genre, status, tipe, dan rating.";
 
   return {
     title,
