@@ -1,38 +1,23 @@
 {
-  "name": "manhwaindo-web",
+  "name": "galerikomik",
   "version": "0.1.0",
   "private": true,
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint",
-    "pages:build": "next build && npx opennextjs-cloudflare build && npm run copy-worker",
-    "copy-worker": "node scripts/copy-worker.js",
-    "pages:dev": "wrangler pages dev .open-next/assets --compatibility-flag=nodejs_compat",
-    "pages:deploy": "wrangler pages deploy .open-next/assets"
+    "lint": "eslint"
   },
   "dependencies": {
-    "jspdf": "^3.0.4",
-    "jszip": "^3.10.1",
-    "next": "^15.0.0",
-    "react": "^18.3.0",
-    "react-dom": "^18.3.0"
+    "mysql2": "^3.19.0",
+    "next": "16.1.6",
+    "react": "19.2.3",
+    "react-dom": "19.2.3"
   },
   "devDependencies": {
-    "@cloudflare/workers-types": "^4.20241218.0",
-    "@opennextjs/cloudflare": "^1.14.7",
-    "@types/node": "^22.10.2",
-    "@types/react": "^18.3.0",
-    "@types/react-dom": "^18.3.0",
-    "autoprefixer": "^10.4.23",
-    "esbuild": "^0.27.2",
-    "eslint": "^9.0.0",
-    "eslint-config-next": "^15.0.0",
-    "open-next": "^0.0.1",
-    "postcss": "^8.5.6",
-    "tailwindcss": "^3.4.19",
-    "typescript": "^5.7.2",
-    "wrangler": "^4.56.0"
+    "@tailwindcss/postcss": "^4",
+    "eslint": "^9",
+    "eslint-config-next": "16.1.6",
+    "tailwindcss": "^4"
   }
 }

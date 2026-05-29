@@ -1,0 +1,67 @@
+[
+  {
+    "id": "ad_1",
+    "name": "Header Banner",
+    "position": "content",
+    "type": "script",
+    "content": "<a href=\"#\" target=\"_blank\" rel=\"noopener\">\n  <img src=\"https://manhwaindo.web.id/pasang-iklan.png\" \n       alt=\"Pasang Iklan\" \n       style=\"width:100%; height:auto; display:block;\">\n</a><a href=\"#\" target=\"_blank\" rel=\"noopener\">\n  <img src=\"https://manhwaindo.web.id/pasang-iklan.png\" \n       alt=\"Pasang Iklan\" \n       style=\"width:100%; height:auto; display:block;\">\n</a><a href=\"#\" target=\"_blank\" rel=\"noopener\">\n  <img src=\"https://manhwaindo.web.id/pasang-iklan.png\" \n       alt=\"Pasang Iklan\" \n       style=\"width:100%; height:auto; display:block;\">\n</a>",
+    "imageUrl": "",
+    "targetUrl": "",
+    "isActive": false,
+    "createdAt": "2026-03-09T00:00:00Z",
+    "impressions": 0,
+    "clicks": 0
+  },
+  {
+    "id": "ad_2",
+    "name": "Sidebar Banner",
+    "position": "sidebar",
+    "type": "image",
+    "content": "",
+    "imageUrl": "",
+    "targetUrl": "",
+    "isActive": false,
+    "createdAt": "2026-03-09T00:00:00Z",
+    "impressions": 0,
+    "clicks": 0
+  },
+  {
+    "id": "ad_3",
+    "name": "Between Content",
+    "position": "content",
+    "type": "script",
+    "content": "<a href=\"#\" target=\"_blank\" rel=\"noopener\">\n  <img src=\"https://manhwaindo.web.id/iklan.jpg\" \n       alt=\"Pasang Iklan\" \n       style=\"width:100%; height:auto; display:block;\">\n</a><a href=\"#\" target=\"_blank\" rel=\"noopener\">\n  <img src=\"https://manhwaindo.web.id/iklan.jpg\" \n       alt=\"Pasang Iklan\" \n       style=\"width:100%; height:auto; display:block;\">\n</a>",
+    "imageUrl": "",
+    "targetUrl": "",
+    "isActive": false,
+    "createdAt": "2026-03-09T00:00:00Z",
+    "impressions": 0,
+    "clicks": 0
+  },
+  {
+    "id": "ad_4",
+    "name": "Footer Banner",
+    "position": "footer",
+    "type": "script",
+    "content": "<a href=\"#\" target=\"_blank\" rel=\"noopener\">\n  <img src=\"https://manhwaindo.web.id/pasang-iklan.png\" \n       alt=\"Pasang Iklan\" \n       style=\"width:100%; height:auto; display:block;\">\n</a><a href=\"#\" target=\"_blank\" rel=\"noopener\">\n  <img src=\"https://manhwaindo.web.id/pasang-iklan.png\" \n       alt=\"Pasang Iklan\" \n       style=\"width:100%; height:auto; display:block;\">\n</a>",
+    "imageUrl": "",
+    "targetUrl": "",
+    "isActive": false,
+    "createdAt": "2026-03-09T00:00:00Z",
+    "impressions": 0,
+    "clicks": 0
+  },
+  {
+    "id": "ad_5",
+    "name": "Popup Ad",
+    "position": "popup",
+    "type": "script",
+    "content": "",
+    "imageUrl": "",
+    "targetUrl": "",
+    "isActive": false,
+    "createdAt": "2026-03-09T00:00:00Z",
+    "impressions": 0,
+    "clicks": 0
+  }
+]

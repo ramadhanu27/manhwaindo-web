@@ -1,0 +1,37 @@
+{
+  "totalPageViews": 89,
+  "totalVisitors": 3,
+  "todayPageViews": 58,
+  "todayVisitors": 2,
+  "todayDate": "2026-05-29",
+  "pages": {
+    "/": 56,
+    "/wordpress/kontak": 1,
+    "/komik/criminal-transfer-student": 3,
+    "/komik/criminal-transfer-student/chapter-15": 2,
+    "/manhwa": 4,
+    "/manhwa/status/ongoing": 5,
+    "/komik/musume-ni-danzai-sareru-akuyaku-koushaku-ni-tensei-shitemashita-akuyaku-muubu-o-yameta-no-ni-nazeka-musume-ga-koori-no-reijou-ka-suru-ken": 2,
+    "/manhwa/status/ongoing/page/13": 1,
+    "/komik/the-corporate-underdog-who-does-everything-right": 6,
+    "/komik/the-corporate-underdog-who-does-everything-right/chapter-67": 1,
+    "/komik/the-corporate-underdog-who-does-everything-right/chapter-47": 4,
+    "/komik/the-corporate-underdog-who-does-everything-right/chapter-62": 2,
+    "/trending": 1,
+    "/komik/mokushiroku-no-yonkishi": 1
+  },
+  "daily": {
+    "2026-03-09": {
+      "pageViews": 31,
+      "visitors": 1
+    },
+    "2026-05-29": {
+      "pageViews": 58,
+      "visitors": 2
+    }
+  },
+  "visitors": [
+    "OjoxOk1vemlsbGEvNS4wIChXaW5kb3dz",
+    "OjoxOk1vemlsbGEvNS4wIChpUGhvbmU7"
+  ]
+}
