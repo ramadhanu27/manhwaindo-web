@@ -190,7 +190,7 @@ export default function ReaderClient({ images, manhwaSlug, manhwaTitle, chapterT
       {/* Floating settings panel trigger button */}
       <button
         onClick={() => setShowSettings(!showSettings)}
-        className={`fixed bottom-20 right-6 z-50 w-12 h-12 rounded-full flex items-center justify-center shadow-xl transition-all duration-200 ${showSettings ? "bg-accent-600 text-white scale-110 border border-accent-500/50" : "glass text-dark-300 border border-dark-700/50 hover:text-accent-400 hover:border-accent-500/30 hover:scale-110"}`}
+        className={`fixed bottom-20 right-4 sm:right-6 z-50 w-12 h-12 rounded-full flex items-center justify-center shadow-xl transition-all duration-200 ${showSettings ? "bg-accent-600 text-white scale-110 border border-accent-500/50" : "glass text-dark-300 border border-dark-700/50 hover:text-accent-400 hover:border-accent-500/30 hover:scale-110"}`}
         aria-label="Pengaturan Pembaca"
         title="Pengaturan Pembaca"
       >
@@ -204,7 +204,7 @@ export default function ReaderClient({ images, manhwaSlug, manhwaTitle, chapterT
       {showSettings && (
         <div
           ref={settingsRef}
-          className="fixed bottom-36 right-6 z-50 w-72 sm:w-80 bg-dark-900/95 border border-dark-700/80 rounded-2xl p-5 shadow-2xl backdrop-blur-md slide-fade-in"
+          className="fixed bottom-36 right-4 sm:right-6 z-50 w-[calc(100vw-2rem)] sm:w-80 bg-dark-900/95 border border-dark-700/80 rounded-2xl p-5 shadow-2xl backdrop-blur-md slide-fade-in"
         >
           {/* Header */}
           <div className="flex items-center justify-between pb-3 border-b border-dark-800/85 mb-4">
@@ -308,7 +308,7 @@ export default function ReaderClient({ images, manhwaSlug, manhwaTitle, chapterT
       {showScrollTop && (
         <button
           onClick={scrollToTop}
-          className="fixed bottom-6 right-6 z-50 w-12 h-12 rounded-full bg-accent-600 text-white flex items-center justify-center shadow-xl hover:bg-accent-500 hover:scale-110 transition-all"
+          className="fixed bottom-6 right-4 sm:right-6 z-50 w-12 h-12 rounded-full bg-accent-600 text-white flex items-center justify-center shadow-xl hover:bg-accent-500 hover:scale-110 transition-all"
           aria-label="Scroll to top">
           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" />

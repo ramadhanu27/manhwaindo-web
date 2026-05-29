@@ -40,20 +40,20 @@ export default async function ChapterReaderPage({ params }) {
       {/* ═══ Top Navigation Bar ═══ */}
       <div className="glass border-b border-dark-700/30 relative z-10">
         <div className="max-w-4xl mx-auto px-4 py-3">
-          <div className="flex items-center gap-2 text-xs text-dark-400 mb-2">
-            <Link href="/" className="hover:text-accent-400 transition-colors">
+          <div className="flex items-center gap-2 text-xs text-dark-400 mb-2 flex-wrap">
+            <Link href="/" className="hover:text-accent-400 transition-colors flex-shrink-0">
               Home
             </Link>
-            <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className="w-3 h-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
             </svg>
-            <Link href={`/komik/${data.manhwa_slug}`} className="hover:text-accent-400 transition-colors truncate max-w-[150px] sm:max-w-[250px]">
+            <Link href={`/komik/${data.manhwa_slug}`} className="hover:text-accent-400 transition-colors truncate max-w-[120px] sm:max-w-[250px] flex-shrink-0">
               {data.manhwa_title}
             </Link>
             <svg className="w-3 h-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
             </svg>
-            <span className="text-accent-400 font-medium flex-shrink-0">{data.chapter_title}</span>
+            <span className="text-accent-400 font-medium truncate max-w-[120px] sm:max-w-[250px]">{data.chapter_title}</span>
           </div>
 
           <div className="flex items-center justify-between gap-3">
@@ -104,39 +104,42 @@ export default async function ChapterReaderPage({ params }) {
 
       {/* ═══ Bottom Navigation ═══ */}
       <div className="max-w-4xl mx-auto px-4 py-8">
-        <div className="glass-card rounded-2xl p-6">
-          <div className="flex items-center justify-between gap-4">
+        <div className="glass-card rounded-2xl p-4 sm:p-6">
+          <div className="flex items-center justify-between gap-2 sm:gap-4 flex-wrap sm:flex-nowrap">
             {data.navigation.prev_slug ? (
               <Link
                 href={`/komik/${data.manhwa_slug}/${data.navigation.prev_slug}`}
-                className="flex items-center gap-2 px-5 py-3 rounded-xl glass text-sm font-semibold text-dark-200 hover:text-accent-400 hover:border-accent-500/30 transition-all">
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                className="flex items-center gap-1.5 sm:gap-2 px-3 py-2 sm:px-5 sm:py-3 rounded-xl glass text-xs sm:text-sm font-semibold text-dark-200 hover:text-accent-400 hover:border-accent-500/30 transition-all flex-1 sm:flex-initial justify-center sm:justify-start">
+                <svg className="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
                 </svg>
-                Chapter Sebelumnya
+                <span className="hidden sm:inline">Chapter Sebelumnya</span>
+                <span className="sm:hidden">Prev</span>
               </Link>
             ) : (
-              <div />
+              <div className="flex-1 sm:flex-initial" />
             )}
 
-            <Link href={`/komik/${data.manhwa_slug}`} className="flex items-center gap-2 px-5 py-3 rounded-lg bg-accent-600 text-white text-sm font-semibold hover:bg-accent-500 transition-colors">
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <Link href={`/komik/${data.manhwa_slug}`} className="flex items-center gap-1.5 sm:gap-2 px-3 py-2 sm:px-5 sm:py-3 rounded-xl bg-accent-600 text-white text-xs sm:text-sm font-semibold hover:bg-accent-500 transition-colors flex-initial justify-center">
+              <svg className="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 10h16M4 14h16M4 18h16" />
               </svg>
               <span className="hidden sm:inline">Daftar Chapter</span>
+              <span className="sm:hidden">Chapters</span>
             </Link>
 
             {data.navigation.next_slug ? (
               <Link
                 href={`/komik/${data.manhwa_slug}/${data.navigation.next_slug}`}
-                className="flex items-center gap-2 px-5 py-3 rounded-xl glass text-sm font-semibold text-dark-200 hover:text-accent-400 hover:border-accent-500/30 transition-all">
-                Chapter Selanjutnya
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                className="flex items-center gap-1.5 sm:gap-2 px-3 py-2 sm:px-5 sm:py-3 rounded-xl glass text-xs sm:text-sm font-semibold text-dark-200 hover:text-accent-400 hover:border-accent-500/30 transition-all flex-1 sm:flex-initial justify-center sm:justify-start">
+                <span className="hidden sm:inline">Chapter Selanjutnya</span>
+                <span className="sm:hidden">Next</span>
+                <svg className="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                 </svg>
               </Link>
             ) : (
-              <div />
+              <div className="flex-1 sm:flex-initial" />
             )}
           </div>
         </div>

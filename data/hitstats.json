@@ -1,11 +1,11 @@
 {
-  "totalPageViews": 93,
+  "totalPageViews": 97,
   "totalVisitors": 3,
-  "todayPageViews": 62,
+  "todayPageViews": 66,
   "todayVisitors": 2,
   "todayDate": "2026-05-29",
   "pages": {
-    "/": 59,
+    "/": 60,
     "/wordpress/kontak": 1,
     "/komik/criminal-transfer-student": 3,
     "/komik/criminal-transfer-student/chapter-15": 2,
@@ -19,7 +19,10 @@
     "/komik/the-corporate-underdog-who-does-everything-right/chapter-62": 2,
     "/trending": 1,
     "/komik/mokushiroku-no-yonkishi": 1,
-    "/komik/player-who-cant-level-up/chapter-224": 1
+    "/komik/player-who-cant-level-up/chapter-224": 1,
+    "/komik/deretai-kanojo-no-uraomote/chapter-05.5": 1,
+    "/komik/deretai-kanojo-no-uraomote": 1,
+    "/komik/deretai-kanojo-no-uraomote/chapter-6": 1
   },
   "daily": {
     "2026-03-09": {
@@ -27,7 +30,7 @@
       "visitors": 1
     },
     "2026-05-29": {
-      "pageViews": 62,
+      "pageViews": 66,
       "visitors": 2
     }
   },

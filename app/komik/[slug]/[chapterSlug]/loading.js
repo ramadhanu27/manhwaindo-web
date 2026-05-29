@@ -4,7 +4,7 @@ export default function ChapterReaderLoading() {
       {/* Top nav skeleton */}
       <div className="glass border-b border-dark-700/30 relative z-10">
         <div className="max-w-4xl mx-auto px-4 py-3">
-          <div className="flex items-center gap-2 mb-2">
+          <div className="flex items-center gap-2 mb-2 flex-wrap">
             <div className="w-12 h-3 skeleton rounded" />
             <div className="w-3 h-3 skeleton rounded" />
             <div className="w-32 h-3 skeleton rounded" />
